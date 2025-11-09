@@ -164,7 +164,7 @@ export default function NewIssue() {
                       <textarea
                         className="form-control form-control-sm"
                         rows="3"
-                        placeholder="Ex: Fix CNC #3..."
+                        placeholder="Provide a short description of the task..."
                         value={form.description}
                         onChange={(e) =>
                           setForm({ ...form, description: e.target.value })
@@ -190,7 +190,7 @@ export default function NewIssue() {
                       </div>
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
-                          Due Date
+                          Deadline
                         </label>
                         <input
                           type="date"

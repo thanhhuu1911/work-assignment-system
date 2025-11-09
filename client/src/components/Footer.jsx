@@ -18,9 +18,6 @@ export default function Footer() {
           <p className="mb-3 small text-light">
             Contact: thanhhuu123455@gmail.com | Hotline: 0368206517
           </p>
-          <div className="d-flex justify-content-center">
-            <LanguageToggle />
-          </div>
         </div>
       </footer>
 

@@ -48,13 +48,12 @@ export default function Dashboard() {
     <div>
       <Header />
 
-      <div className="container-fluid py-4">
-        {/* TITLE MOVED UP */}
+      <div className="container-fluid py-1">
+        {/* TITLE */}
         <h2 className="mb-3 fw-bold text-dark">{t("task_list")}</h2>
 
-        {/* MAIN ACTION BAR: FILTERS (LEFT) + BUTTONS (RIGHT) */}
-        <div className="d-flex flex-wrap align-items-center gap-3 mb-4">
-          {/* LEFT: 6 FILTER BUTTONS */}
+        {/* FILTERS + BUTTONS */}
+        <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
           <div className="btn-group flex-wrap" role="group">
             {STATUS_FILTERS.map((f) => (
               <button
@@ -74,11 +73,10 @@ export default function Dashboard() {
             ))}
           </div>
 
-          {/* RIGHT: ASSIGN TASK + RELOAD */}
           <div className="ms-auto d-flex gap-2">
             {canAssignTask && (
               <button
-                className="btn btn-success px-4"
+                className="btn btn-primary px-4"
                 onClick={() => navigate("/new-issue")}
               >
                 {t("create_task")}
@@ -90,8 +88,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* TASK LIST */}
-        <div className="row">
+        {/* TASK GRID – 4 CỘT, KHOẢNG CÁCH GỌN */}
+        <div className="row g-4">
           {loading ? (
             <div className="col-12 text-center py-5">
               <div className="spinner-border text-primary" />
@@ -102,8 +100,8 @@ export default function Dashboard() {
             </div>
           ) : (
             filteredTasks.map((task) => (
-              <div className="col-md-6 col-lg-4 mb-4" key={task._id}>
-                <TaskCard task={task} taskId={task._id} />
+              <div className="col-md-6 col-lg-4" key={task._id}>
+                <TaskCard task={task} />
               </div>
             ))
           )}

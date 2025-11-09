@@ -11,7 +11,7 @@ export default function Register() {
     name: "",
     email: "",
     password: "",
-    role: "member",
+    role: "",
     department: "",
     group: "",
   });
@@ -97,10 +97,10 @@ export default function Register() {
                 <option value="" disabled>
                   Select Role
                 </option>
-                <option value="member">Staff</option>
-                <option value="leader">Leader</option>
-                <option value="a_manager">Assistant Manager</option>
                 <option value="manager">Manager</option>
+                <option value="a_manager">Assistant Manager</option>
+                <option value="leader">Leader</option>
+                <option value="member">Staff</option>
               </select>
             </div>
 
