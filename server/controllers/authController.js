@@ -1,3 +1,4 @@
+// server/controllers/authController.js
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 
@@ -8,12 +9,25 @@ const generateToken = (id) => {
 };
 
 export const register = async (req, res) => {
-  const { name, email, password, role, department } = req.body;
-  try {
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: "Email đã tồn tại!" });
+  const { name, email, password, role, group } = req.body;
 
-    user = new User({ name, email, password, role, department });
+  try {
+    // Kiểm tra email
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email đã tồn tại!" });
+    }
+
+    // Tạo user mới
+    const user = new User({
+      name,
+      email,
+      password,
+      role,
+      department: "ME",
+      group: ["leader", "member"].includes(role) ? group : null,
+    });
+
     await user.save();
 
     const token = generateToken(user._id);
@@ -27,15 +41,18 @@ export const register = async (req, res) => {
         email: user.email,
         role: user.role,
         department: user.department,
+        group: user.group,
       },
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: err.message });
   }
 };
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const user = await User.findOne({ email });
     if (!user || !(await user.matchPassword(password))) {
@@ -53,6 +70,7 @@ export const login = async (req, res) => {
         email: user.email,
         role: user.role,
         department: user.department,
+        group: user.group,
       },
     });
   } catch (err) {

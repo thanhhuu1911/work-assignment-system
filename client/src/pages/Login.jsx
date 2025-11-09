@@ -8,18 +8,16 @@ export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
+  // client/src/pages/Login.jsx (chỉ đoạn xử lý login)
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // reset lỗi
     try {
-      const res = await api.post("/auth/login", form);
+      const res = await api.post("/auth/login", { email, password });
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-
-      // SIÊU MƯỢT: reload + chuyển trang → App.jsx đọc lại user ngay!
-      window.location.href = "/dashboard";
+      localStorage.setItem("user", JSON.stringify(res.data.user)); // ← LƯU ĐẦY ĐỦ
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Login error");
+      setError(err.response?.data?.message || "Login failed");
     }
   };
 

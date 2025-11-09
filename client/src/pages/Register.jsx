@@ -13,30 +13,42 @@ export default function Register() {
     password: "",
     role: "member",
     department: "",
+    group: "",
   });
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/auth/register", form);
+      const payload = { ...form };
+      // Chỉ gửi group nếu là leader hoặc member
+      if (!["leader", "member"].includes(form.role)) {
+        delete payload.group;
+      }
+      await api.post("/auth/register", payload);
+      alert("Registration successful! Please log in.");
       navigate("/login");
     } catch (err) {
-      // ĐÃ SỬA DÒNG NÀY – LOẠI BỎ KÝ TỰ LẠ
-      setError(err.response?.data?.message || "Registration Error");
+      setError(err.response?.data?.message || "Registration failed");
     }
   };
 
+  const showGroup = ["leader", "member"].includes(form.role);
+
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center p-3">
+    <div className="min-vh-100 d-flex align-items-center justify-content-center p-3 bg-light">
       <div
-        className="card shadow-lg"
-        style={{ maxWidth: "500px", width: "100%" }}
+        className="card shadow-lg border-0"
+        style={{ maxWidth: "520px", width: "100%" }}
       >
         <div className="card-body p-5">
-          <h2 className="text-center mb-4">{t("register")}</h2>
+          <h2 className="text-center mb-4 fw-bold text-primary">
+            {t("register")}
+          </h2>
           {error && <div className="alert alert-danger">{error}</div>}
+
           <form onSubmit={handleSubmit}>
+            {/* Full Name */}
             <div className="mb-3">
               <input
                 type="text"
@@ -47,6 +59,8 @@ export default function Register() {
                 required
               />
             </div>
+
+            {/* Email */}
             <div className="mb-3">
               <input
                 type="email"
@@ -57,44 +71,80 @@ export default function Register() {
                 required
               />
             </div>
+
+            {/* Password */}
             <div className="mb-3">
               <input
                 type="password"
                 className="form-control"
-                placeholder="password"
+                placeholder="Password"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
               />
             </div>
+
+            {/* Role */}
             <div className="mb-3">
               <select
-                className="form-control"
+                className="form-select"
                 value={form.role}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, role: e.target.value, group: "" })
+                }
+                required
               >
-                <option value="leader">Leader</option>
+                <option value="" disabled>
+                  Select Role
+                </option>
                 <option value="member">Staff</option>
+                <option value="leader">Leader</option>
+                <option value="a_manager">Assistant Manager</option>
+                <option value="manager">Manager</option>
               </select>
             </div>
+
+            {/* Group (only for Leader & Staff) */}
+            {showGroup && (
+              <div className="mb-3">
+                <select
+                  className="form-select"
+                  value={form.group}
+                  onChange={(e) => setForm({ ...form, group: e.target.value })}
+                  required
+                >
+                  <option value="" disabled>
+                    Select Group
+                  </option>
+                  <option value="Lean">Lean</option>
+                  <option value="IE">IE</option>
+                  <option value="Data">Data</option>
+                </select>
+              </div>
+            )}
+
+            {/* Department (auto-filled) */}
             <div className="mb-3">
               <input
                 type="text"
                 className="form-control"
                 placeholder="Department"
-                value={form.department}
-                onChange={(e) =>
-                  setForm({ ...form, department: e.target.value })
-                }
-                required
+                value="ME"
+                readOnly
+                style={{ backgroundColor: "#f8f9fa" }}
               />
             </div>
-            <button type="submit" className="btn btn-primary w-100">
+
+            <button type="submit" className="btn btn-primary w-100 fw-bold">
               {t("register")}
             </button>
           </form>
-          <p className="text-center mt-3">
-            Already have an account? <Link to="/login">Log In</Link>
+
+          <p className="text-center mt-3 text-muted">
+            Already have an account?{" "}
+            <Link to="/login" className="text-primary">
+              Log In
+            </Link>
           </p>
         </div>
       </div>

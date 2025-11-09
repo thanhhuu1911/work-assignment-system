@@ -1,3 +1,4 @@
+// client/src/pages/Dashboard.jsx
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -22,13 +23,16 @@ export default function Dashboard() {
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const canAssignTask = ["manager", "a_manager", "leader"].includes(user.role);
+
   const loadTasks = async () => {
     setLoading(true);
     try {
       const res = await api.get("/tasks");
       setTasks(res.data.data);
     } catch (err) {
-      alert("Lỗi tải công việc");
+      alert("Failed to load tasks");
     }
     setLoading(false);
   };
@@ -43,44 +47,50 @@ export default function Dashboard() {
   return (
     <div>
       <Header />
-      <div className="container-fluid">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2>{t("task_list")}</h2>
-          <div className="d-flex gap-2">
-            {JSON.parse(localStorage.getItem("user") || "{}").role ===
-              "leader" && (
+
+      <div className="container-fluid py-4">
+        {/* TITLE MOVED UP */}
+        <h2 className="mb-3 fw-bold text-dark">{t("task_list")}</h2>
+
+        {/* MAIN ACTION BAR: FILTERS (LEFT) + BUTTONS (RIGHT) */}
+        <div className="d-flex flex-wrap align-items-center gap-3 mb-4">
+          {/* LEFT: 6 FILTER BUTTONS */}
+          <div className="btn-group flex-wrap" role="group">
+            {STATUS_FILTERS.map((f) => (
               <button
-                className="btn btn-success"
+                key={f.key}
+                className={`btn btn-outline-${f.color} ${
+                  filter === f.key ? "active" : ""
+                }`}
+                onClick={() => setFilter(f.key)}
+              >
+                {t(f.label)} (
+                {
+                  tasks.filter((t) => f.key === "all" || t.status === f.key)
+                    .length
+                }
+                )
+              </button>
+            ))}
+          </div>
+
+          {/* RIGHT: ASSIGN TASK + RELOAD */}
+          <div className="ms-auto d-flex gap-2">
+            {canAssignTask && (
+              <button
+                className="btn btn-success px-4"
                 onClick={() => navigate("/new-issue")}
               >
                 {t("create_task")}
               </button>
             )}
-            <button className="btn btn-primary" onClick={loadTasks}>
+            <button className="btn btn-primary px-4" onClick={loadTasks}>
               {t("reload")}
             </button>
           </div>
         </div>
 
-        <div className="btn-group mb-4 flex-wrap" role="group">
-          {STATUS_FILTERS.map((f) => (
-            <button
-              key={f.key}
-              className={`btn btn-outline-${f.color} ${
-                filter === f.key ? "active" : ""
-              }`}
-              onClick={() => setFilter(f.key)}
-            >
-              {t(f.label)} (
-              {
-                tasks.filter((t) => f.key === "all" || t.status === f.key)
-                  .length
-              }
-              )
-            </button>
-          ))}
-        </div>
-
+        {/* TASK LIST */}
         <div className="row">
           {loading ? (
             <div className="col-12 text-center py-5">
@@ -88,18 +98,18 @@ export default function Dashboard() {
             </div>
           ) : filteredTasks.length === 0 ? (
             <div className="col-12 text-center py-5">
-              <p className="text-muted">Không có công việc nào</p>
+              <p className="text-muted">{t("no_tasks")}</p>
             </div>
           ) : (
             filteredTasks.map((task) => (
               <div className="col-md-6 col-lg-4 mb-4" key={task._id}>
-                <TaskCard task={task} taskId={task._id} />{" "}
-                {/* ĐÃ SỬA DÒNG NÀY */}
+                <TaskCard task={task} taskId={task._id} />
               </div>
             ))
           )}
         </div>
       </div>
+
       <Footer />
     </div>
   );
