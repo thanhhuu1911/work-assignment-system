@@ -78,7 +78,7 @@ export default function TaskCard({ task }) {
             <strong>{t("assignee")}:</strong> {task.assignee?.name || "N/A"}
           </div>
           <div>
-            {/* <strong>{t("position")}:</strong> {task.position || "Assembly 08"}  sửa dòng này cho tự cập nhật vị trí */}
+            <strong>{t("position")}:</strong> {task.position || "Chưa cập nhật"}
           </div>
           <div>
             <strong>{t("created_at")}:</strong>{" "}

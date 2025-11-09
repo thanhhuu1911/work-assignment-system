@@ -16,6 +16,7 @@ export default function NewIssue() {
     startDate: "",
     dueDate: "",
     beforeImage: null,
+    position: "",
   });
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
@@ -68,6 +69,7 @@ export default function NewIssue() {
     formData.append("assignee", form.assignee);
     formData.append("startDate", form.startDate);
     formData.append("dueDate", form.dueDate);
+    formData.append("position", form.position);
     if (form.beforeImage) formData.append("beforeImage", form.beforeImage);
 
     try {
@@ -156,7 +158,35 @@ export default function NewIssue() {
                         </select>
                       </div>
                     </div>
-
+                    {/* Position */}
+                    <div className="col-12">
+                      <label className="form-label small fw-semibold">
+                        Position
+                      </label>
+                      <select
+                        className="form-select form-select-sm"
+                        value={form.position}
+                        onChange={(e) =>
+                          setForm({
+                            ...form,
+                            position: e.target.value,
+                          })
+                        }
+                        required
+                      >
+                        <option value="">Select</option>
+                        <option value="CUTTING">CUTTING</option>
+                        <option value="ASSEMBLY A">ASSEMBLY A</option>
+                        <option value="ASSEMBLY B">ASSEMBLY B</option>
+                        <option value="VISOR">VISOR</option>
+                        <option value="PANEL">PANEL</option>
+                        <option value="PRINT">PRINT</option>
+                        <option value="EMBROIDERY">EMBROIDERY</option>
+                        <option value="FINISH WH">FINISH WH</option>
+                        <option value="QC/QA">QC/QA</option>
+                        <option value="WAREHOUSE">WAREHOUSE</option>
+                      </select>
+                    </div>
                     <div className="mt-3">
                       <label className="form-label small fw-semibold">
                         Description
