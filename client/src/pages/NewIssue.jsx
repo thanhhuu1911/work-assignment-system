@@ -16,7 +16,7 @@ export default function NewIssue() {
     startDate: "",
     dueDate: "",
     beforeImage: null,
-    position: "",
+    position: "", // THÊM FIELD
   });
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
@@ -69,8 +69,10 @@ export default function NewIssue() {
     formData.append("assignee", form.assignee);
     formData.append("startDate", form.startDate);
     formData.append("dueDate", form.dueDate);
-    formData.append("position", form.position);
+    formData.append("position", form.position); // ĐÃ GỬI
+
     if (form.beforeImage) formData.append("beforeImage", form.beforeImage);
+    if (form.attachment) formData.append("attachment", form.attachment); // GỬI FILE
 
     try {
       await api.post("/tasks", formData);
@@ -96,15 +98,13 @@ export default function NewIssue() {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Header />
-
-      {/* MAIN CONTENT – TỰ ĐỘNG CO GIÃN */}
       <main className="flex-grow-1 bg-light py-4">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-6 col-xl-5">
               <div className="card shadow-sm border-0">
                 <div className="card-body p-4">
-                  <h2 className="h5 text-center mb-4 text-success fw-bold">
+                  <h2 className="h5 text-center mb-4 text-primary fw-bold">
                     {t("assign_task")} - ME
                   </h2>
 
@@ -158,8 +158,9 @@ export default function NewIssue() {
                         </select>
                       </div>
                     </div>
-                    {/* Position */}
-                    <div className="col-12">
+
+                    {/* POSITION SELECT */}
+                    <div className="mt-3">
                       <label className="form-label small fw-semibold">
                         Position
                       </label>
@@ -167,14 +168,11 @@ export default function NewIssue() {
                         className="form-select form-select-sm"
                         value={form.position}
                         onChange={(e) =>
-                          setForm({
-                            ...form,
-                            position: e.target.value,
-                          })
+                          setForm({ ...form, position: e.target.value })
                         }
                         required
                       >
-                        <option value="">Select</option>
+                        <option value="">-- Select Position --</option>
                         <option value="CUTTING">CUTTING</option>
                         <option value="ASSEMBLY A">ASSEMBLY A</option>
                         <option value="ASSEMBLY B">ASSEMBLY B</option>
@@ -187,6 +185,7 @@ export default function NewIssue() {
                         <option value="WAREHOUSE">WAREHOUSE</option>
                       </select>
                     </div>
+
                     <div className="mt-3">
                       <label className="form-label small fw-semibold">
                         Description
@@ -194,7 +193,7 @@ export default function NewIssue() {
                       <textarea
                         className="form-control form-control-sm"
                         rows="3"
-                        placeholder="Provide a short description of the task..."
+                        placeholder="Enter task description..."
                         value={form.description}
                         onChange={(e) =>
                           setForm({ ...form, description: e.target.value })
@@ -220,7 +219,7 @@ export default function NewIssue() {
                       </div>
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
-                          Deadline
+                          Due Date
                         </label>
                         <input
                           type="date"
@@ -247,18 +246,32 @@ export default function NewIssue() {
                         }
                       />
                     </div>
+                    {/* File */}
+                    <div className="mt-3">
+                      <label className="form-label small fw-semibold">
+                        {t("attachment")} (PDF, DOCX, XLSX...)
+                      </label>
+                      <input
+                        type="file"
+                        className="form-control form-control-sm"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx"
+                        onChange={(e) =>
+                          setForm({ ...form, attachment: e.target.files[0] })
+                        }
+                      />
+                    </div>
 
                     <div className="d-flex justify-content-center gap-2 mt-4">
                       <button
                         type="button"
-                        className="btn btn-secondary btn-sm px-3"
+                        className="btn btn-primary btn-sm px-3"
                         onClick={() => navigate("/dashboard")}
                       >
                         Home
                       </button>
                       <button
                         type="submit"
-                        className="btn btn-success btn-sm px-3 fw-bold"
+                        className="btn btn-primary btn-sm px-3 fw-bold"
                         disabled={!eligibleAssignees.length}
                       >
                         Assign
@@ -271,8 +284,6 @@ export default function NewIssue() {
           </div>
         </div>
       </main>
-
-      {/* FOOTER DÍNH CHÂN */}
       <Footer />
     </div>
   );

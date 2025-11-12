@@ -1,8 +1,15 @@
 import Task from "../models/Task.js";
 
 export const createTask = async (req, res) => {
-  const { title, description, department, assignee, startDate, dueDate } =
-    req.body;
+  const {
+    title,
+    description,
+    department,
+    assignee,
+    startDate,
+    dueDate,
+    position,
+  } = req.body;
   const beforeImage = req.file?.filename;
 
   try {
@@ -15,9 +22,11 @@ export const createTask = async (req, res) => {
       startDate,
       dueDate,
       beforeImage,
+      position,
     });
     await task.save();
     await task.populate(["assignedBy", "assignee"]);
+
     res.status(201).json({ success: true, data: task });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -28,7 +37,7 @@ export const getTasks = async (req, res) => {
   try {
     const tasks = await Task.find()
       .populate("assignedBy", "name")
-      .populate("assignee", "name");
+      .populate("assignee", "name group");
     res.json({ success: true, data: tasks });
   } catch (err) {
     res.status(500).json({ message: err.message });

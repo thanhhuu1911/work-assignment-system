@@ -32,6 +32,7 @@ const taskSchema = new mongoose.Schema(
     beforeImage: { type: String },
     afterImage: { type: String },
     feedback: { type: String },
+    position: { type: String, required: true },
   },
   { timestamps: true }
 );

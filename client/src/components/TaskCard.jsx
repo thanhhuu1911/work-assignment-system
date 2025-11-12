@@ -1,5 +1,6 @@
 // client/src/components/TaskCard.jsx
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 const STATUS_COLORS = {
   support: "warning",
@@ -12,22 +13,29 @@ const STATUS_COLORS = {
 
 export default function TaskCard({ task }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <div className="card h-100 shadow-lg border-0 rounded-4 overflow-hidden position-relative">
-      {/* HEADER: TITLE + STATUS */}
-      <div className="card-header bg-white border-0 py-2 px-3 d-flex justify-content-between align-items-center">
-        <h6 className="mb-0 fw-bold text-primary">{task.title}</h6>
-        <span
-          className={`badge rounded-pill bg-${
-            STATUS_COLORS[task.status] || "secondary"
-          } text-white px-2 py-1 small`}
-        >
-          {t(task.status)}
-        </span>
+      {/* HEADER */}
+      <div className="card-header bg-white border-0 py-2 px-3">
+        <div className="d-flex justify-content-between align-items-start">
+          <div>
+            <small className="text-primary fw-semibold">{task.position}</small>
+          </div>
+          <span
+            className={`badge rounded-pill bg-${
+              task.isOverdue
+                ? "danger"
+                : STATUS_COLORS[task.status] || "secondary"
+            } text-white px-2 py-1 small`}
+          >
+            {task.isOverdue ? "Overdue" : t(task.status)}
+          </span>
+        </div>
       </div>
 
-      {/* 2 ẢNH NHỎ, BO TRÒN */}
+      {/* ẢNH */}
       <div className="row g-2 p-2">
         <div className="col-6 position-relative">
           <img
@@ -38,7 +46,7 @@ export default function TaskCard({ task }) {
             }
             alt="Before"
             className="img-fluid rounded-3 w-100"
-            style={{ height: "90px", objectFit: "cover" }}
+            style={{ height: "150px", objectFit: "cover" }}
           />
           <div
             className="position-absolute bottom-0 start-0 bg-white bg-opacity-80 text-dark px-2 py-1 rounded-end small fw-semibold"
@@ -56,7 +64,7 @@ export default function TaskCard({ task }) {
             }
             alt="After"
             className="img-fluid rounded-3 w-100"
-            style={{ height: "90px", objectFit: "cover" }}
+            style={{ height: "150px", objectFit: "cover" }}
           />
           <div
             className="position-absolute bottom-0 end-0 bg-white bg-opacity-80 text-dark px-2 py-1 rounded-start small fw-semibold"
@@ -67,35 +75,62 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
-      {/* INFO NHỎ GỌN */}
-      <div className="card-body p-3 pt-2">
-        <div className="small text-muted lh-sm">
-          <div>
-            <strong>{t("assigned_by")}:</strong>{" "}
-            {task.assignedBy?.name || "N/A"}
+      {/* MÔ TẢ */}
+      <div className="px-3 pb-1">
+        <p className="small text-primary mb-0">
+          {task.description || "No description"}
+        </p>
+      </div>
+
+      {/* THÔNG TIN */}
+      <div className="card-body p-3 pt-1">
+        <div className="row small text-muted">
+          <div className="col-6">
+            <div className="d-flex">
+              <strong className="me-1">{t("assigned_by")}:</strong>
+              <span
+                className="text-truncate d-inline-block"
+                style={{ maxWidth: "80px" }}
+              >
+                {task.assignedBy?.name || "N/A"}
+              </span>
+            </div>
+            <div className="d-flex mt-1">
+              <strong className="me-1">{t("created_at")}:</strong>
+              <span>
+                {new Date(task.createdAt).toLocaleDateString("vi-VN")}
+              </span>
+            </div>
           </div>
-          <div>
-            <strong>{t("assignee")}:</strong> {task.assignee?.name || "N/A"}
-          </div>
-          <div>
-            <strong>{t("position")}:</strong> {task.position || "Chưa cập nhật"}
-          </div>
-          <div>
-            <strong>{t("created_at")}:</strong>{" "}
-            {new Date(task.createdAt).toLocaleDateString("vi-VN")}
-          </div>
-          <div>
-            <strong>{t("due_date")}:</strong>{" "}
-            {new Date(task.dueDate).toLocaleDateString("vi-VN")}
+          <div className="col-6">
+            <div className="d-flex">
+              <strong className="me-1">{t("assignee")}:</strong>
+              <span
+                className="text-truncate d-inline-block"
+                style={{ maxWidth: "80px" }}
+              >
+                {task.assignee?.name || "N/A"}
+              </span>
+            </div>
+            <div className="d-flex mt-1">
+              <strong className="me-1">{t("due_date")}:</strong>
+              <span>{new Date(task.dueDate).toLocaleDateString("vi-VN")}</span>
+            </div>
           </div>
         </div>
 
-        {/* NÚT HÀNH ĐỘNG */}
-        <div className="d-flex gap-1 mt-2">
-          <button className="btn btn-outline-info btn-sm flex-fill py-1">
+        {/* NÚT */}
+        <div className="d-flex gap-1 mt-3">
+          <button
+            className="btn btn-outline-info btn-sm flex-fill py-1"
+            onClick={() => navigate(`/task/${task._id}`)}
+          >
             {t("view_detail")}
           </button>
-          <button className="btn btn-outline-success btn-sm flex-fill py-1">
+          <button
+            className="btn btn-outline-success btn-sm flex-fill py-1"
+            onClick={() => navigate(`/improve/${task._id}`)}
+          >
             {t("improve")}
           </button>
         </div>

@@ -16,21 +16,52 @@ const STATUS_FILTERS = [
   { key: "rejected", label: "rejected_overdue", color: "danger" },
 ];
 
+const POSITIONS = [
+  "CUTTING",
+  "ASSEMBLY A",
+  "ASSEMBLY B",
+  "VISOR",
+  "PANEL",
+  "PRINT",
+  "EMBROIDERY",
+  "FINISH WH",
+  "QC/QA",
+  "WAREHOUSE",
+];
+
 export default function Dashboard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
-  const [filter, setFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [positionFilter, setPositionFilter] = useState("all");
+  const [groupFilter, setGroupFilter] = useState("all");
+  const [assigneeFilter, setAssigneeFilter] = useState("all");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const tasksPerPage = 8;
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const canAssignTask = ["manager", "a_manager", "leader"].includes(user.role);
+
+  // THÊM OVERDUE
+  const enrichTasksWithOverdue = (tasks) => {
+    return tasks.map((task) => ({
+      ...task,
+      isOverdue:
+        task.status === "pending" && new Date(task.dueDate) < new Date(),
+    }));
+  };
 
   const loadTasks = async () => {
     setLoading(true);
     try {
       const res = await api.get("/tasks");
-      setTasks(res.data.data);
+      const sorted = res.data.data.sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      const enriched = enrichTasksWithOverdue(sorted);
+      setTasks(enriched);
     } catch (err) {
       alert("Failed to load tasks");
     }
@@ -41,34 +72,140 @@ export default function Dashboard() {
     loadTasks();
   }, []);
 
-  const filteredTasks =
-    filter === "all" ? tasks : tasks.filter((t) => t.status === filter);
+  // LỌC TASK – ĐÃ CÓ OVERDUE
+  let filteredTasks = tasks;
+
+  if (statusFilter === "pending") {
+    filteredTasks = filteredTasks.filter(
+      (t) => t.status === "pending" && !t.isOverdue
+    );
+  } else if (statusFilter === "rejected") {
+    filteredTasks = filteredTasks.filter(
+      (t) => t.status === "rejected" || t.isOverdue
+    );
+  } else if (statusFilter !== "all") {
+    filteredTasks = filteredTasks.filter((t) => t.status === statusFilter);
+  }
+
+  if (positionFilter !== "all") {
+    filteredTasks = filteredTasks.filter((t) => t.position === positionFilter);
+  }
+  if (groupFilter !== "all") {
+    filteredTasks = filteredTasks.filter(
+      (t) => t.assignee?.group === groupFilter
+    );
+  }
+  if (assigneeFilter !== "all") {
+    filteredTasks = filteredTasks.filter(
+      (t) => t.assignee?._id === assigneeFilter
+    );
+  }
+
+  const indexOfLastTask = currentPage * tasksPerPage;
+  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+  const currentTasks = filteredTasks.slice(indexOfFirstTask, indexOfLastTask);
+  const totalPages = Math.ceil(filteredTasks.length / tasksPerPage);
+
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  const uniqueAssignees = tasks
+    .filter(
+      (t, i, a) => a.findIndex((x) => x.assignee?._id === t.assignee?._id) === i
+    )
+    .map((t) => t.assignee);
+
+  const uniqueGroups = [
+    ...new Set(tasks.map((t) => t.assignee?.group).filter(Boolean)),
+  ];
+
+  // ĐẾM SỐ CHÍNH XÁC
+  const countByStatus = (key) => {
+    if (key === "all") return tasks.length;
+    if (key === "pending")
+      return tasks.filter((t) => t.status === "pending" && !t.isOverdue).length;
+    if (key === "rejected")
+      return tasks.filter((t) => t.status === "rejected" || t.isOverdue).length;
+    return tasks.filter((t) => t.status === key).length;
+  };
 
   return (
     <div>
       <Header />
+      <div className="container-fluid py-3">
+        {/* 3 BỘ LỌC: VỊ TRÍ - NHÓM - TÊN */}
+        <div className="row g-3 mb-4 justify-content-center">
+          <div className="col-md-3">
+            <select
+              className="form-select form-select-sm"
+              value={positionFilter}
+              onChange={(e) => {
+                setPositionFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="all">{t("Vị Trí")}</option>
+              {POSITIONS.map((pos) => (
+                <option key={pos} value={pos}>
+                  {pos}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      <div className="container-fluid py-1">
-        {/* TITLE */}
-        <h2 className="mb-3 fw-bold text-dark">{t("task_list")}</h2>
+          <div className="col-md-3">
+            <select
+              className="form-select form-select-sm"
+              value={groupFilter}
+              onChange={(e) => {
+                setGroupFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="all">{t("Nhóm")}</option>
+              {uniqueGroups.map((gr) => (
+                <option key={gr} value={gr}>
+                  {gr}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* FILTERS + BUTTONS */}
+          <div className="col-md-3">
+            <select
+              className="form-select form-select-sm"
+              value={assigneeFilter}
+              onChange={(e) => {
+                setAssigneeFilter(e.target.value);
+                setCurrentPage(1);
+              }}
+            >
+              <option value="all">{t("Tên")}</option>
+              {uniqueAssignees.map((u) => (
+                <option key={u._id} value={u._id}>
+                  {u.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* STATUS + BUTTONS */}
         <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
           <div className="btn-group flex-wrap" role="group">
             {STATUS_FILTERS.map((f) => (
               <button
                 key={f.key}
                 className={`btn btn-outline-${f.color} ${
-                  filter === f.key ? "active" : ""
+                  statusFilter === f.key ? "active" : ""
                 }`}
-                onClick={() => setFilter(f.key)}
+                onClick={() => {
+                  setStatusFilter(f.key);
+                  setCurrentPage(1);
+                }}
               >
-                {t(f.label)} (
-                {
-                  tasks.filter((t) => f.key === "all" || t.status === f.key)
-                    .length
-                }
-                )
+                {t(f.label)} ({countByStatus(f.key)})
               </button>
             ))}
           </div>
@@ -88,26 +225,79 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* TASK GRID – 4 CỘT, KHOẢNG CÁCH GỌN */}
+        {/* TASK GRID */}
         <div className="row g-4">
           {loading ? (
             <div className="col-12 text-center py-5">
               <div className="spinner-border text-primary" />
             </div>
-          ) : filteredTasks.length === 0 ? (
+          ) : currentTasks.length === 0 ? (
             <div className="col-12 text-center py-5">
               <p className="text-muted">{t("no_tasks")}</p>
             </div>
           ) : (
-            filteredTasks.map((task) => (
-              <div className="col-md-6 col-lg-4" key={task._id}>
+            currentTasks.map((task) => (
+              <div className="col-6 col-md-4 col-lg-3" key={task._id}>
                 <TaskCard task={task} />
               </div>
             ))
           )}
         </div>
-      </div>
 
+        {/* PHÂN TRANG */}
+        {totalPages > 1 && (
+          <nav className="d-flex justify-content-center mt-4">
+            <ul className="pagination pagination-sm">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button className="page-link" onClick={() => goToPage(1)}>
+                  {"<<"}
+                </button>
+              </li>
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => goToPage(currentPage - 1)}
+                >
+                  {"<"}
+                </button>
+              </li>
+              <li className="page-item active">
+                <span className="page-link">
+                  {currentPage} / {totalPages}
+                </span>
+              </li>
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => goToPage(currentPage + 1)}
+                >
+                  {">"}
+                </button>
+              </li>
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => goToPage(totalPages)}
+                >
+                  {">>"}
+                </button>
+              </li>
+            </ul>
+          </nav>
+        )}
+      </div>
       <Footer />
     </div>
   );
