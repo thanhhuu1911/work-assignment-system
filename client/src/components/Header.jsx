@@ -51,7 +51,7 @@ export default function Header() {
             <span className="fw-semibold text-dark">
               {user.name || "Guest"}
             </span>
-            <span className="text-muted fw-medium">
+            <span className="text-dark fw-medium">
               _{getRoleDisplay(user.role)}_ME
             </span>
           </div>

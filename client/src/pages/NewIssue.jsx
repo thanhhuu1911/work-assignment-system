@@ -16,24 +16,57 @@ export default function NewIssue() {
     startDate: "",
     dueDate: "",
     beforeImage: null,
-    position: "", // THÊM FIELD
+    position: "",
   });
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
+  const [loading, setLoading] = useState(true); // DÙNG CHUNG
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userRes = await api.get("/auth/users");
+        const [userRes, storedUser] = await Promise.all([
+          api.get("/auth/users"),
+          Promise.resolve(JSON.parse(localStorage.getItem("user") || "{}")),
+        ]);
         setUsers(userRes.data.data);
-        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
         setCurrentUser(storedUser);
       } catch (err) {
         alert("Failed to load data");
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
   }, []);
+
+  // HIỂN THỊ LOADING
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="container py-5 text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // KIỂM TRA QUYỀN SAU KHI LOAD
+  if (!["manager", "a_manager", "leader"].includes(currentUser.role)) {
+    return (
+      <>
+        <Header />
+        <div className="container py-5 text-center">
+          <div className="alert alert-warning d-inline-block">No access</div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   const getEligibleAssignees = () => {
     const role = currentUser.role;
@@ -41,7 +74,7 @@ export default function NewIssue() {
 
     if (role === "manager" || role === "a_manager") {
       return users.filter(
-        (u) => u.department === "ME" && u._id !== currentUser.id
+        (u) => u.department === "ME" && u._id !== currentUser._id
       );
     }
     if (role === "leader") {
@@ -50,7 +83,7 @@ export default function NewIssue() {
           u.department === "ME" &&
           u.group === group &&
           u.role === "member" &&
-          u._id !== currentUser.id
+          u._id !== currentUser._id
       );
     }
     return [];
@@ -69,10 +102,9 @@ export default function NewIssue() {
     formData.append("assignee", form.assignee);
     formData.append("startDate", form.startDate);
     formData.append("dueDate", form.dueDate);
-    formData.append("position", form.position); // ĐÃ GỬI
+    formData.append("position", form.position);
 
     if (form.beforeImage) formData.append("beforeImage", form.beforeImage);
-    if (form.attachment) formData.append("attachment", form.attachment); // GỬI FILE
 
     try {
       await api.post("/tasks", formData);
@@ -82,18 +114,6 @@ export default function NewIssue() {
       alert("Error: " + (err.response?.data?.message || "Failed"));
     }
   };
-
-  if (!["manager", "a_manager", "leader"].includes(currentUser.role)) {
-    return (
-      <>
-        <Header />
-        <div className="container py-5 text-center">
-          <div className="alert alert-warning">No access</div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -159,7 +179,6 @@ export default function NewIssue() {
                       </div>
                     </div>
 
-                    {/* POSITION SELECT */}
                     <div className="mt-3">
                       <label className="form-label small fw-semibold">
                         Position
@@ -173,16 +192,22 @@ export default function NewIssue() {
                         required
                       >
                         <option value="">-- Select Position --</option>
-                        <option value="CUTTING">CUTTING</option>
-                        <option value="ASSEMBLY A">ASSEMBLY A</option>
-                        <option value="ASSEMBLY B">ASSEMBLY B</option>
-                        <option value="VISOR">VISOR</option>
-                        <option value="PANEL">PANEL</option>
-                        <option value="PRINT">PRINT</option>
-                        <option value="EMBROIDERY">EMBROIDERY</option>
-                        <option value="FINISH WH">FINISH WH</option>
-                        <option value="QC/QA">QC/QA</option>
-                        <option value="WAREHOUSE">WAREHOUSE</option>
+                        {[
+                          "CUTTING",
+                          "ASSEMBLY A",
+                          "ASSEMBLY B",
+                          "VISOR",
+                          "PANEL",
+                          "PRINT",
+                          "EMBROIDERY",
+                          "FINISH WH",
+                          "QC/QA",
+                          "WAREHOUSE",
+                        ].map((pos) => (
+                          <option key={pos} value={pos}>
+                            {pos}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
@@ -243,20 +268,6 @@ export default function NewIssue() {
                         accept="image/*"
                         onChange={(e) =>
                           setForm({ ...form, beforeImage: e.target.files[0] })
-                        }
-                      />
-                    </div>
-                    {/* File */}
-                    <div className="mt-3">
-                      <label className="form-label small fw-semibold">
-                        {t("attachment")} (PDF, DOCX, XLSX...)
-                      </label>
-                      <input
-                        type="file"
-                        className="form-control form-control-sm"
-                        accept=".pdf,.doc,.docx,.xls,.xlsx"
-                        onChange={(e) =>
-                          setForm({ ...form, attachment: e.target.files[0] })
                         }
                       />
                     </div>
