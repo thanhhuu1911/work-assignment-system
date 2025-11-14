@@ -10,22 +10,22 @@ import api from "../services/api";
 // LOẠI BỎ "Need Support"
 const STATUS_FILTERS = [
   { key: "all", label: "all_status", color: "primary" },
-  { key: "pending", label: "pending", color: "warning" },
+  { key: "ongoing", label: "ongoing", color: "warning" },
   { key: "review", label: "in_review", color: "info" },
   { key: "approved", label: "approved", color: "success" },
-  { key: "rejected", label: "overdue", color: "danger" },
+  { key: "overdue", label: "overdue", color: "danger" },
 ];
 
 const POSITIONS = [
-  "CUTTING",
   "ASSEMBLY A",
   "ASSEMBLY B",
-  "VISOR",
-  "PANEL",
-  "PRINT",
+  "CUTTING",
   "EMBROIDERY",
   "FINISH WH",
+  "PANEL",
+  "PRINT",
   "QC/QA",
+  "VISOR",
   "WAREHOUSE",
 ];
 
@@ -61,7 +61,7 @@ export default function Dashboard() {
   const enrichTasksWithOverdue = (tasks) => {
     return tasks.map((task) => ({
       ...task,
-      isOverdue: task.status === "pending" && isOverdue(task.dueDate),
+      isOverdue: task.status === "ongoing" && isOverdue(task.dueDate),
     }));
   };
 
@@ -86,13 +86,13 @@ export default function Dashboard() {
 
   // LỌC TASK
   let filteredTasks = tasks;
-  if (statusFilter === "pending") {
+  if (statusFilter === "ongoing") {
     filteredTasks = filteredTasks.filter(
-      (t) => t.status === "pending" && !t.isOverdue
+      (t) => t.status === "ongoing" && !t.isOverdue
     );
-  } else if (statusFilter === "rejected") {
+  } else if (statusFilter === "overdue") {
     filteredTasks = filteredTasks.filter(
-      (t) => t.status === "rejected" || t.isOverdue
+      (t) => t.status === "overdue" || t.isOverdue
     );
   } else if (statusFilter !== "all") {
     filteredTasks = filteredTasks.filter((t) => t.status === statusFilter);
@@ -128,10 +128,10 @@ export default function Dashboard() {
 
   const countByStatus = (key) => {
     if (key === "all") return tasks.length;
-    if (key === "pending")
-      return tasks.filter((t) => t.status === "pending" && !t.isOverdue).length;
-    if (key === "rejected")
-      return tasks.filter((t) => t.status === "rejected" || t.isOverdue).length;
+    if (key === "ongoing")
+      return tasks.filter((t) => t.status === "ongoing" && !t.isOverdue).length;
+    if (key === "overdue")
+      return tasks.filter((t) => t.status === "overdue" || t.isOverdue).length;
     return tasks.filter((t) => t.status === key).length;
   };
 
@@ -160,7 +160,7 @@ export default function Dashboard() {
                   setCurrentPage(1);
                 }}
               >
-                <option value="all">{t("Vị Trí")}</option>
+                <option value="all">{t("Tất cả nhà máy")}</option>
                 {POSITIONS.map((pos) => (
                   <option key={pos} value={pos}>
                     {pos}

@@ -3,10 +3,10 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const STATUS_COLORS = {
-  pending: "warning",
+  ongoing: "warning",
   review: "info",
   approved: "success",
-  rejected: "danger",
+  overdue: "danger",
 };
 
 export default function TaskCard({ task, canReview }) {
@@ -14,7 +14,7 @@ export default function TaskCard({ task, canReview }) {
   const navigate = useNavigate();
 
   const getStatusText = () => {
-    if (task.isOverdue) return "Overdue";
+    if (task.isOverdue) return "overdue";
     return t(task.status);
   };
 
@@ -164,7 +164,7 @@ export default function TaskCard({ task, canReview }) {
             {t("view_detail")}
           </button>
 
-          {["pending", "review"].includes(task.status) && (
+          {["ongoing", "review"].includes(task.status) && (
             <button
               className="btn btn-outline-success btn-sm flex-fill py-2 text-nowrap fw-bold"
               style={{ minWidth: "75px", fontSize: "0.875rem" }}

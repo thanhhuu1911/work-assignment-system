@@ -10,108 +10,133 @@ i18n
     resources: {
       en: {
         translation: {
+          // === AUTH ===
           login: "Login",
           register: "Register",
           logout: "Logout",
+
+          // === DASHBOARD ===
           task_list: "Task List",
           reload: "Reload",
           all_status: "All Status",
-          need_support: "Need Support",
-          pending: "Pending",
-          in_review: "In Review",
+          ongoing: "Ongoing",
+          in_review: "In Review", // ĐÃ SỬA
           approved: "Approved",
-          rejected_overdue: "Rejected / Overdue",
+          rejected: "Rejected", // ĐÃ THÊM
+          overdue: "Overdue",
+
+          // === FILTERS ===
+          "Vị Trí": "Position",
+          Nhóm: "Group",
+          Tên: "Name",
+
+          // === TASK INFO ===
           assigned_by: "Assigned by",
           assignee: "Assignee",
-          start_date: "Start Date",
+          created_at: "Created At",
           due_date: "Due Date",
-          view: "View",
+
+          // === BUTTONS ===
+          view_detail: "View Detail",
           improve: "Improve",
+          review: "Review",
           create_task: "Create Task",
-          department: "Department",
-          employee: "Employee",
+
+          // === FORM & UI ===
           description: "Description",
-          start_date_task: "Task Start Date",
-          end_date_task: "Task End Date",
-          before_image: "Before Image",
-          after_image: "After Image",
-          submit_task: "Submit Task",
-          feedback: "Feedback",
+          before: "Before",
+          after: "After",
           no_tasks: "No tasks available",
           welcome: "Welcome",
-          assign_task: "Assign Task",
         },
       },
       vi: {
         translation: {
+          // === AUTH ===
           login: "Đăng nhập",
           register: "Đăng ký",
           logout: "Đăng xuất",
+
+          // === DASHBOARD ===
           task_list: "Danh sách công việc",
           reload: "Tải lại",
           all_status: "Tất cả trạng thái",
-          need_support: "Cần hỗ trợ",
-          pending: "Đang chờ",
-          in_review: "Chờ duyệt",
-          approved: "Đã phê duyệt",
-          rejected_overdue: "Không đạt / Quá hạn",
+          ongoing: "Đang thực hiện",
+          in_review: "Chờ duyệt", // ĐÃ SỬA
+          approved: "Đã duyệt",
+          rejected: "Không đạt", // ĐÃ THÊM
+          overdue: "Quá hạn", // ĐÃ SỬA (chỉ 1 lần)
+          Overdue: "Quá hạn", // ĐÃ SỬA (chỉ 1 lần)
+
+          // === FILTERS ===
+          "Vị Trí": "Vị Trí",
+          Nhóm: "Nhóm",
+          Tên: "Tên",
+
+          // === TASK INFO ===
           assigned_by: "Người giao",
           assignee: "Người thực hiện",
-          start_date: "Ngày giao",
-          due_date: "Ngày kết thúc",
-          view: "Xem",
+          created_at: "Ngày tạo",
+          due_date: "Hạn hoàn thành",
+
+          // === BUTTONS ===
+          view_detail: "Xem chi tiết",
           improve: "Cải thiện",
-          create_task: "Giao nhiệm vụ",
-          department: "Bộ phận",
-          employee: "Nhân viên",
+          review: "Duyệt",
+          create_task: "Tạo công việc",
+
+          // === FORM & UI ===
           description: "Mô tả công việc",
-          start_date_task: "Ngày giao nhiệm vụ",
-          end_date_task: "Ngày kết thúc",
-          before_image: "Ảnh trước khi thực hiện",
-          after_image: "Ảnh sau khi hoàn thành",
-          submit_task: "Gửi lên khi đã hoàn thành",
-          feedback: "Phản hồi",
+          before: "Trước",
+          after: "Sau",
           no_tasks: "Không có công việc nào",
           welcome: "Chào mừng",
-          assign_task: "Giao nhiệm vụ",
         },
       },
       ko: {
         translation: {
+          // === AUTH ===
           login: "로그인",
           register: "회원가입",
           logout: "로그아웃",
+
+          // === DASHBOARD ===
           task_list: "작업 목록",
           reload: "새로고침",
           all_status: "모든 상태",
-          need_support: "지원 필요",
-          pending: "대기 중",
-          in_review: "검토 중",
+          ongoing: "진행 중", // ĐÃ SỬA
+          in_review: "검토 중", // ĐÃ SỬA
           approved: "승인됨",
-          rejected_overdue: "거부됨 / 기한 초과",
+          rejected: "거부됨", // ĐÃ THÊM
+          overdue: "기한 초과", // ĐÃ SỬA
+
+          // === FILTERS ===
+          "Vị Trí": "위치",
+          Nhóm: "그룹",
+          Tên: "이름",
+
+          // === TASK INFO ===
           assigned_by: "할당자",
           assignee: "담당자",
-          start_date: "시작일",
+          created_at: "생성일",
           due_date: "마감일",
-          view: "보기",
+
+          // === BUTTONS ===
+          view_detail: "상세 보기",
           improve: "개선",
+          review: "검토",
           create_task: "작업 생성",
-          department: "부서",
-          employee: "직원",
+
+          // === FORM & UI ===
           description: "작업 설명",
-          start_date_task: "작업 시작일",
-          end_date_task: "작업 마감일",
-          before_image: "작업 전 사진",
-          after_image: "작업 후 사진",
-          submit_task: "작업 제출",
-          feedback: "피드백",
+          before: "전",
+          after: "후",
           no_tasks: "작업이 없습니다",
           welcome: "환영합니다",
-          assign_task: "작업 할당",
         },
       },
     },
-    lng: "en",
+    lng: "vi", // MẶC ĐỊNH TIẾNG VIỆT
     fallbackLng: "en",
     interpolation: {
       escapeValue: false,

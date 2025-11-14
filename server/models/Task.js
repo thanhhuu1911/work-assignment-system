@@ -20,14 +20,14 @@ const taskSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: [
-        "pending",
+        "ongoing",
         "processing",
         "support",
         "review",
         "approved",
         "rejected",
       ],
-      default: "pending",
+      default: "ongoing",
     },
     beforeImage: { type: String },
     afterImage: { type: String },

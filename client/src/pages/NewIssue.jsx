@@ -11,7 +11,7 @@ export default function NewIssue() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     description: "",
-    department: "",
+    department: "ME",
     assignee: "",
     startDate: "",
     dueDate: "",
@@ -171,7 +171,8 @@ export default function NewIssue() {
                           </option>
                           {eligibleAssignees.map((u) => (
                             <option key={u._id} value={u._id}>
-                              {u.name} ({u.role === "leader" ? "L" : "S"} -{" "}
+                              {u.name} (
+                              {u.role === "leader" ? "Leader" : "Staff"} -{" "}
                               {u.group})
                             </option>
                           ))}
@@ -193,15 +194,15 @@ export default function NewIssue() {
                       >
                         <option value="">-- Select Position --</option>
                         {[
-                          "CUTTING",
                           "ASSEMBLY A",
                           "ASSEMBLY B",
-                          "VISOR",
-                          "PANEL",
-                          "PRINT",
+                          "CUTTING",
                           "EMBROIDERY",
                           "FINISH WH",
+                          "PANEL",
+                          "PRINT",
                           "QC/QA",
+                          "VISOR",
                           "WAREHOUSE",
                         ].map((pos) => (
                           <option key={pos} value={pos}>

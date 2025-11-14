@@ -7,7 +7,12 @@ const router = express.Router();
 
 router.use(protect);
 
-router.post("/", authorize("leader"), upload.single("beforeImage"), createTask);
+router.post(
+  "/",
+  authorize("manager", "a_manager", "leader"),
+  upload.single("beforeImage"),
+  createTask
+);
 router.get("/", getTasks);
 
 export default router;
