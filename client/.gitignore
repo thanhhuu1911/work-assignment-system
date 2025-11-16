@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# === QUAN TRỌNG: CHẶN ẢNH & FILE UPLOAD ===
+server/uploads/
+client/public/uploads/
