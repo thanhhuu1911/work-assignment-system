@@ -1,4 +1,4 @@
-// client/src/i18n.js
+// client/src/i18n/index.js
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
@@ -20,10 +20,9 @@ i18n
           reload: "Reload",
           all_status: "All Status",
           ongoing: "Ongoing",
-          in_review: "In Review", // ĐÃ SỬA
+          review: "In Review",
           approved: "Approved",
-          rejected: "Rejected", // ĐÃ THÊM
-          overdue: "Overdue",
+          overdue: "Overdue", // CHỈ CÒN NÀY
 
           // === FILTERS ===
           "Vị Trí": "Position",
@@ -33,14 +32,16 @@ i18n
           // === TASK INFO ===
           assigned_by: "Assigned by",
           assignee: "Assignee",
-          created_at: "Created At",
-          due_date: "Due Date",
+          created: "Created", // ĐÃ ĐỔI từ start_date
+          deadline: "Deadline", // ĐÃ ĐỔI từ due_date
 
           // === BUTTONS ===
           view_detail: "View Detail",
           improve: "Improve",
           review: "Review",
           create_task: "Create Task",
+          assign_task: "Assign Task",
+          in_review: "In Review",
 
           // === FORM & UI ===
           description: "Description",
@@ -62,11 +63,10 @@ i18n
           reload: "Tải lại",
           all_status: "Tất cả trạng thái",
           ongoing: "Đang thực hiện",
-          in_review: "Chờ duyệt", // ĐÃ SỬA
+          review: "Chờ duyệt",
           approved: "Đã duyệt",
-          rejected: "Không đạt", // ĐÃ THÊM
-          overdue: "Quá hạn", // ĐÃ SỬA (chỉ 1 lần)
-          Overdue: "Quá hạn", // ĐÃ SỬA (chỉ 1 lần)
+          overdue: "Quá hạn", // CHỈ CÒN NÀY
+          in_review: "Chờ duyệt",
 
           // === FILTERS ===
           "Vị Trí": "Vị Trí",
@@ -76,14 +76,15 @@ i18n
           // === TASK INFO ===
           assigned_by: "Người giao",
           assignee: "Người thực hiện",
-          created_at: "Ngày tạo",
-          due_date: "Hạn hoàn thành",
+          created_date: "Ngày tạo", // ĐÃ ĐỔI
+          deadline: "Hạn chót", // ĐÃ ĐỔI
 
           // === BUTTONS ===
           view_detail: "Xem chi tiết",
           improve: "Cải thiện",
           review: "Duyệt",
           create_task: "Tạo công việc",
+          assign_task: "Giao nhiệm vụ",
 
           // === FORM & UI ===
           description: "Mô tả công việc",
@@ -104,11 +105,10 @@ i18n
           task_list: "작업 목록",
           reload: "새로고침",
           all_status: "모든 상태",
-          ongoing: "진행 중", // ĐÃ SỬA
-          in_review: "검토 중", // ĐÃ SỬA
+          ongoing: "진행 중",
+          review: "검토 중",
           approved: "승인됨",
-          rejected: "거부됨", // ĐÃ THÊM
-          overdue: "기한 초과", // ĐÃ SỬA
+          overdue: "기한 초과", // CHỈ CÒN NÀY
 
           // === FILTERS ===
           "Vị Trí": "위치",
@@ -118,8 +118,8 @@ i18n
           // === TASK INFO ===
           assigned_by: "할당자",
           assignee: "담당자",
-          created_at: "생성일",
-          due_date: "마감일",
+          created: "생성일", // ĐÃ ĐỔI
+          deadline: "마감일", // ĐÃ ĐỔI
 
           // === BUTTONS ===
           view_detail: "상세 보기",

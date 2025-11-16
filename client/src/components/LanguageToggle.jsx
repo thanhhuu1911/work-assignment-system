@@ -5,7 +5,7 @@ export default function LanguageToggle() {
   const { i18n } = useTranslation();
 
   const toggleLanguage = () => {
-    const langs = ["en", "vi", "ko"];
+    const langs = ["vi", "en", "ko"];
     const currentIndex = langs.indexOf(i18n.language);
     const nextIndex = (currentIndex + 1) % 3;
     i18n.changeLanguage(langs[nextIndex]);
@@ -17,12 +17,12 @@ export default function LanguageToggle() {
   return (
     <button
       onClick={toggleLanguage}
-      className="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1 rounded-pill px-2 py-1 shadow-sm"
+      className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 rounded-pill px-2 py-1 shadow-sm"
       style={{
         fontSize: "0.75rem",
         fontWeight: "600",
-        border: "1.5px solid #ffffffff",
-        background: "rgba(255, 0, 230, 0.59)",
+        border: "1.5px solid #fbfbfbff",
+        background: "rgba(176, 152, 255, 0.59)",
         backdropFilter: "blur(4px)",
       }}
       title={`Chuyển ngôn ngữ: ${getLangCode(

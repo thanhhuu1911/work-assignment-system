@@ -4,7 +4,8 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import NewIssue from "./pages/NewIssue";
 import TaskDetail from "./pages/TaskDetail"; // THÊM
-import TaskImprove from "./pages/TaskImprove"; // THÊM
+import ImproveTask from "./pages/ImproveTask"; // THÊM
+import ReviewTask from "./pages/ReviewTask";
 
 export default function App() {
   return (
@@ -16,7 +17,8 @@ export default function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/new-issue" element={<NewIssue />} />
         <Route path="/task/:id" element={<TaskDetail />} /> {/* MỚI */}
-        <Route path="/task/improve/:id" element={<TaskImprove />} /> {/* MỚI */}
+        <Route path="/improve/:id" element={<ImproveTask />} />
+        <Route path="/review/:id" element={<ReviewTask />} />
       </Routes>
     </BrowserRouter>
   );

@@ -11,25 +11,31 @@ export default function ImproveTask() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [afterImage, setAfterImage] = useState(null);
-  const [resultFile, setResultFile] = useState(null);
+  // const [resultFile, setResultFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!afterImage && !resultFile)
-      return alert("Vui lòng chọn ít nhất 1 file");
+
+    if (!afterImage) {
+      return alert("Vui lòng chọn ảnh!");
+    }
 
     setLoading(true);
     const formData = new FormData();
-    if (afterImage) formData.append("afterImage", afterImage);
-    if (resultFile) formData.append("resultFile", resultFile);
+    formData.append("afterImage", afterImage);
+
+    console.log("Đang gửi file:", afterImage.name, afterImage.size);
 
     try {
-      await api.put(`/tasks/${id}/improve`, formData);
+      const res = await api.put(`/tasks/${id}/improve`, formData);
+      console.log("Server trả về:", res.data);
       alert("Cập nhật thành công!");
       navigate("/dashboard");
     } catch (err) {
-      alert("Lỗi: " + (err.response?.data?.message || "Thử lại"));
+      console.error("Lỗi API:", err.response || err);
+      const msg = err.response?.data?.message || "Lỗi server";
+      alert("Lỗi: " + msg);
     } finally {
       setLoading(false);
     }
@@ -38,48 +44,50 @@ export default function ImproveTask() {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Header />
-      {/* MAIN – ĐẨY NỘI DUNG XUỐNG DƯỚI HEADER */}
       <main className="flex-grow-1 bg-light py-5">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-6 col-xl-5">
-              {/* CARD – HIỂN THỊ ĐẸP */}
-              <div className="card shadow-sm border-0 rounded-4 h-100">
-                <div className="card-header bg-white border-0 py-3 px-4">
-                  <h4 className="mb-0 text-success fw-bold">
+              <div className="card shadow-lg border-0 rounded-4">
+                <div className="card-header bg-white text-primary py-3 px-4">
+                  <h4 className="mb-0 text-center fw-bold">
                     {t("improve_task")}
                   </h4>
                 </div>
                 <div className="card-body p-4">
                   <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                      <label className="form-label small fw-semibold text-primary">
-                        {t("after_image")}
+                      <label className="form-label fw-bold text-primary">
+                        {t("Chọn ảnh")}
                       </label>
                       <input
                         type="file"
-                        className="form-control form-control-sm"
+                        className="form-control form-control-lg"
                         accept="image/*"
                         onChange={(e) => setAfterImage(e.target.files[0])}
                       />
+                      <small className="text-dark">
+                        Chọn ảnh sau khi cải thiện
+                      </small>
                     </div>
-
+                    {/* 
                     <div className="mb-4">
-                      <label className="form-label small fw-semibold text-primary">
-                        {t("result_file")} (PDF, DOCX, XLSX...)
+                      <label className="form-label fw-bold text-primary">
+                        {t("result_file")}
                       </label>
                       <input
                         type="file"
-                        className="form-control form-control-sm"
+                        className="form-control form-control-lg"
                         accept=".pdf,.doc,.docx,.xls,.xlsx"
                         onChange={(e) => setResultFile(e.target.files[0])}
                       />
-                    </div>
+                      <small className="text-muted">PDF, DOCX, XLSX...</small>
+                    </div> */}
 
                     <div className="d-flex gap-2">
                       <button
                         type="button"
-                        className="btn btn-outline-secondary btn-sm flex-fill"
+                        className="btn btn-outline-primary flex-fill py-2 fw-bold"
                         onClick={() => navigate(-1)}
                         disabled={loading}
                       >
@@ -87,10 +95,10 @@ export default function ImproveTask() {
                       </button>
                       <button
                         type="submit"
-                        className="btn btn-success btn-sm flex-fill fw-bold"
+                        className="btn btn-primary flex-fill py-2 text-white fw-bold"
                         disabled={loading}
                       >
-                        {loading ? "Đang gửi..." : t("submit")}
+                        {loading ? t("sending") : t("submit")}
                       </button>
                     </div>
                   </form>

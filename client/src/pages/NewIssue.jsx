@@ -45,7 +45,7 @@ export default function NewIssue() {
     return (
       <>
         <Header />
-        <div className="container py-5 text-center">
+        <div className="container py-5 text-center d-flex justify-content-center align-items-center min-vh-100 bg-light">
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
@@ -231,7 +231,7 @@ export default function NewIssue() {
                     <div className="row g-3 mt-3">
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
-                          Start Date
+                          Created Date
                         </label>
                         <input
                           type="date"
@@ -245,7 +245,7 @@ export default function NewIssue() {
                       </div>
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
-                          Due Date
+                          Deadline
                         </label>
                         <input
                           type="date"

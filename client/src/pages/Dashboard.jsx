@@ -9,11 +9,11 @@ import api from "../services/api";
 
 // LOẠI BỎ "Need Support"
 const STATUS_FILTERS = [
-  { key: "all", label: "all_status", color: "primary" },
-  { key: "ongoing", label: "ongoing", color: "warning" },
-  { key: "review", label: "in_review", color: "info" },
-  { key: "approved", label: "approved", color: "success" },
-  { key: "overdue", label: "overdue", color: "danger" },
+  { key: "all", label: "all_status", color: "dark" },
+  { key: "ongoing", label: "ongoing", color: "dark" },
+  { key: "review", label: "in_review", color: "dark" },
+  { key: "approved", label: "approved", color: "dark" },
+  { key: "overdue", label: "overdue", color: "dark" },
 ];
 
 const POSITIONS = [
@@ -122,6 +122,12 @@ export default function Dashboard() {
       (t, i, a) => a.findIndex((x) => x.assignee?._id === t.assignee?._id) === i
     )
     .map((t) => t.assignee);
+
+  const filteredAssignees =
+    groupFilter === "all"
+      ? uniqueAssignees
+      : uniqueAssignees.filter((u) => u?.group === groupFilter);
+
   const uniqueGroups = [
     ...new Set(tasks.map((t) => t.assignee?.group).filter(Boolean)),
   ];
@@ -195,7 +201,7 @@ export default function Dashboard() {
                 }}
               >
                 <option value="all">{t("Tên nhân viên")}</option>
-                {uniqueAssignees.map((u) => (
+                {filteredAssignees.map((u) => (
                   <option key={u._id} value={u._id}>
                     {u.name}
                   </option>
@@ -231,7 +237,19 @@ export default function Dashboard() {
                   {t("create_task")}
                 </button>
               )}
-              <button className="btn btn-primary px-4" onClick={loadTasks}>
+              <button
+                className="btn btn-primary px-4"
+                onClick={() => {
+                  // reset các filter về mặc định
+                  setStatusFilter("all");
+                  setPositionFilter("all");
+                  setGroupFilter("all");
+                  setAssigneeFilter("all");
+                  setCurrentPage(1);
+                  // load lại tasks
+                  loadTasks();
+                }}
+              >
                 {t("reload")}
               </button>
             </div>

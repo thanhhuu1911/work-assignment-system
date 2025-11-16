@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "/api", // Dùng proxy trong package.json
+  baseURL: "http://localhost:5000/api", // ĐÚNG PORT BACKEND
   withCredentials: true, // ← Quan trọng nếu backend dùng cookie
 });
 
@@ -12,6 +12,11 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+
   return config;
 });
 
