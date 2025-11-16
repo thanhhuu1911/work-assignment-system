@@ -13,7 +13,7 @@ const STATUS_FILTERS = [
   { key: "ongoing", label: "ongoing", color: "dark" },
   { key: "review", label: "in_review", color: "dark" },
   { key: "approved", label: "approved", color: "dark" },
-  { key: "overdue", label: "overdue", color: "dark" },
+  { key: "rejected/overdue", label: "rejected/overdue", color: "danger" },
 ];
 
 const POSITIONS = [
@@ -84,15 +84,18 @@ export default function Dashboard() {
     loadTasks();
   }, []);
 
-  // LỌC TASK
+  // CẬP NHẬT: LỌC TASK
   let filteredTasks = tasks;
+
   if (statusFilter === "ongoing") {
     filteredTasks = filteredTasks.filter(
-      (t) => t.status === "ongoing" && !t.isOverdue
+      (t) => t.status === "ongoing" && !t.isOverdue && !t.reviewNote
     );
-  } else if (statusFilter === "overdue") {
+  } else if (statusFilter === "rejected/overdue") {
     filteredTasks = filteredTasks.filter(
-      (t) => t.status === "overdue" || t.isOverdue
+      (t) =>
+        t.isOverdue || // quá hạn
+        (["ongoing", "processing"].includes(t.status) && t.reviewNote) // bị reject có góp ý
     );
   } else if (statusFilter !== "all") {
     filteredTasks = filteredTasks.filter((t) => t.status === statusFilter);
@@ -135,9 +138,13 @@ export default function Dashboard() {
   const countByStatus = (key) => {
     if (key === "all") return tasks.length;
     if (key === "ongoing")
-      return tasks.filter((t) => t.status === "ongoing" && !t.isOverdue).length;
-    if (key === "overdue")
-      return tasks.filter((t) => t.status === "overdue" || t.isOverdue).length;
+      return tasks.filter(
+        (t) => t.status === "ongoing" && !t.isOverdue && !t.reviewNote
+      ).length;
+    if (key === "rejected/overdue")
+      return tasks.filter(
+        (t) => t.isOverdue || (t.status === "ongoing" && t.reviewNote)
+      ).length;
     return tasks.filter((t) => t.status === key).length;
   };
 

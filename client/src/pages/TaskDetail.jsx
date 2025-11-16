@@ -39,7 +39,6 @@ export default function TaskDetail() {
               <div className="col-lg-6 col-xl-5">
                 <div className="card shadow-sm border-0">
                   <div className="card-body p-4">
-                    {/* Skeleton content */}
                     <div className="d-flex justify-content-between mb-3">
                       <div
                         className="bg-secondary bg-opacity-10 rounded"
@@ -54,7 +53,6 @@ export default function TaskDetail() {
                       className="bg-secondary bg-opacity-10 rounded mb-3"
                       style={{ height: "60px" }}
                     ></div>
-                    {/* ... thêm skeleton cho ảnh, info, nút ... */}
                   </div>
                 </div>
               </div>
@@ -81,7 +79,7 @@ export default function TaskDetail() {
   const statusConfig = {
     ongoing: { color: "bg-warning", text: "Đang thực hiện" },
     review: { color: "bg-info", text: "Chờ duyệt" },
-    completed: { color: "bg-success", text: "Hoàn thành" },
+    approved: { color: "bg-success", text: "Hoàn thành" },
   };
   const status = statusConfig[task.status] || statusConfig.ongoing;
 
@@ -92,10 +90,8 @@ export default function TaskDetail() {
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-6 col-xl-5">
-              {/* CARD NHỎ GỌN */}
               <div className="card shadow-sm border-0">
                 <div className="card-body p-4">
-                  {/* HEADER: Tiêu đề + trạng thái */}
                   <div className="d-flex justify-content-between align-items-start mb-3">
                     <h5 className="mb-0 fw-bold text-primary">
                       {task.position}
@@ -103,18 +99,26 @@ export default function TaskDetail() {
                     <span
                       className={`badge rounded-pill ${status.color} text-white px-3 py-1 small`}
                     >
-                      {status.text}
+                      {task.reviewNote ? "Không đạt" : status.text}
                     </span>
                   </div>
 
-                  {/* MÔ TẢ NGẮN */}
                   <div className="mb-3">
                     <p className="text-muted small mb-1">
                       {task.description || "Không có mô tả"}
                     </p>
                   </div>
 
-                  {/* 2 ẢNH NHỎ – CỐ ĐỊNH 200px */}
+                  {/* GHI CHÚ TỪ CHỐI */}
+                  {task.reviewNote && (
+                    <div
+                      className="alert alert-danger small py-2 px-3 mb-3"
+                      role="alert"
+                    >
+                      <strong>{t("review_note")}:</strong> {task.reviewNote}
+                    </div>
+                  )}
+
                   <div className="row g-3 mb-3">
                     <div className="col-6">
                       <div className="text-center">
@@ -138,7 +142,6 @@ export default function TaskDetail() {
                         </div>
                       </div>
                     </div>
-
                     <div className="col-6">
                       <div className="text-center">
                         <small className="text-primary fw-semibold d-block mb-1">
@@ -169,7 +172,6 @@ export default function TaskDetail() {
                     </div>
                   </div>
 
-                  {/* THÔNG TIN NHỎ GỌN */}
                   <div className="row text-dark small mb-3 g-2">
                     <div className="col-6">
                       <div className="d-flex justify-content-start align-items-center mb-1">
@@ -179,7 +181,7 @@ export default function TaskDetail() {
                         </span>
                       </div>
                       <div className="d-flex justify-content-start align-items-center mb-1">
-                        <span className="fw-medium"> Ngày tạo:</span>
+                        <span className="fw-medium">Ngày tạo:</span>
                         <span>
                           {new Date(task.createdAt).toLocaleDateString("vi-VN")}
                         </span>
@@ -201,7 +203,6 @@ export default function TaskDetail() {
                     </div>
                   </div>
 
-                  {/* NÚT HÀNH ĐỘNG */}
                   <div className="d-flex justify-content-center gap-2 mt-3">
                     <button
                       type="button"
@@ -210,7 +211,6 @@ export default function TaskDetail() {
                     >
                       Home
                     </button>
-
                     {["ongoing", "review"].includes(task.status) && (
                       <button
                         className="btn btn-success btn-sm px-3 fw-bold"

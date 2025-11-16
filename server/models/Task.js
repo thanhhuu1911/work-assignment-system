@@ -1,3 +1,4 @@
+// models/Task.js
 import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema(
@@ -24,10 +25,32 @@ const taskSchema = new mongoose.Schema(
     },
     beforeImage: { type: String },
     afterImage: { type: String },
-    feedback: { type: String },
     position: { type: String, required: true },
+
+    // GÓP Ý TỪ DUYỆT
+    reviewNote: { type: String, default: null },
+    reviewedAt: { type: Date },
   },
   { timestamps: true }
 );
+
+// VIRTUAL: TỰ ĐỘNG TÍNH QUÁ HẠN
+taskSchema.virtual("isOverdue").get(function () {
+  if (!["ongoing", "processing"].includes(this.status)) return false;
+  const now = new Date();
+  const due = new Date(this.dueDate);
+  const endOfDay = new Date(
+    due.getFullYear(),
+    due.getMonth(),
+    due.getDate(),
+    23,
+    59,
+    59
+  );
+  return now > endOfDay;
+});
+
+taskSchema.set("toJSON", { virtuals: true });
+taskSchema.set("toObject", { virtuals: true });
 
 export default mongoose.model("Task", taskSchema);

@@ -47,7 +47,7 @@ export default function ReviewTask() {
     try {
       await api.put(`/tasks/${id}/review`, {
         status: decision === "approve" ? "approved" : "ongoing",
-        reviewNote: note,
+        reviewNote: note || null,
       });
       alert(
         decision === "approve" ? "Duyệt thành công!" : "Yêu cầu cải thiện lại!"

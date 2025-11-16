@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const STATUS_COLORS = {
   ongoing: "warning",
+  processing: "primary",
   review: "info",
   approved: "success",
   overdue: "danger",
@@ -16,23 +17,23 @@ export default function TaskCard({ task }) {
   const canReview = ["manager", "a_manager"].includes(currentUser?.role);
 
   const getStatusText = () => {
-    if (task.isOverdue) return t("overdue"); // "Quá hạn"
+    if (task.isOverdue) return t("overdue"); // Chỉ quá hạn
+    if (task.reviewNote) return t("rejected"); // Chỉ bị từ chối
     return t(task.status);
   };
-
   const getStatusColor = () => {
-    if (task.isOverdue) return "danger";
-    return STATUS_COLORS[task.status] || "warning";
+    if (task.isOverdue) return "danger"; // Đỏ đậm: Quá hạn
+    if (task.reviewNote) return "danger"; // Cam: Không đạt
+    return STATUS_COLORS[task.status] || "secondary";
   };
 
   return (
     <div className="card h-100 shadow-lg border-0 rounded-4 overflow-hidden d-flex flex-column">
-      {/* HEADER */}
       <div className="card-header bg-white border-0 py-2 px-3 flex-shrink-0">
         <div className="d-flex justify-content-between align-items-center">
           <div
             className="text-primary fw-bold text-truncate"
-            style={{ maxWidth: "140px", fontSize: "1rem" }}
+            style={{ maxWidth: "140px" }}
             title={task.position}
           >
             {task.position}
@@ -46,7 +47,6 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
-      {/* ẢNH */}
       <div className="row g-2 p-2 flex-shrink-0">
         <div className="col-6 position-relative">
           <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
@@ -90,7 +90,6 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
-      {/* MÔ TẢ */}
       <div className="px-3 pb-1 flex-shrink-0">
         <p
           className="text-primary mb-0"
@@ -104,13 +103,33 @@ export default function TaskCard({ task }) {
             fontSize: "0.9rem",
             fontWeight: "500",
           }}
-          title={task.description || "No description"}
+          title={task.description}
         >
           {task.description || "No description"}
         </p>
       </div>
 
-      {/* THÔNG TIN */}
+      {/* GÓP Ý TỪ DUYỆT - HIỆN RÕ */}
+      {task.reviewNote && (
+        <div className="mx-3 mt-2 p-2 bg-danger bg-opacity-10 border border-danger rounded">
+          <small className="text-danger fw-bold d-block mb-1">
+            Góp ý từ duyệt:
+          </small>
+          <p
+            className="text-danger mb-0 small"
+            style={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
+            title={task.reviewNote}
+          >
+            {task.reviewNote}
+          </p>
+        </div>
+      )}
+
       <div className="card-body p-3 pt-1 flex-grow-1 d-flex flex-column">
         <div
           className="row text-dark flex-grow-1"
@@ -154,30 +173,24 @@ export default function TaskCard({ task }) {
           </div>
         </div>
 
-        {/* NÚT */}
         <div className="d-flex gap-2 mt-3">
           <button
-            className="btn btn-outline-primary btn-sm flex-fill py-2 text-nowrap fw-bold"
-            style={{ minWidth: "75px", fontSize: "0.875rem" }}
+            className="btn btn-outline-primary btn-sm flex-fill py-2 fw-bold"
             onClick={() => navigate(`/task/${task._id}`)}
           >
             {t("view_detail")}
           </button>
-
-          {["ongoing", "review"].includes(task.status) && (
+          {["ongoing", "processing", "review"].includes(task.status) && (
             <button
-              className="btn btn-outline-success btn-sm flex-fill py-2 text-nowrap fw-bold"
-              style={{ minWidth: "75px", fontSize: "0.875rem" }}
+              className="btn btn-outline-success btn-sm flex-fill py-2 fw-bold"
               onClick={() => navigate(`/improve/${task._id}`)}
             >
               {t("improve")}
             </button>
           )}
-
           {canReview && task.status === "review" && (
             <button
               className="btn btn-info btn-sm flex-fill py-2 text-white fw-bold"
-              style={{ minWidth: "75px", fontSize: "0.875rem" }}
               onClick={() => navigate(`/review/${task._id}`)}
             >
               {t("review")}
