@@ -94,8 +94,9 @@ export default function Dashboard() {
   } else if (statusFilter === "rejected/overdue") {
     filteredTasks = filteredTasks.filter(
       (t) =>
-        t.isOverdue || // quá hạn
-        (["ongoing", "processing"].includes(t.status) && t.reviewNote) // bị reject có góp ý
+        t.isOverdue ||
+        t.status === "rejected" ||
+        (t.status === "ongoing" && t.reviewNote)
     );
   } else if (statusFilter !== "all") {
     filteredTasks = filteredTasks.filter((t) => t.status === statusFilter);
@@ -143,7 +144,10 @@ export default function Dashboard() {
       ).length;
     if (key === "rejected/overdue")
       return tasks.filter(
-        (t) => t.isOverdue || (t.status === "ongoing" && t.reviewNote)
+        (t) =>
+          t.isOverdue ||
+          t.status === "rejected" ||
+          (t.status === "ongoing" && t.reviewNote)
       ).length;
     return tasks.filter((t) => t.status === key).length;
   };
@@ -223,12 +227,13 @@ export default function Dashboard() {
               {STATUS_FILTERS.map((f) => (
                 <button
                   key={f.key}
+                  type="button"
                   className={`btn btn-outline-${f.color} ${
                     statusFilter === f.key ? "active" : ""
-                  }`}
+                  } fw-bold`}
                   onClick={() => {
                     setStatusFilter(f.key);
-                    setCurrentPage(1);
+                    setCurrentPage(1); // ← QUAN TRỌNG NHẤT – RESET TRANG KHI ĐỔI TAB
                   }}
                 >
                   {t(f.label)} ({countByStatus(f.key)})

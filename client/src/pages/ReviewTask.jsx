@@ -14,24 +14,20 @@ export default function ReviewTask() {
   const [loading, setLoading] = useState(true);
   const [decision, setDecision] = useState("");
   const [note, setNote] = useState("");
+
   useEffect(() => {
     const fetchTask = async () => {
       try {
         const res = await api.get(`/tasks/${id}`);
-
-        // BACKEND TRẢ VỀ TRỰC TIẾP TASK → DÙNG res.data
-        const task = res.data; // KHÔNG CẦN .data
-
-        if (!task || task.status !== "review") {
-          alert("Công việc không tồn tại hoặc không ở trạng thái duyệt");
+        const taskData = res.data;
+        if (taskData.status !== "review") {
+          alert("Công việc không ở trạng thái chờ duyệt");
           navigate("/dashboard");
           return;
         }
-
-        setTask(task);
+        setTask(taskData);
       } catch (err) {
-        console.error("Lỗi fetch task:", err);
-        alert("Lỗi: " + (err.response?.data?.message || "Server error"));
+        alert("Lỗi tải công việc");
         navigate("/dashboard");
       } finally {
         setLoading(false);
@@ -45,13 +41,12 @@ export default function ReviewTask() {
 
     setLoading(true);
     try {
+      const newStatus = decision === "approve" ? "approved" : "rejected";
       await api.put(`/tasks/${id}/review`, {
-        status: decision === "approve" ? "approved" : "ongoing",
-        reviewNote: note || null,
+        status: newStatus,
+        reviewNote: note.trim() || null,
       });
-      alert(
-        decision === "approve" ? "Duyệt thành công!" : "Yêu cầu cải thiện lại!"
-      );
+      alert(decision === "approve" ? "Đã duyệt!" : "Đã từ chối!");
       navigate("/dashboard");
     } catch (err) {
       alert("Lỗi: " + (err.response?.data?.message || "Server error"));
@@ -60,172 +55,92 @@ export default function ReviewTask() {
     }
   };
 
-  // SKELETON LOADING
-  if (loading) {
+  if (loading)
     return (
-      <>
-        <Header />
-        <main className="flex-grow-1 bg-light py-4">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-lg-6 col-xl-5">
-                <div className="card shadow-sm border-0">
-                  <div className="card-body p-4">
-                    <div
-                      className="bg-secondary bg-opacity-10 rounded mb-3"
-                      style={{ height: "32px" }}
-                    ></div>
-                    <div className="row g-3 mb-3">
-                      <div className="col-6">
-                        <div
-                          className="bg-secondary bg-opacity-10 rounded"
-                          style={{ height: "200px" }}
-                        ></div>
-                      </div>
-                      <div className="col-6">
-                        <div
-                          className="bg-secondary bg-opacity-10 rounded"
-                          style={{ height: "200px" }}
-                        ></div>
-                      </div>
-                    </div>
-                    <div
-                      className="bg-secondary bg-opacity-10 rounded mb-3"
-                      style={{ height: "80px" }}
-                    ></div>
-                    <div className="d-flex gap-2">
-                      <div
-                        className="bg-secondary bg-opacity-10 rounded flex-fill"
-                        style={{ height: "40px" }}
-                      ></div>
-                      <div
-                        className="bg-secondary bg-opacity-10 rounded flex-fill"
-                        style={{ height: "40px" }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </>
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary" />
+      </div>
     );
-  }
-
-  if (!task || task.status !== "review") {
-    return (
-      <>
-        <Header />
-        <div className="container py-5 text-center">
-          <div className="alert alert-danger">
-            Không thể duyệt công việc này
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
+  if (!task) return null;
 
   return (
     <div className="d-flex flex-column min-vh-100">
       <Header />
-      <main className="flex-grow-1 bg-light py-4">
+      <main className="flex-grow-1 bg-light py-5">
         <div className="container">
           <div className="row justify-content-center">
-            <div className="col-lg-6 col-xl-5">
-              <div className="card shadow-sm border-0">
-                <div className="card-body p-4">
-                  <h2 className="h5 text-center mb-4 text-primary fw-bold">
-                    {t("review_task")} - {task.position}
-                  </h2>
-
-                  {/* ẢNH TRƯỚC - SAU */}
-                  <div className="row g-3 mb-4">
-                    <div className="col-6">
-                      <div className="text-center">
-                        <small className="text-primary fw-semibold d-block mb-2">
-                          Trước
-                        </small>
-                        <img
-                          src={`http://localhost:5000/uploads/${task.beforeImage}`}
-                          alt="Trước"
-                          className="img-fluid rounded border"
-                          style={{ height: "200px", objectFit: "cover" }}
-                          loading="lazy"
-                        />
-                      </div>
+            <div className="col-lg-7">
+              <div className="card shadow-lg border-0 rounded-4">
+                <div className="card-header bg-white text-center py-4">
+                  <h3 className="text-primary fw-bold mb-0">
+                    Duyệt công việc: {task.position}
+                  </h3>
+                </div>
+                <div className="card-body p-5">
+                  <div className="row g-4 mb-4">
+                    <div className="col-6 text-center">
+                      <p className="text-primary fw-bold">Trước</p>
+                      <img
+                        src={`http://localhost:5000/uploads/${task.beforeImage}`}
+                        className="img-fluid rounded shadow"
+                        style={{ height: "300px", objectFit: "cover" }}
+                        alt="Trước"
+                      />
                     </div>
-                    <div className="col-6">
-                      <div className="text-center">
-                        <small className="text-primary fw-semibold d-block mb-2">
-                          Sau
-                        </small>
-                        <img
-                          src={`http://localhost:5000/uploads/${task.afterImage}`}
-                          alt="Sau"
-                          className="img-fluid rounded border"
-                          style={{ height: "200px", objectFit: "cover" }}
-                          loading="lazy"
-                        />
-                      </div>
+                    <div className="col-6 text-center">
+                      <p className="text-success fw-bold">Sau</p>
+                      <img
+                        src={`http://localhost:5000/uploads/${task.afterImage}`}
+                        className="img-fluid rounded shadow"
+                        style={{ height: "300px", objectFit: "cover" }}
+                        alt="Sau"
+                      />
                     </div>
                   </div>
 
-                  {/* GHI CHÚ */}
-                  <div className="mb-3">
-                    <label className="form-label small fw-semibold">
-                      Ghi chú (tùy chọn)
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">
+                      Ghi chú (nếu từ chối)
                     </label>
                     <textarea
-                      className="form-control form-control-sm"
-                      rows="3"
-                      placeholder="Nhập lý do từ chối hoặc góp ý..."
+                      className="form-control"
+                      rows="4"
+                      placeholder="Nhập lý do từ chối..."
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                     />
                   </div>
 
-                  {/* LỰA CHỌN */}
-                  <div className="d-flex gap-2 mb-3">
+                  <div className="d-flex gap-3 mb-4">
                     <button
-                      className={`btn flex-fill py-2 fw-bold ${
+                      className={`btn flex-fill py-3 fw-bold ${
                         decision === "approve"
                           ? "btn-success"
                           : "btn-outline-success"
                       }`}
                       onClick={() => setDecision("approve")}
                     >
-                      Duyệt
+                      DUYỆT
                     </button>
                     <button
-                      className={`btn flex-fill py-2 fw-bold ${
+                      className={`btn flex-fill py-3 fw-bold ${
                         decision === "reject"
                           ? "btn-danger"
                           : "btn-outline-danger"
                       }`}
                       onClick={() => setDecision("reject")}
                     >
-                      Từ chối
+                      TỪ CHỐI
                     </button>
                   </div>
 
-                  {/* NÚT HÀNH ĐỘNG */}
-                  <div className="d-flex justify-content-center gap-2">
+                  <div className="text-center">
                     <button
-                      className="btn btn-outline-secondary btn-sm px-3"
-                      onClick={() => navigate(-1)}
-                      disabled={loading}
-                    >
-                      Quay lại
-                    </button>
-                    <button
-                      className="btn btn-primary btn-sm px-3 fw-bold"
+                      className="btn btn-primary px-5 py-2 fw-bold"
                       onClick={handleReview}
-                      disabled={loading || !decision}
+                      disabled={!decision || loading}
                     >
-                      {loading ? "Đang xử lý..." : "Xác nhận"}
+                      {loading ? "Đang xử lý..." : "XÁC NHẬN"}
                     </button>
                   </div>
                 </div>

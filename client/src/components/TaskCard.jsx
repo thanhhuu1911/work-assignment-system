@@ -14,16 +14,27 @@ export default function TaskCard({ task }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-  const canReview = ["manager", "a_manager"].includes(currentUser?.role);
+  const canReview = () => {
+    if (!currentUser?.role) return false;
+    if (["manager", "a_manager"].includes(currentUser.role)) return true;
+    if (
+      currentUser.role === "leader" &&
+      task.assignee?.group === currentUser.group
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   const getStatusText = () => {
-    if (task.isOverdue) return t("overdue"); // Chỉ quá hạn
-    if (task.reviewNote) return t("rejected"); // Chỉ bị từ chối
+    if (task.isOverdue) return "Quá hạn";
+    if (task.status === "rejected" || task.reviewNote) return "Không đạt";
     return t(task.status);
   };
+
   const getStatusColor = () => {
-    if (task.isOverdue) return "danger"; // Đỏ đậm: Quá hạn
-    if (task.reviewNote) return "danger"; // Cam: Không đạt
+    if (task.isOverdue || task.status === "rejected" || task.reviewNote)
+      return "danger";
     return STATUS_COLORS[task.status] || "secondary";
   };
 
@@ -111,22 +122,11 @@ export default function TaskCard({ task }) {
 
       {/* GÓP Ý TỪ DUYỆT - HIỆN RÕ */}
       {task.reviewNote && (
-        <div className="mx-3 mt-2 p-2 bg-danger bg-opacity-10 border border-danger rounded">
+        <div className="mx-3 mt-2 p-3 bg-danger bg-opacity-15 border border-danger rounded-3">
           <small className="text-danger fw-bold d-block mb-1">
-            Góp ý từ duyệt:
+            Lý do không đạt:
           </small>
-          <p
-            className="text-danger mb-0 small"
-            style={{
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
-            }}
-            title={task.reviewNote}
-          >
-            {task.reviewNote}
-          </p>
+          <p className="text-danger mb-0 small fw-medium">{task.reviewNote}</p>
         </div>
       )}
 

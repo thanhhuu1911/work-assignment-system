@@ -36,7 +36,7 @@ const taskSchema = new mongoose.Schema(
 
 // VIRTUAL: TỰ ĐỘNG TÍNH QUÁ HẠN
 taskSchema.virtual("isOverdue").get(function () {
-  if (!["ongoing", "processing"].includes(this.status)) return false;
+  if (this.status !== "ongoing" && this.status !== "rejected") return false;
   const now = new Date();
   const due = new Date(this.dueDate);
   const endOfDay = new Date(

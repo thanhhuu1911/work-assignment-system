@@ -23,12 +23,14 @@ router.get("/", getTasks);
 router.get("/:id", getTaskById);
 router.put(
   "/:id/improve",
-  upload.fields([
-    { name: "afterImage", maxCount: 1 },
-    { name: "resultFile", maxCount: 1 },
-  ]),
+  authorize("leader", "staff"),
+  upload.single("afterImage"),
   improveTask
 );
-router.put("/:id/review", authorize("manager", "a_manager"), reviewTask);
+router.put(
+  "/:id/review",
+  authorize("manager", "a_manager", "leader"),
+  reviewTask
+);
 
 export default router;

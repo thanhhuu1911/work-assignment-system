@@ -15,14 +15,13 @@ export default function ImproveTask() {
   const [task, setTask] = useState(null);
   const [isOverdue, setIsOverdue] = useState(false);
 
-  // LẤY TASK ĐỂ KIỂM TRA QUÁ HẠN
   useEffect(() => {
     const fetchTask = async () => {
       try {
         const res = await api.get(`/tasks/${id}`);
         const taskData = res.data;
         setTask(taskData);
-        setIsOverdue(taskData.isOverdue);
+        setIsOverdue(taskData.isOverdue || false);
       } catch (err) {
         alert("Không tải được công việc");
         navigate("/dashboard");
@@ -33,12 +32,7 @@ export default function ImproveTask() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // CHẶN NẾU QUÁ HẠN
-    if (isOverdue) {
-      return alert("Công việc đã quá hạn! Không thể cải thiện.");
-    }
-
+    if (isOverdue) return alert("Công việc đã quá hạn! Không thể cải thiện.");
     if (!afterImage) return alert("Vui lòng chọn ảnh!");
 
     setLoading(true);
@@ -46,8 +40,10 @@ export default function ImproveTask() {
     formData.append("afterImage", afterImage);
 
     try {
-      await api.put(`/tasks/${id}/improve`, formData);
-      alert("Cập nhật thành công!");
+      await api.put(`/tasks/${id}/improve`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Cải thiện thành công!");
       navigate("/dashboard");
     } catch (err) {
       const msg = err.response?.data?.message || "Lỗi server";
@@ -75,53 +71,50 @@ export default function ImproveTask() {
       <main className="flex-grow-1 bg-light py-5">
         <div className="container">
           <div className="row justify-content-center">
-            <div className="col-lg-6 col-xl-5">
+            <div className="col-lg-6">
               <div className="card shadow-lg border-0 rounded-4">
-                <div className="card-header bg-white text-primary py-3 px-4">
-                  <h4 className="mb-0 text-center fw-bold">
-                    {t("improve_task")}
-                  </h4>
+                <div className="card-header bg-white text-primary py-4 text-center">
+                  <h4 className="mb-0 fw-bold">{t("improve_task")}</h4>
+                  <p className="mb-0 mt-2 text-danger fw-bold">
+                    {task.position}
+                  </p>
                 </div>
                 <div className="card-body p-4">
-                  {/* CẢNH BÁO QUÁ HẠN */}
                   {isOverdue && (
-                    <div className="alert alert-danger mb-3 text-center">
-                      <strong>QUÁ HẠN!</strong> Không thể cải thiện công việc
-                      này.
+                    <div className="alert alert-danger text-center fw-bold">
+                      QUÁ HẠN – Không thể cải thiện!
                     </div>
                   )}
 
                   <form onSubmit={handleSubmit}>
-                    <div className="mb-3">
+                    <div className="mb-4">
                       <label className="form-label fw-bold text-primary">
-                        {t("Chọn ảnh")}
+                        Ảnh sau khi cải thiện
                       </label>
                       <input
                         type="file"
-                        className="form-control form-control-lg"
                         accept="image/*"
+                        className="form-control form-control-lg"
                         onChange={(e) => setAfterImage(e.target.files[0])}
-                        disabled={isOverdue} // VÔ HIỆU HÓA INPUT
+                        disabled={isOverdue}
+                        required
                       />
-                      <small className="text-dark">
-                        Chọn ảnh sau khi cải thiện
-                      </small>
                     </div>
 
-                    <div className="d-flex gap-2">
+                    <div className="d-flex gap-3">
                       <button
                         type="button"
-                        className="btn btn-outline-primary flex-fill py-2 fw-bold"
+                        className="btn btn-outline-secondary flex-fill py-2"
                         onClick={() => navigate(-1)}
                       >
-                        {t("cancel")}
+                        Quay lại
                       </button>
                       <button
                         type="submit"
-                        className="btn btn-primary flex-fill py-2 text-white fw-bold"
-                        disabled={loading || isOverdue} // VÔ HIỆU HÓA NÚT
+                        className="btn btn-success flex-fill py-2 fw-bold"
+                        disabled={loading || isOverdue}
                       >
-                        {loading ? t("sending") : t("submit")}
+                        {loading ? "Đang gửi..." : "Gửi duyệt"}
                       </button>
                     </div>
                   </form>

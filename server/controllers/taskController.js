@@ -84,16 +84,14 @@ export const improveTask = async (req, res) => {
         .json({ message: "Công việc đã quá hạn! Không thể cải thiện." });
     }
 
-    if (req.files?.afterImage?.[0])
-      task.afterImage = req.files.afterImage[0].filename;
-    if (req.files?.resultFile?.[0])
-      task.resultFile = req.files.resultFile[0].filename;
+    if (req.file) {
+      task.afterImage = req.file.filename;
+    }
 
     task.status = "review";
     task.reviewNote = null;
 
     await task.save();
-    await task.sort({ createdAt: -1 });
     await task.populate("assignedBy", "name");
     await task.populate("assignee", "name group");
     res.json({ message: "Cải thiện thành công!", task });
@@ -105,22 +103,18 @@ export const improveTask = async (req, res) => {
 export const reviewTask = async (req, res) => {
   const { status, reviewNote } = req.body;
   try {
-    const updateData = { status, reviewedAt: new Date() };
-
-    if (status === "ongoing" && reviewNote?.trim()) {
-      updateData.reviewNote = reviewNote.trim();
-    } else {
-      updateData.reviewNote = null;
-    }
+    const updateData = {
+      status,
+      reviewedAt: new Date(),
+      reviewNote:
+        status === "rejected" ? reviewNote?.trim() || "Không đạt" : null,
+    };
 
     const task = await Task.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
-    })
-      .populate("assignedBy", "name")
-      .populate("assignee", "name group");
+    }).populate("assignedBy assignee");
 
-    if (!task) return res.status(404).json({ message: "Không tìm thấy task" });
-    res.json({ message: "Duyệt thành công", task });
+    res.json({ message: "Duyệt thành công!", task });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
