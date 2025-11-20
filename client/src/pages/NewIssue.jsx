@@ -105,7 +105,11 @@ export default function NewIssue() {
     formData.append("position", form.position);
 
     if (form.beforeImage) formData.append("beforeImage", form.beforeImage);
-
+    // THÊM FILE ĐÍNH KÈM
+    const attachedFileInput = e.target.attachedFile;
+    if (attachedFileInput?.files[0]) {
+      formData.append("attachedFile", attachedFileInput.files[0]);
+    }
     try {
       await api.post("/tasks", formData);
       alert("Task assigned!");
@@ -270,6 +274,18 @@ export default function NewIssue() {
                         onChange={(e) =>
                           setForm({ ...form, beforeImage: e.target.files[0] })
                         }
+                      />
+                    </div>
+
+                    <div className="mt-3">
+                      <label className="form-label small fw-semibold">
+                        Đính kèm tài liệu (PDF, Word, Excel...)
+                      </label>
+                      <input
+                        type="file"
+                        name="attachedFile"
+                        className="form-control form-control-sm"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
                       />
                     </div>
 

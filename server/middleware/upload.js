@@ -14,21 +14,33 @@ const storage = multer.diskStorage({
 
 // Filter chỉ cho phép ảnh
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  );
-  const mimetype = allowedTypes.test(file.mimetype);
-  if (extname && mimetype) {
+  // Cho phép tất cả file dưới 10MB
+  const allowedTypes = [
+    // Images
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    // Documents
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ];
+
+  if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Chỉ cho phép ảnh!"), false);
+    cb(new Error("Chỉ cho phép ảnh và tài liệu!"), false);
   }
 };
 
-// Tạo middleware
+// Cập nhật limits
 export const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });

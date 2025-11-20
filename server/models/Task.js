@@ -30,6 +30,12 @@ const taskSchema = new mongoose.Schema(
     // GÓP Ý TỪ DUYỆT
     reviewNote: { type: String, default: null },
     reviewedAt: { type: Date },
+    attachedFile: { type: String }, // File khi giao việc
+    completedFile: { type: String }, // File khi nhân viên nộp
+    improveNote: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

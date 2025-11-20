@@ -14,6 +14,7 @@ export default function TaskCard({ task }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+
   const canReview = () => {
     if (!currentUser?.role) return false;
     if (["manager", "a_manager"].includes(currentUser.role)) return true;
@@ -58,19 +59,31 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
+      {/* ẢNH TRƯỚC - SAU: HIỆN LOGO CÔNG TY NẾU CÓ FILE YÊU CẦU */}
       <div className="row g-2 p-2 flex-shrink-0">
         <div className="col-6 position-relative">
           <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
-            <img
-              src={
-                task.beforeImage
-                  ? `http://localhost:5000/uploads/${task.beforeImage}`
-                  : "/placeholder.jpg"
-              }
-              alt="Before"
-              className="w-100 h-100"
-              style={{ objectFit: "cover" }}
-            />
+            {task.attachedFile ? (
+              <div className="d-flex align-items-center justify-content-center bg-white h-100">
+                <img
+                  src="/logo-company.png"
+                  alt="Logo công ty"
+                  className="img-fluid"
+                  style={{ maxHeight: "80%", maxWidth: "80%" }}
+                />
+              </div>
+            ) : (
+              <img
+                src={
+                  task.beforeImage
+                    ? `http://localhost:5000/uploads/${task.beforeImage}`
+                    : "/placeholder.jpg"
+                }
+                alt="Before"
+                className="w-100 h-100"
+                style={{ objectFit: "cover" }}
+              />
+            )}
           </div>
           <div
             className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold"
@@ -79,18 +92,33 @@ export default function TaskCard({ task }) {
             {t("before")}
           </div>
         </div>
+
         <div className="col-6 position-relative">
           <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
-            <img
-              src={
-                task.afterImage
-                  ? `http://localhost:5000/uploads/${task.afterImage}`
-                  : "/no-image.png"
-              }
-              alt="After"
-              className="w-100 h-100"
-              style={{ objectFit: "cover" }}
-            />
+            {task.attachedFile ? (
+              <div className="d-flex align-items-center justify-content-center bg-white h-100">
+                <img
+                  src="/logo-company.png"
+                  alt="Logo công ty"
+                  className="img-fluid"
+                  style={{ maxHeight: "80%", maxWidth: "80%" }}
+                />
+              </div>
+            ) : task.afterImage ? (
+              <img
+                src={`http://localhost:5000/uploads/${task.afterImage}`}
+                alt="After"
+                className="w-100 h-100"
+                style={{ objectFit: "cover" }}
+              />
+            ) : (
+              <img
+                src="/no-image.png"
+                alt="After"
+                className="w-100 h-100"
+                style={{ objectFit: "cover" }}
+              />
+            )}
           </div>
           <div
             className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold"
@@ -102,6 +130,9 @@ export default function TaskCard({ task }) {
       </div>
 
       <div className="px-3 pb-1 flex-shrink-0">
+        <div>
+          <span className="text-primary fw-bold small">Mô tả công việc:</span>
+        </div>
         <p
           className="text-primary mb-0"
           style={{
@@ -120,21 +151,76 @@ export default function TaskCard({ task }) {
         </p>
       </div>
 
-      {/* GÓP Ý TỪ DUYỆT - HIỆN RÕ */}
-      {task.reviewNote && (
-        <div className="mx-3 mt-2 p-3 bg-danger bg-opacity-15 border border-danger rounded-3">
-          <small className="text-danger fw-bold d-block mb-1">
-            Lý do không đạt:
-          </small>
-          <p className="text-danger mb-0 small fw-medium">{task.reviewNote}</p>
+      {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
+      {task.improveNote && (
+        <div className="mx-1 mt-1 px-1">
+          <div className="d-flex align-items-start gap-2">
+            <i className="bi bi-chat-dots-fill text-primary mt-1"></i>
+            <div className="flex-grow-1">
+              <small className="text-primary fw-bold d-block">
+                {task.assignee?.name || "Nhân viên"} đã nhắn:
+              </small>
+              <p
+                className="mb-0 text-primary small lh-sm"
+                style={{ fontStyle: "italic" }}
+              >
+                “{task.improveNote}”
+              </p>
+            </div>
+          </div>
         </div>
       )}
 
-      <div className="card-body p-3 pt-1 flex-grow-1 d-flex flex-column">
-        <div
-          className="row text-dark flex-grow-1"
-          style={{ fontSize: "0.8rem" }}
-        >
+      {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}
+      {task.reviewNote && (
+        <div className="mx-3 mt-2 p-2 bg-danger bg-opacity-10 border border-danger rounded-3">
+          <small className="text-danger fw-bold d-block">
+            Lý do không đạt:
+          </small>
+          <p className="text-danger text-center mb-0 small fw-medium lh-sm">
+            {task.reviewNote}
+          </p>
+        </div>
+      )}
+
+      <div className="mx-3 mt-2">
+        {task.attachedFile && (
+          <div className="d-flex align-items-center gap-2 mb-2">
+            <i className="bi bi-file-earmark-text text-primary"></i>
+            <a
+              href={`http://localhost:5000/uploads/${task.attachedFile}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary small text-decoration-underline"
+            >
+              File yêu cầu:{" "}
+              {task.attachedFile.length > 30
+                ? task.attachedFile.substring(0, 27) + "..."
+                : task.attachedFile}
+            </a>
+          </div>
+        )}
+        {task.completedFile && (
+          <div className="d-flex align-items-center gap-2">
+            <i className="bi bi-file-check text-success"></i>
+            <a
+              href={`http://localhost:5000/uploads/${task.completedFile}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-success small text-decoration-underline"
+            >
+              File hoàn thành:{" "}
+              {task.completedFile.length > 30
+                ? task.completedFile.substring(0, 27) + "..."
+                : task.completedFile}
+            </a>
+          </div>
+        )}
+      </div>
+
+      {/* KHÓA CỨNG PHẦN DƯỚI – CHỈ THAY ĐOẠN NÀY */}
+      <div className="mt-auto p-3 pt-2 bg-white border-top">
+        <div className="row text-dark mb-3" style={{ fontSize: "0.8rem" }}>
           <div className="col-6">
             <div className="d-flex align-items-center mb-1">
               <strong className="me-1 text-nowrap">{t("assigned_by")}:</strong>
@@ -173,7 +259,7 @@ export default function TaskCard({ task }) {
           </div>
         </div>
 
-        <div className="d-flex gap-2 mt-3">
+        <div className="d-flex gap-2">
           <button
             className="btn btn-outline-primary btn-sm flex-fill py-2 fw-bold"
             onClick={() => navigate(`/task/${task._id}`)}
@@ -198,6 +284,7 @@ export default function TaskCard({ task }) {
           )}
         </div>
       </div>
+      {/* KẾT THÚC KHÓA CỨNG */}
     </div>
   );
 }
