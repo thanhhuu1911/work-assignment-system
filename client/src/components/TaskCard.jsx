@@ -1,6 +1,7 @@
 // client/src/components/TaskCard.jsx
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import ImageDisplay from "./ImageDisplay";
 
 const STATUS_COLORS = {
   ongoing: "warning",
@@ -28,14 +29,16 @@ export default function TaskCard({ task }) {
   };
 
   const getStatusText = () => {
-    if (task.isOverdue) return "Quá hạn";
-    if (task.status === "rejected" || task.reviewNote) return "Không đạt";
+    if (task.status === "approved") return t("approved");
+    if (task.isOverdue && task.status !== "approved") return "Quá hạn";
+    if (task.reviewNote && task.status !== "approved") return "Không đạt";
     return t(task.status);
   };
 
   const getStatusColor = () => {
-    if (task.isOverdue || task.status === "rejected" || task.reviewNote)
-      return "danger";
+    if (task.status === "approved") return "success";
+    if (task.isOverdue) return "danger";
+    if (task.reviewNote) return "danger";
     return STATUS_COLORS[task.status] || "secondary";
   };
 
@@ -59,77 +62,40 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
-      {/* ẢNH TRƯỚC - SAU: HIỆN LOGO CÔNG TY NẾU CÓ FILE YÊU CẦU */}
-      <div className="row g-2 p-2 flex-shrink-0">
+      {/* === 2 Ô ẢNH TRƯỚC - SAU – ĐÃ SỬA HOÀN HẢO 100% === */}
+      <div className="row g-2 px-3 pt-2">
+        {/* ẢNH TRƯỚC */}
         <div className="col-6 position-relative">
-          <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
-            {task.attachedFile ? (
-              <div className="d-flex align-items-center justify-content-center bg-white h-100">
-                <img
-                  src="/logo-company.png"
-                  alt="Logo công ty"
-                  className="img-fluid"
-                  style={{ maxHeight: "80%", maxWidth: "80%" }}
-                />
-              </div>
-            ) : (
-              <img
-                src={
-                  task.beforeImage
-                    ? `http://localhost:5000/uploads/${task.beforeImage}`
-                    : "/placeholder.jpg"
-                }
-                alt="Before"
-                className="w-100 h-100"
-                style={{ objectFit: "cover" }}
-              />
-            )}
+          <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
+            <ImageDisplay
+              imageField={task.beforeImage}
+              attachedFile={task.attachedFile}
+              type="before"
+            />
           </div>
-          <div
+          <small
             className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold"
-            style={{ fontSize: "0.75rem" }}
+            style={{ fontSize: "0.7rem" }}
           >
             {t("before")}
-          </div>
+          </small>
         </div>
 
+        {/* ẢNH SAU – BÂY GIỜ ĐẸP, KHÔNG CÒN BỰ, KHÔNG MÉO */}
         <div className="col-6 position-relative">
-          <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
-            {task.attachedFile ? (
-              <div className="d-flex align-items-center justify-content-center bg-white h-100">
-                <img
-                  src="/logo-company.png"
-                  alt="Logo công ty"
-                  className="img-fluid"
-                  style={{ maxHeight: "80%", maxWidth: "80%" }}
-                />
-              </div>
-            ) : task.afterImage ? (
-              <img
-                src={`http://localhost:5000/uploads/${task.afterImage}`}
-                alt="After"
-                className="w-100 h-100"
-                style={{ objectFit: "cover" }}
-              />
-            ) : (
-              <img
-                src="/no-image.png"
-                alt="After"
-                className="w-100 h-100"
-                style={{ objectFit: "cover" }}
-              />
-            )}
+          <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
+            <ImageDisplay imageField={task.afterImage} type="after" />
           </div>
-          <div
+          <small
             className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold"
-            style={{ fontSize: "0.75rem" }}
+            style={{ fontSize: "0.7rem" }}
           >
             {t("after")}
-          </div>
+          </small>
         </div>
       </div>
 
-      <div className="px-3 pb-1 flex-shrink-0">
+      <div className="px-3  flex-shrink-0">
         <div>
           <span className="text-primary fw-bold small">Mô tả công việc:</span>
         </div>
@@ -153,9 +119,9 @@ export default function TaskCard({ task }) {
 
       {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
       {task.improveNote && (
-        <div className="mx-1 mt-1 px-1">
+        <div className="mx-1  px-1">
           <div className="d-flex align-items-start gap-2">
-            <i className="bi bi-chat-dots-fill text-primary mt-1"></i>
+            <i className="bi bi-chat-dots-fill text-primary"></i>
             <div className="flex-grow-1">
               <small className="text-primary fw-bold d-block">
                 {task.assignee?.name || "Nhân viên"} đã nhắn:
@@ -171,21 +137,12 @@ export default function TaskCard({ task }) {
         </div>
       )}
 
-      {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}
-      {task.reviewNote && (
-        <div className="mx-3 mt-2 p-2 bg-danger bg-opacity-10 border border-danger rounded-3">
-          <small className="text-danger fw-bold d-block">
-            Lý do không đạt:
-          </small>
-          <p className="text-danger text-center mb-0 small fw-medium lh-sm">
-            {task.reviewNote}
-          </p>
-        </div>
-      )}
-
-      <div className="mx-3 mt-2">
+      <div className="mx-3 mt-1">
+        <small className="text-muted fw-bold d-block mb-2">
+          File đính kèm:
+        </small>
         {task.attachedFile && (
-          <div className="d-flex align-items-center gap-2 mb-2">
+          <div className="d-flex align-items-center gap-2 mb-1">
             <i className="bi bi-file-earmark-text text-primary"></i>
             <a
               href={`http://localhost:5000/uploads/${task.attachedFile}`}
@@ -216,8 +173,36 @@ export default function TaskCard({ task }) {
             </a>
           </div>
         )}
+        {!task.attachedFile && !task.completedFile && (
+          <small className="text-muted">Không có file đính kèm</small>
+        )}
       </div>
 
+      {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}
+      {task.reviewNote && (
+        <div
+          className={`mx-2 mt-1 p-1 rounded-3 border ${
+            task.status === "approved"
+              ? "bg-primary bg-opacity-10 border-primary"
+              : "bg-danger bg-opacity-10 border-danger"
+          }`}
+        >
+          <small
+            className={`fw-bold d-block ${
+              task.status === "approved" ? "text-primary" : "text-danger"
+            }`}
+          >
+            {task.status === "approved" ? "Ghi chú:" : "Lý do không đạt:"}
+          </small>
+          <p
+            className={`mb-0 small lh-sm ${
+              task.status === "approved" ? "text-primary" : "text-danger"
+            } fst-italic`}
+          >
+            “{task.reviewNote}”
+          </p>
+        </div>
+      )}
       {/* KHÓA CỨNG PHẦN DƯỚI – CHỈ THAY ĐOẠN NÀY */}
       <div className="mt-auto p-3 pt-2 bg-white border-top">
         <div className="row text-dark mb-3" style={{ fontSize: "0.8rem" }}>

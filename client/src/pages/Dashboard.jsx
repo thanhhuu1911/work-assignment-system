@@ -10,9 +10,9 @@ import api from "../services/api";
 // LOẠI BỎ "Need Support"
 const STATUS_FILTERS = [
   { key: "all", label: "all_status", color: "dark" },
-  { key: "ongoing", label: "ongoing", color: "dark" },
-  { key: "review", label: "in_review", color: "dark" },
-  { key: "approved", label: "approved", color: "dark" },
+  { key: "ongoing", label: "ongoing", color: "warning" },
+  { key: "review", label: "review", color: "primary" },
+  { key: "approved", label: "approved", color: "success" },
   { key: "rejected/overdue", label: "rejected/overdue", color: "danger" },
 ];
 
@@ -88,18 +88,25 @@ export default function Dashboard() {
   let filteredTasks = tasks;
 
   if (statusFilter === "ongoing") {
-    filteredTasks = filteredTasks.filter(
+    filteredTasks = tasks.filter(
       (t) => t.status === "ongoing" && !t.isOverdue && !t.reviewNote
     );
+  } else if (statusFilter === "review") {
+    filteredTasks = tasks.filter((t) => t.status === "review");
+  } else if (statusFilter === "approved") {
+    filteredTasks = tasks.filter((t) => t.status === "approved");
   } else if (statusFilter === "rejected/overdue") {
-    filteredTasks = filteredTasks.filter(
+    filteredTasks = tasks.filter(
       (t) =>
-        t.isOverdue ||
-        t.status === "rejected" ||
-        (t.status === "ongoing" && t.reviewNote)
+        // 1. Đã bị reject (có reviewNote + status không phải approved)
+        (t.reviewNote && t.status !== "approved") ||
+        // 2. Đang ongoing + quá hạn
+        (t.status === "ongoing" && t.isOverdue) ||
+        // 3. Status chính thức là rejected (nếu bạn có thêm status này sau)
+        t.status === "rejected"
     );
   } else if (statusFilter !== "all") {
-    filteredTasks = filteredTasks.filter((t) => t.status === statusFilter);
+    filteredTasks = tasks.filter((t) => t.status === statusFilter);
   }
   if (positionFilter !== "all")
     filteredTasks = filteredTasks.filter((t) => t.position === positionFilter);
@@ -142,12 +149,16 @@ export default function Dashboard() {
       return tasks.filter(
         (t) => t.status === "ongoing" && !t.isOverdue && !t.reviewNote
       ).length;
+    if (key === "review")
+      return tasks.filter((t) => t.status === "review").length;
+    if (key === "approved")
+      return tasks.filter((t) => t.status === "approved").length;
     if (key === "rejected/overdue")
       return tasks.filter(
         (t) =>
-          t.isOverdue ||
-          t.status === "rejected" ||
-          (t.status === "ongoing" && t.reviewNote)
+          (t.reviewNote && t.status !== "approved") ||
+          (t.status === "ongoing" && t.isOverdue) ||
+          t.status === "rejected"
       ).length;
     return tasks.filter((t) => t.status === key).length;
   };

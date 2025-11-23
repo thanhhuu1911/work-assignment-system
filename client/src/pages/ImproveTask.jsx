@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import ImageDisplay from "../components/ImageDisplay";
 
 export default function ImproveTask() {
   const { t } = useTranslation();
@@ -80,9 +81,7 @@ export default function ImproveTask() {
 
     try {
       await api.put(`/tasks/${id}/improve`, formData);
-      alert(
-        "Gửi duyệt thành công! Sếp sẽ thấy lời nhắn của bạn trên task card"
-      );
+      alert("Gửi duyệt thành công!");
       navigate("/dashboard");
     } catch (err) {
       alert("Lỗi: " + (err.response?.data?.message || "Server error"));
@@ -130,65 +129,30 @@ export default function ImproveTask() {
                     </span>
                   </div>
                 </div>
-
-                {/* ẢNH TRƯỚC - SAU */}
-                <div className="row g-2 p-2 flex-shrink-0">
+                {/* // Ảnh TRƯỚC */}
+                <div className="row g-3 px-4 pt-3">
                   <div className="col-6 position-relative">
                     <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
-                      {task.attachedFile ? (
-                        <div className="d-flex align-items-center justify-content-center bg-white h-100">
-                          <img
-                            src="/logo-company.png"
-                            alt="Logo"
-                            className="img-fluid"
-                            style={{ maxHeight: "80%", maxWidth: "80%" }}
-                          />
-                        </div>
-                      ) : (
-                        <img
-                          src={
-                            task.beforeImage
-                              ? `http://localhost:5000/uploads/${task.beforeImage}`
-                              : "/placeholder.jpg"
-                          }
-                          alt="Trước"
-                          className="w-100 h-100"
-                          style={{ objectFit: "cover" }}
-                        />
-                      )}
+                      <ImageDisplay
+                        imageField={task.beforeImage}
+                        attachedFile={task.attachedFile}
+                        type="before"
+                      />
                     </div>
-                    <div
-                      className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold"
-                      style={{ fontSize: "0.75rem" }}
-                    >
+                    <div className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold small">
                       Trước
                     </div>
                   </div>
-
+                  {/* // Ảnh SAU */}
                   <div className="col-6 position-relative">
-                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light ">
-                      {afterPreview ? (
-                        <img
-                          src={afterPreview}
-                          alt="Sau"
-                          className="w-100 h-100"
-                          style={{ objectFit: "cover" }}
-                        />
-                      ) : (
-                        <div className="d-flex align-items-center justify-content-center h-100">
-                          <i className="bi bi-camera-fill text-success fs-1 opacity-50"></i>
-                        </div>
-                      )}
+                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
+                      <ImageDisplay imageField={task.afterImage} type="after" />
                     </div>
-                    <div
-                      className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold"
-                      style={{ fontSize: "0.75rem" }}
-                    >
+                    <div className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold small">
                       Sau
                     </div>
                   </div>
                 </div>
-
                 {/* MÔ TẢ CÔNG VIỆC */}
                 <div className="px-3 pb-1 flex-shrink-0">
                   <span className="text-primary fw-bold small">
@@ -211,19 +175,37 @@ export default function ImproveTask() {
                     {task.description || "Không có mô tả"}
                   </p>
                 </div>
-
                 {/* FEEDBACK CŨ (NẾU BỊ TỪ CHỐI) */}
                 {task.reviewNote && (
-                  <div className="mx-3 mt-2 p-2 bg-danger bg-opacity-10 border border-danger rounded-3">
-                    <small className="text-danger fw-bold d-block">
-                      Lý do không đạt:
+                  <div
+                    className={`mx-2 mt-1 p-1 rounded-3 border ${
+                      task.status === "approved"
+                        ? "bg-primary bg-opacity-10 border-primary"
+                        : "bg-danger bg-opacity-10 border-danger"
+                    }`}
+                  >
+                    <small
+                      className={`fw-bold d-block ${
+                        task.status === "approved"
+                          ? "text-primary"
+                          : "text-danger"
+                      }`}
+                    >
+                      {task.status === "approved"
+                        ? "Ghi chú:"
+                        : "Lý do không đạt:"}
                     </small>
-                    <p className="text-danger text-center mb-0 small fw-medium lh-sm">
-                      {task.reviewNote}
+                    <p
+                      className={`mb-0 small lh-sm ${
+                        task.status === "approved"
+                          ? "text-primary"
+                          : "text-danger"
+                      } fst-italic`}
+                    >
+                      “{task.reviewNote}”
                     </p>
                   </div>
                 )}
-
                 {/* UPLOAD ẢNH SAU */}
                 <div className="px-3 py-2">
                   <div
@@ -270,7 +252,6 @@ export default function ImproveTask() {
                     style={{ fontSize: "0.85rem" }}
                   />
                 </div>
-
                 {/* THÔNG TIN + NÚT – Y HỆT TASKCARD */}
                 <div className="mt-auto p-3 pt-2 bg-white border-top">
                   <div
@@ -328,7 +309,7 @@ export default function ImproveTask() {
 
                   <div className="d-flex justify-content-center gap-3 mt-3">
                     <button
-                      className="btn btn-outline-secondary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                      className="btn btn-outline-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                       onClick={() => navigate(-1)}
                       disabled={submitting}
                       style={{ minWidth: "110px" }}
@@ -337,7 +318,7 @@ export default function ImproveTask() {
                     </button>
 
                     <button
-                      className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                      className="btn btn-outline-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                       onClick={handleSubmit}
                       disabled={submitting || !afterImage}
                       style={{ minWidth: "110px" }}

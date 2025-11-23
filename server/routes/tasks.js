@@ -16,13 +16,13 @@ router.use(protect);
 // SUPPORT NHIỀU FILE CÙNG LÚC KHI TẠO TASK
 const uploadCreateTask = upload.fields([
   { name: "beforeImage", maxCount: 1 }, // Ảnh trước
-  { name: "attachedFile", maxCount: 1 }, // File đính kèm từ sếp
+  { name: "attachedFile", maxCount: 10 }, // File đính kèm từ sếp
 ]);
 
 // SUPPORT NHIỀU FILE KHI CẢI THIỆN
 const uploadImproveTask = upload.fields([
   { name: "afterImage", maxCount: 1 }, // Ảnh sau
-  { name: "completedFile", maxCount: 1 }, // File hoàn thành từ nhân viên
+  { name: "completedFile", maxCount: 10 }, // File hoàn thành từ nhân viên
 ]);
 
 // ROUTES

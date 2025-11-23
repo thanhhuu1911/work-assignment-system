@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import ImageDisplay from "../components/ImageDisplay";
 
 export default function TaskDetail() {
   const { t } = useTranslation();
@@ -62,39 +63,6 @@ export default function TaskDetail() {
     rejected: { color: "bg-danger", text: "Không đạt" },
   }[task.status] || { color: "bg-secondary", text: task.status };
 
-  const renderImage = (imageField) => {
-    if (task.attachedFile) {
-      return (
-        <div className="d-flex align-items-center justify-content-center bg-white h-100">
-          <img
-            src="/logo-company.png"
-            alt="Logo công ty"
-            className="img-fluid"
-            style={{ maxHeight: "80%", maxWidth: "80%" }}
-          />
-        </div>
-      );
-    }
-    if (imageField) {
-      return (
-        <img
-          src={`http://localhost:5000/uploads/${imageField}`}
-          alt=""
-          className="w-100 h-100"
-          style={{ objectFit: "cover" }}
-          onError={(e) => {
-            e.target.src = "https://via.placeholder.com/300?text=No+Image";
-          }}
-        />
-      );
-    }
-    return (
-      <div className="d-flex align-items-center justify-content-center h-100 bg-light text-muted">
-        <span className="small">Chưa có ảnh</span>
-      </div>
-    );
-  };
-
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
       <Header />
@@ -107,7 +75,7 @@ export default function TaskDetail() {
                 <div className="card-header bg-white border-0 py-3 px-4">
                   <div className="d-flex justify-content-between align-items-center">
                     <h5
-                      className=".mb-0 fw-bold text-primary text-truncate"
+                      className="mb-0 fw-bold text-primary text-truncate"
                       style={{ maxWidth: "70%" }}
                     >
                       {task.position}
@@ -119,29 +87,32 @@ export default function TaskDetail() {
                     </span>
                   </div>
                 </div>
-
-                {/* ẢNH TRƯỚC - SAU */}
-                <div className="row g-3 p-3">
+                {/* // Ảnh TRƯỚC */}
+                <div className="row g-3 px-4 pt-3">
                   <div className="col-6 position-relative">
                     <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
-                      {renderImage(task.beforeImage)}
+                      <ImageDisplay
+                        imageField={task.beforeImage}
+                        attachedFile={task.attachedFile}
+                        type="before"
+                      />
                     </div>
                     <div className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold small">
                       Trước
                     </div>
                   </div>
+                  {/* // Ảnh SAU */}
                   <div className="col-6 position-relative">
                     <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
-                      {renderImage(task.afterImage)}
+                      <ImageDisplay imageField={task.afterImage} type="after" />
                     </div>
                     <div className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold small">
                       Sau
                     </div>
                   </div>
                 </div>
-
                 {/* MÔ TẢ CÔNG VIỆC – CÓ TIÊU ĐỀ + ICON ĐẸP */}
-                <div className="px-3 pb-1 flex-shrink-0">
+                <div className="px-3  flex-shrink-0">
                   <div>
                     <span className="text-primary fw-bold small">
                       Mô tả công việc:
@@ -159,13 +130,35 @@ export default function TaskDetail() {
                       fontSize: "0.9rem",
                       fontWeight: "500",
                     }}
+                    title={task.description}
                   >
-                    {task.description || "Không có mô tả"}
+                    {task.description || "No description"}
                   </p>
                 </div>
-
+                {/* LỜI NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – DÁN NGAY ĐÂY */}
+                {task.improveNote && (
+                  <div className="mx-1  px-1">
+                    <div className="d-flex align-items-start gap-2">
+                      <i className="bi bi-chat-dots-fill text-primary"></i>
+                      <div className="flex-grow-1">
+                        <small className="text-primary fw-bold d-block">
+                          {task.assignee?.name || "Nhân viên"} đã nhắn:
+                        </small>
+                        <p
+                          className="mb-0 text-primary small lh-sm"
+                          style={{ fontStyle: "italic" }}
+                        >
+                          “{task.improveNote}”
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {/* FILE */}
                 <div className="px-4 py-3">
+                  <small className="text-muted fw-bold d-block mb-2">
+                    File đính kèm:
+                  </small>
                   {task.attachedFile && (
                     <div className="d-flex align-items-center gap-2 mb-1">
                       <i className="bi bi-file-earmark-text text-primary"></i>
@@ -195,17 +188,37 @@ export default function TaskDetail() {
                     </div>
                   )}
                 </div>
-
-                {/* GHI CHÚ TỪ CHỐI */}
+                {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}
                 {task.reviewNote && (
-                  <div className="mx-4 mt-2 p-3 bg-danger bg-opacity-10 border border-danger rounded-3">
-                    <small className="text-danger fw-bold d-block">
-                      Lý do không đạt:
+                  <div
+                    className={`mx-2 mt-1 p-1 rounded-3 border ${
+                      task.status === "approved"
+                        ? "bg-primary bg-opacity-10 border-primary"
+                        : "bg-danger bg-opacity-10 border-danger"
+                    }`}
+                  >
+                    <small
+                      className={`fw-bold d-block ${
+                        task.status === "approved"
+                          ? "text-primary"
+                          : "text-danger"
+                      }`}
+                    >
+                      {task.status === "approved"
+                        ? "Ghi chú:"
+                        : "Lý do không đạt:"}
                     </small>
-                    <p className="text-danger mb-0 small">{task.reviewNote}</p>
+                    <p
+                      className={`mb-0 small lh-sm ${
+                        task.status === "approved"
+                          ? "text-primary"
+                          : "text-danger"
+                      } fst-italic`}
+                    >
+                      “{task.reviewNote}”
+                    </p>
                   </div>
                 )}
-
                 {/* THÔNG TIN CHI TIẾT */}
                 <div className="p-4 pt-3 bg-white border-top">
                   <div className="row text-muted small">
@@ -241,7 +254,7 @@ export default function TaskDetail() {
                   {/* NÚT HÀNH ĐỘNG */}
                   <div className="d-flex justify-content-center gap-3 mt-4 px-3">
                     <button
-                      className="btn btn-outline-secondary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                      className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                       onClick={() => navigate(-1)}
                       style={{ minWidth: "110px" }}
                     >
@@ -250,7 +263,7 @@ export default function TaskDetail() {
 
                     {["ongoing", "rejected"].includes(task.status) && (
                       <button
-                        className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                        className="btn btn-outline-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                         onClick={() => navigate(`/improve/${task._id}`)}
                         style={{ minWidth: "110px" }}
                       >
@@ -260,7 +273,7 @@ export default function TaskDetail() {
 
                     {task.status === "review" && (
                       <button
-                        className="btn btn-info btn-sm px-4 py-2 text-white fw-bold rounded-pill shadow-sm"
+                        className="btn btn-outline-info btn-sm px-4 py-2 text-white fw-bold rounded-pill shadow-sm"
                         onClick={() => navigate(`/review/${task._id}`)}
                         style={{ minWidth: "110px" }}
                       >
