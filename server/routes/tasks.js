@@ -38,7 +38,7 @@ router.get("/:id", getTaskById);
 
 router.put(
   "/:id/improve",
-  authorize("manager", "a_manager", "leader", "staff"),
+  authorize("manager", "a_manager", "leader", "member"),
   uploadImproveTask, // ĐÃ THAY ĐỔI TẠI ĐÂY
   improveTask
 );

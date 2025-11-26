@@ -173,20 +173,21 @@ export default function TaskDetail() {
                       </a>
                     </div>
                   )}
-                  {task.completedFile && (
-                    <div className="d-flex align-items-center gap-2">
-                      <i className="bi bi-file-check text-success"></i>
-                      <a
-                        href={`http://localhost:5000/uploads/${task.completedFile}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-success small text-decoration-underline text-truncate d-block"
-                        style={{ maxWidth: "280px" }}
+                  {Array.isArray(task.completedFiles) &&
+                    task.completedFiles.map((file, idx) => (
+                      <div
+                        key={idx}
+                        className="d-flex align-items-center gap-2"
                       >
-                        File hoàn thành: {task.completedFile}
-                      </a>
-                    </div>
-                  )}
+                        <i className="bi bi-file-check text-success"></i>
+                        <a
+                          href={`http://localhost:5000/uploads/${file}`}
+                          target="_blank"
+                        >
+                          File hoàn thành {idx + 1}: {file}
+                        </a>
+                      </div>
+                    ))}
                 </div>
                 {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}
                 {task.reviewNote && (
@@ -273,7 +274,7 @@ export default function TaskDetail() {
 
                     {task.status === "review" && (
                       <button
-                        className="btn btn-outline-info btn-sm px-4 py-2 text-white fw-bold rounded-pill shadow-sm"
+                        className="btn btn-info btn-sm px-4 py-2 text-white fw-bold rounded-pill shadow-sm"
                         onClick={() => navigate(`/review/${task._id}`)}
                         style={{ minWidth: "110px" }}
                       >

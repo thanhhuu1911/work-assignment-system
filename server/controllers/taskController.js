@@ -25,7 +25,12 @@ export const createTask = async (req, res) => {
       beforeImage: req.files?.beforeImage?.[0]?.filename,
       attachedFile: req.files?.attachedFile?.[0]?.filename,
     });
-
+    if (req.files?.attachedFiles) {
+      const files = Array.isArray(req.files.attachedFiles)
+        ? req.files.attachedFiles
+        : [req.files.attachedFiles];
+      task.attachedFiles = files.map((f) => f.filename); // ← mảng
+    }
     await task.save();
     await task.populate("assignedBy", "name");
     await task.populate("assignee", "name group");
@@ -89,8 +94,11 @@ export const improveTask = async (req, res) => {
     if (req.files?.afterImage?.[0]) {
       task.afterImage = req.files.afterImage[0].filename;
     }
-    if (req.files?.completedFile?.[0]) {
-      task.completedFile = req.files.completedFile[0].filename;
+    if (req.files?.completedFile) {
+      const files = Array.isArray(req.files.completedFile)
+        ? req.files.completedFile
+        : [req.files.completedFile];
+      task.completedFiles = files.map((f) => f.filename); // ← phải là mảng
     }
     if (req.body.improveNote) {
       task.improveNote = req.body.improveNote.trim(); // lưu lời nhắn

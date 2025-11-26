@@ -1,4 +1,4 @@
-// client/src/components/ImageDisplay.jsx – PHIÊN BẢN BOOTSTRAP 5 SIÊU SẠCH
+// client/src/components/ImageDisplay.jsx
 const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
   const isBefore = type === "before";
 

@@ -172,22 +172,21 @@ export default function ReviewTask() {
                     </div>
                   )}
 
-                  {task.completedFile && (
-                    <div className="d-flex align-items-center gap-2">
-                      <i className="bi bi-file-check-fill text-success fs-5"></i>
-                      <a
-                        href={`http://localhost:5000/uploads/${task.completedFile}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-success text-decoration-underline fw-medium small"
+                  {Array.isArray(task.completedFiles) &&
+                    task.completedFiles.map((file, idx) => (
+                      <div
+                        key={idx}
+                        className="d-flex align-items-center gap-2"
                       >
-                        File hoàn thành:{" "}
-                        {task.completedFile.length > 35
-                          ? task.completedFile.substring(0, 32) + "..."
-                          : task.completedFile}
-                      </a>
-                    </div>
-                  )}
+                        <i className="bi bi-file-check text-success"></i>
+                        <a
+                          href={`http://localhost:5000/uploads/${file}`}
+                          target="_blank"
+                        >
+                          File hoàn thành {idx + 1}: {file}
+                        </a>
+                      </div>
+                    ))}
 
                   {!task.attachedFile && !task.completedFile && (
                     <small className="text-muted">Không có file đính kèm</small>

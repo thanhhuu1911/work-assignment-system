@@ -21,6 +21,7 @@ export default function NewIssue() {
   const [users, setUsers] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
   const [loading, setLoading] = useState(true); // DÙNG CHUNG
+  const [attachedFiles, setAttachedFiles] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -107,6 +108,8 @@ export default function NewIssue() {
     if (form.beforeImage) formData.append("beforeImage", form.beforeImage);
     // THÊM FILE ĐÍNH KÈM
     const attachedFileInput = e.target.attachedFile;
+    attachedFiles.forEach((file) => formData.append("attachedFiles", file));
+
     if (attachedFileInput?.files[0]) {
       formData.append("attachedFile", attachedFileInput.files[0]);
     }
@@ -283,9 +286,12 @@ export default function NewIssue() {
                       </label>
                       <input
                         type="file"
-                        name="attachedFile"
-                        className="form-control form-control-sm"
-                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                        name="attachedFiles"
+                        multiple
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png"
+                        onChange={(e) =>
+                          setAttachedFiles(Array.from(e.target.files))
+                        }
                       />
                     </div>
 

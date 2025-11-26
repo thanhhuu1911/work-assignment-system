@@ -1,14 +1,12 @@
-// client/src/pages/ImproveTask.jsx – PHIÊN BẢN HOÀN HẢO NHẤT, ĐẸP Y HỆT TASKCARD
-import { useState, useEffect, useRef } from "react";
+// client/src/pages/ImproveTask.jsx – PHIÊN BẢN HOÀN HẢO NHẤT, ĐẸP NHƯ TASKCARD, KHÔNG BẮT BUỘC ẢNH
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import api from "../services/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ImageDisplay from "../components/ImageDisplay";
 
 export default function ImproveTask() {
-  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -16,12 +14,13 @@ export default function ImproveTask() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
+  // Ảnh "Sau"
   const [afterImage, setAfterImage] = useState(null);
   const [afterPreview, setAfterPreview] = useState(null);
+
+  // File hoàn thành
   const [completedFiles, setCompletedFiles] = useState([]);
   const [noteToBoss, setNoteToBoss] = useState("");
-
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -44,39 +43,53 @@ export default function ImproveTask() {
     fetchTask();
   }, [id, navigate]);
 
-  // Ctrl+V dán ảnh
-  useEffect(() => {
-    const handlePaste = (e) => {
-      const file = e.clipboardData?.files[0];
-      if (file && file.type.startsWith("image/")) {
-        setAfterImage(file);
-        setAfterPreview(URL.createObjectURL(file));
-      }
-    };
-    document.addEventListener("paste", handlePaste);
-    return () => document.removeEventListener("paste", handlePaste);
-  }, []);
-
-  const handleImageChange = (e) => {
+  const handleAfterImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (file && file.type.startsWith("image/")) {
       setAfterImage(file);
       setAfterPreview(URL.createObjectURL(file));
     }
   };
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setCompletedFiles((prev) => [...prev, ...files].slice(0, 3));
+  const removeAfterImage = () => {
+    if (afterPreview) URL.revokeObjectURL(afterPreview);
+    setAfterImage(null);
+    setAfterPreview(null);
+  };
+
+  const handleCompletedFilesChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+    const enhanced = newFiles.map((file) => ({
+      file,
+      name: file.name,
+      size: file.size,
+      preview: file.type.startsWith("image/")
+        ? URL.createObjectURL(file)
+        : null,
+      isImage: file.type.startsWith("image/"),
+    }));
+    setCompletedFiles((prev) => [...prev, ...enhanced].slice(0, 10));
+  };
+
+  const removeFile = (idx) => {
+    const file = completedFiles[idx];
+    if (file.preview) URL.revokeObjectURL(file.preview);
+    setCompletedFiles((prev) => prev.filter((_, i) => i !== idx));
   };
 
   const handleSubmit = async () => {
-    if (!afterImage) return alert("Vui lòng chọn ảnh sau khi cải thiện!");
+    // Chỉ cần có ít nhất 1 ảnh hoặc 1 file là được gửi
+    if (!afterImage && completedFiles.length === 0) {
+      return alert("Vui lòng chọn ít nhất 1 ảnh 'Sau' hoặc 1 file hoàn thành!");
+    }
 
     setSubmitting(true);
     const formData = new FormData();
-    formData.append("afterImage", afterImage);
-    completedFiles.forEach((file) => formData.append("completedFile", file));
+
+    if (afterImage) formData.append("afterImage", afterImage);
+    completedFiles.forEach((item) =>
+      formData.append("completedFiles", item.file)
+    );
     if (noteToBoss.trim()) formData.append("improveNote", noteToBoss.trim());
 
     try {
@@ -109,222 +122,204 @@ export default function ImproveTask() {
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-12 col-md-8 col-lg-6 col-xl-5">
-              {/* TASKCARD CẢI THIỆN – ĐẸP Y HỆT TASKCARD CHÍNH THỨC */}
-              <div className="card h-100 shadow-lg border-0 rounded-4 overflow-hidden d-flex flex-column">
+              <div className="card shadow-lg border-0 rounded-4 overflow-hidden">
                 {/* HEADER */}
-                <div className="card-header bg-white border-0 py-2 px-3 flex-shrink-0">
+                <div className="card-header bg-white border-0 py-3 px-4">
                   <div className="d-flex justify-content-between align-items-center">
-                    <div
-                      className="text-primary fw-bold text-truncate"
-                      style={{ maxWidth: "140px" }}
-                      title={task.position}
+                    <h5
+                      className="mb-0 text-primary fw-bold text-truncate"
+                      style={{ maxWidth: "70%" }}
                     >
                       {task.position}
-                    </div>
-                    <span
-                      className="badge rounded-pill bg-info text-white px-2 py-1"
-                      style={{ fontSize: "0.8rem" }}
-                    >
+                    </h5>
+                    <span className="badge bg-info text-white px-3 py-2">
                       Đang cải thiện
                     </span>
                   </div>
                 </div>
-                {/* // Ảnh TRƯỚC */}
+
+                {/* ẢNH TRƯỚC - SAU */}
                 <div className="row g-3 px-4 pt-3">
                   <div className="col-6 position-relative">
-                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
+                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
                       <ImageDisplay
                         imageField={task.beforeImage}
                         attachedFile={task.attachedFile}
                         type="before"
                       />
                     </div>
-                    <div className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold small">
+                    <div className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end small fw-bold">
                       Trước
                     </div>
                   </div>
-                  {/* // Ảnh SAU */}
                   <div className="col-6 position-relative">
-                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
-                      <ImageDisplay imageField={task.afterImage} type="after" />
+                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
+                      {afterPreview ? (
+                        <img
+                          src={afterPreview}
+                          alt="Sau"
+                          className="w-100 h-100 object-fit-cover"
+                        />
+                      ) : (
+                        <div className="d-flex align-items-center justify-content-center h-100 text-muted">
+                          <i className="bi bi-image fs-3 opacity-50"></i>
+                        </div>
+                      )}
                     </div>
-                    <div className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold small">
+                    <div className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start small fw-bold">
                       Sau
                     </div>
                   </div>
                 </div>
-                {/* MÔ TẢ CÔNG VIỆC */}
-                <div className="px-3 pb-1 flex-shrink-0">
-                  <span className="text-primary fw-bold small">
-                    Mô tả công việc:
-                  </span>
-                  <p
-                    className="text-primary mb-0"
-                    style={{
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      lineHeight: "1.4em",
-                      height: "2.8em",
-                      fontSize: "0.9rem",
-                      fontWeight: "500",
-                    }}
-                    title={task.description}
-                  >
-                    {task.description || "Không có mô tả"}
+
+                {/* MÔ TẢ + LÝ DO KHÔNG ĐẠT */}
+                <div className="px-4 py-3">
+                  <p className="text-primary small mb-2">
+                    <strong>Mô tả:</strong> {task.description}
                   </p>
+                  {task.reviewNote && (
+                    <div className="alert alert-danger py-2 px-3 small rounded-3 border-0">
+                      <strong>Lý do không đạt:</strong> “{task.reviewNote}”
+                    </div>
+                  )}
                 </div>
-                {/* FEEDBACK CŨ (NẾU BỊ TỪ CHỐI) */}
-                {task.reviewNote && (
-                  <div
-                    className={`mx-2 mt-1 p-1 rounded-3 border ${
-                      task.status === "approved"
-                        ? "bg-primary bg-opacity-10 border-primary"
-                        : "bg-danger bg-opacity-10 border-danger"
-                    }`}
-                  >
-                    <small
-                      className={`fw-bold d-block ${
-                        task.status === "approved"
-                          ? "text-primary"
-                          : "text-danger"
-                      }`}
-                    >
-                      {task.status === "approved"
-                        ? "Ghi chú:"
-                        : "Lý do không đạt:"}
-                    </small>
-                    <p
-                      className={`mb-0 small lh-sm ${
-                        task.status === "approved"
-                          ? "text-primary"
-                          : "text-danger"
-                      } fst-italic`}
-                    >
-                      “{task.reviewNote}”
-                    </p>
-                  </div>
-                )}
-                {/* UPLOAD ẢNH SAU */}
-                <div className="px-3 py-2">
-                  <div
-                    className="border-2 border-dashed border-success rounded-3 p-3 text-center bg-white border border-2 border-dashed border-success"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="d-none"
-                      onChange={handleImageChange}
-                    />
-                    {afterPreview ? (
+
+                {/* UPLOAD ẢNH SAU (KHÔNG BẮT BUỘC) */}
+                <div className="px-4 pb-3">
+                  <label className="form-label text-success fw-bold small">
+                    Ảnh sau khi cải thiện (không bắt buộc)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="form-control form-control-sm"
+                    onChange={handleAfterImageChange}
+                  />
+                  {afterPreview && (
+                    <div className="mt-3 position-relative d-inline-block">
                       <img
                         src={afterPreview}
                         alt="Preview"
-                        className="img-fluid rounded-3"
-                        style={{ maxHeight: "180px" }}
+                        className="img-fluid rounded-3 shadow-sm"
+                        style={{ maxHeight: "200px" }}
                       />
-                    ) : (
-                      <div>
-                        <i
-                          className="bi bi-camera-fill text-success"
-                          style={{ fontSize: "2rem" }}
-                        ></i>
-                        <p className="mt-2 mb-0 text-success small fw-bold">
-                          Nhấn hoặc Ctrl+V để dán ảnh hoặc file vào
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                      <button
+                        type="button"
+                        onClick={removeAfterImage}
+                        className="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 mt-2 me-2"
+                        style={{ width: "32px", height: "32px" }}
+                      >
+                        X
+                      </button>
+                    </div>
+                  )}
                 </div>
-                {/* Ô NHẮN CHO SẾP – ĐẸP NHƯ TASKCARD */}
-                <div className="px-3 py-2">
-                  <span className="text-success fw-bold small">feedback:</span>
+
+                {/* UPLOAD FILE HOÀN THÀNH */}
+                <div className="px-4 pb-3">
+                  <label className="form-label text-success fw-bold small">
+                    File hoàn thành (Ấn ctr để chọn nhiều file)
+                  </label>
+                  <input
+                    type="file"
+                    multiple
+                    className="form-control form-control-sm"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png,.jpeg,.zip,.rar"
+                    onChange={handleCompletedFilesChange}
+                  />
+
+                  {completedFiles.length > 0 && (
+                    <div className="mt-3">
+                      <small className="text-success fw-bold d-block mb-2">
+                        Đã chọn {completedFiles.length} file:
+                      </small>
+                      {completedFiles.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="d-flex align-items-center justify-content-between bg-light rounded-3 px-3 py-2 mb-2 border"
+                        >
+                          <div className="d-flex align-items-center gap-3 flex-grow-1 text-truncate">
+                            {item.isImage ? (
+                              <img
+                                src={item.preview}
+                                alt=""
+                                className="rounded"
+                                style={{
+                                  width: "48px",
+                                  height: "48px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            ) : (
+                              <i className="bi bi-file-earmark-text-fill text-primary fs-4"></i>
+                            )}
+                            <div className="text-truncate">
+                              <div
+                                className="small fw-semibold text-success text-truncate"
+                                title={item.name}
+                              >
+                                {item.name}
+                              </div>
+                              <div
+                                className="text-muted"
+                                style={{ fontSize: "0.7rem" }}
+                              >
+                                {(item.size / 1024 / 1024).toFixed(2)} MB
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeFile(idx)}
+                            className="btn btn-sm btn-outline-danger rounded-circle"
+                            style={{ width: "28px", height: "28px" }}
+                          >
+                            X
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* GHI CHÚ */}
+                <div className="px-4 pb-3">
+                  <label className="form-label text-success fw-bold small">
+                    Ghi chú cho sếp
+                  </label>
                   <textarea
-                    className="form-control form-control-sm mt-1"
+                    className="form-control form-control-sm"
                     rows="3"
-                    placeholder="vui lòng nhập feedback..."
+                    placeholder="Nhập lời nhắn (không bắt buộc)..."
                     value={noteToBoss}
                     onChange={(e) => setNoteToBoss(e.target.value)}
-                    style={{ fontSize: "0.85rem" }}
                   />
                 </div>
-                {/* THÔNG TIN + NÚT – Y HỆT TASKCARD */}
-                <div className="mt-auto p-3 pt-2 bg-white border-top">
-                  <div
-                    className="row text-dark mb-3"
-                    style={{ fontSize: "0.8rem" }}
-                  >
+
+                {/* NÚT GỬI */}
+                <div className="p-4 bg-white border-top text-center">
+                  <div className="row g-3">
                     <div className="col-6">
-                      <div className="d-flex align-items-center mb-1">
-                        <strong className="me-1 text-nowrap">
-                          Người giao:
-                        </strong>
-                        <span
-                          className="text-truncate d-inline-block"
-                          style={{ maxWidth: "70px" }}
-                          title={task.assignedBy?.name}
-                        >
-                          {task.assignedBy?.name || "N/A"}
-                        </span>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <strong className="me-1 text-nowrap">Ngày tạo:</strong>
-                        <span className="text-nowrap">
-                          {new Date(task.createdAt).toLocaleDateString("vi-VN")}
-                        </span>
-                      </div>
+                      <button
+                        className="btn btn-outline-secondary w-100 py-2 fw-bold rounded-pill"
+                        onClick={() => navigate(-1)}
+                        disabled={submitting}
+                      >
+                        Quay lại
+                      </button>
                     </div>
                     <div className="col-6">
-                      <div className="d-flex align-items-center mb-1">
-                        <strong className="me-1 text-nowrap">
-                          Người thực hiện:
-                        </strong>
-                        <span
-                          className="text-truncate d-inline-block"
-                          style={{ maxWidth: "70px" }}
-                          title={task.assignee?.name}
-                        >
-                          {task.assignee?.name || "N/A"}
-                        </span>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <strong className="me-1 text-nowrap">Hạn chót:</strong>
-                        <span
-                          className={
-                            task.isOverdue
-                              ? "text-danger fw-bold"
-                              : "text-nowrap"
-                          }
-                        >
-                          {new Date(task.dueDate).toLocaleDateString("vi-VN")}
-                          {task.isOverdue && " (Quá hạn)"}
-                        </span>
-                      </div>
+                      <button
+                        className="btn btn-success w-100 py-2 fw-bold rounded-pill shadow-sm"
+                        onClick={handleSubmit}
+                        disabled={
+                          submitting ||
+                          (!afterImage && completedFiles.length === 0)
+                        }
+                      >
+                        {submitting ? "Đang gửi..." : "GỬI DUYỆT"}
+                      </button>
                     </div>
-                  </div>
-
-                  <div className="d-flex justify-content-center gap-3 mt-3">
-                    <button
-                      className="btn btn-outline-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
-                      onClick={() => navigate(-1)}
-                      disabled={submitting}
-                      style={{ minWidth: "110px" }}
-                    >
-                      Quay lại
-                    </button>
-
-                    <button
-                      className="btn btn-outline-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
-                      onClick={handleSubmit}
-                      disabled={submitting || !afterImage}
-                      style={{ minWidth: "110px" }}
-                    >
-                      {submitting ? "Đang gửi..." : "GỬI"}
-                    </button>
                   </div>
                 </div>
               </div>

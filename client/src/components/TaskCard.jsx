@@ -157,22 +157,15 @@ export default function TaskCard({ task }) {
             </a>
           </div>
         )}
-        {task.completedFile && (
-          <div className="d-flex align-items-center gap-2">
-            <i className="bi bi-file-check text-success"></i>
-            <a
-              href={`http://localhost:5000/uploads/${task.completedFile}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-success small text-decoration-underline"
-            >
-              File hoàn thành:{" "}
-              {task.completedFile.length > 30
-                ? task.completedFile.substring(0, 27) + "..."
-                : task.completedFile}
-            </a>
-          </div>
-        )}
+        {Array.isArray(task.completedFiles) &&
+          task.completedFiles.map((file, idx) => (
+            <div key={idx} className="d-flex align-items-center gap-2">
+              <i className="bi bi-file-check text-success"></i>
+              <a href={`http://localhost:5000/uploads/${file}`} target="_blank">
+                File hoàn thành {idx + 1}: {file}
+              </a>
+            </div>
+          ))}
         {!task.attachedFile && !task.completedFile && (
           <small className="text-muted">Không có file đính kèm</small>
         )}
