@@ -7,7 +7,6 @@ import Footer from "../components/Footer";
 import TaskCard from "../components/TaskCard";
 import api from "../services/api";
 
-// LOẠI BỎ "Need Support"
 const STATUS_FILTERS = [
   { key: "all", label: "all_status", color: "dark" },
   { key: "ongoing", label: "ongoing", color: "warning" },
@@ -44,27 +43,6 @@ export default function Dashboard() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const canAssignTask = ["manager", "a_manager", "leader"].includes(user.role);
 
-  // OVERDUE: SAU 23:59:59 NGÀY dueDate
-  const isOverdue = (dueDate) => {
-    const due = new Date(dueDate);
-    const endOfDay = new Date(
-      due.getFullYear(),
-      due.getMonth(),
-      due.getDate(),
-      23,
-      59,
-      59
-    );
-    return new Date() > endOfDay;
-  };
-
-  const enrichTasksWithOverdue = (tasks) => {
-    return tasks.map((task) => ({
-      ...task,
-      isOverdue: task.status === "ongoing" && isOverdue(task.dueDate),
-    }));
-  };
-
   const loadTasks = async () => {
     setLoading(true);
     try {
@@ -72,8 +50,7 @@ export default function Dashboard() {
       const sorted = res.data.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-      const enriched = enrichTasksWithOverdue(sorted);
-      setTasks(enriched);
+      setTasks(sorted); // ← backend đã có isOverdue rồi!
     } catch (err) {
       alert("Failed to load tasks");
     }
@@ -98,11 +75,11 @@ export default function Dashboard() {
   } else if (statusFilter === "rejected/overdue") {
     filteredTasks = tasks.filter(
       (t) =>
-        // 1. Đã bị reject (có reviewNote + status không phải approved)
+        // 1. Bị reject (có reviewNote + không phải approved)
         (t.reviewNote && t.status !== "approved") ||
-        // 2. Đang ongoing + quá hạn
+        // 2. Đang ongoing nhưng quá hạn → PHẢI HIỆN Ở ĐÂY LUÔN!
         (t.status === "ongoing" && t.isOverdue) ||
-        // 3. Status chính thức là rejected (nếu bạn có thêm status này sau)
+        // 3. Nếu sau này có status "rejected"
         t.status === "rejected"
     );
   } else if (statusFilter !== "all") {

@@ -30,19 +30,19 @@ const taskSchema = new mongoose.Schema(
     // GÓP Ý TỪ DUYỆT
     reviewNote: { type: String, default: null },
     reviewedAt: { type: Date },
-    attachedFile: { type: String }, // File khi giao việc
-    completedFile: { type: String }, // File khi nhân viên nộp
     improveNote: {
       type: String,
       default: null,
     },
+    attachedFiles: [String],
+    completedFiles: [String],
   },
   { timestamps: true }
 );
 
 // VIRTUAL: TỰ ĐỘNG TÍNH QUÁ HẠN
 taskSchema.virtual("isOverdue").get(function () {
-  if (this.status !== "ongoing" && this.status !== "rejected") return false;
+  if (!["ongoing", "processing", "review"].includes(this.status)) return false; // ĐÃ SỬA
   const now = new Date();
   const due = new Date(this.dueDate);
   const endOfDay = new Date(
@@ -58,5 +58,7 @@ taskSchema.virtual("isOverdue").get(function () {
 
 taskSchema.set("toJSON", { virtuals: true });
 taskSchema.set("toObject", { virtuals: true });
-
+taskSchema.index({ dueDate: 1, status: 1 });
+taskSchema.index({ assignee: 1 });
+taskSchema.index({ assignedBy: 1 });
 export default mongoose.model("Task", taskSchema);

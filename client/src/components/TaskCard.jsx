@@ -29,16 +29,16 @@ export default function TaskCard({ task }) {
   };
 
   const getStatusText = () => {
-    if (task.status === "approved") return t("approved");
-    if (task.isOverdue && task.status !== "approved") return "Quá hạn";
-    if (task.reviewNote && task.status !== "approved") return "Không đạt";
+    if (task.status === "approved") return "Hoàn thành";
+    if (task.isOverdue) return "Quá hạn";
+    if (task.reviewNote) return "Không đạt";
     return t(task.status);
   };
 
   const getStatusColor = () => {
     if (task.status === "approved") return "success";
-    if (task.isOverdue) return "danger";
-    if (task.reviewNote) return "danger";
+    if (task.isOverdue) return "danger"; // QUÁ HẠN → ĐỎ LUÔN
+    if (task.reviewNote) return "danger"; // BỊ REJECT → ĐỎ LUÔN
     return STATUS_COLORS[task.status] || "secondary";
   };
 
@@ -69,7 +69,7 @@ export default function TaskCard({ task }) {
           <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
             <ImageDisplay
               imageField={task.beforeImage}
-              attachedFile={task.attachedFile}
+              attachedFile={task.attachedFiles}
               type="before"
             />
           </div>
@@ -138,37 +138,51 @@ export default function TaskCard({ task }) {
       )}
 
       <div className="mx-3 mt-1">
-        <small className="text-muted fw-bold d-block mb-2">
-          File đính kèm:
-        </small>
-        {task.attachedFile && (
-          <div className="d-flex align-items-center gap-2 mb-1">
-            <i className="bi bi-file-earmark-text text-primary"></i>
-            <a
-              href={`http://localhost:5000/uploads/${task.attachedFile}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary small text-decoration-underline"
-            >
-              File yêu cầu:{" "}
-              {task.attachedFile.length > 30
-                ? task.attachedFile.substring(0, 27) + "..."
-                : task.attachedFile}
-            </a>
-          </div>
-        )}
-        {Array.isArray(task.completedFiles) &&
-          task.completedFiles.map((file, idx) => (
-            <div key={idx} className="d-flex align-items-center gap-2">
-              <i className="bi bi-file-check text-success"></i>
-              <a href={`http://localhost:5000/uploads/${file}`} target="_blank">
-                File hoàn thành {idx + 1}: {file}
-              </a>
+        {/* File khi giao việc */}
+        {task.attachedFiles &&
+          Array.isArray(task.attachedFiles) &&
+          task.attachedFiles.length > 0 && (
+            <div className="mb-2">
+              <small className="text-muted d-block">File yêu cầu:</small>
+              {task.attachedFiles.map((file, idx) => (
+                <div key={idx} className="d-flex align-items-center gap-2 mb-1">
+                  <i className="bi bi-file-earmark-text text-primary"></i>
+                  <a
+                    href={`http://localhost:5000/uploads/${file}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary small text-decoration-underline text-truncate d-inline-block"
+                    style={{ maxWidth: "200px" }}
+                  >
+                    File {idx + 1}: {file}
+                  </a>
+                </div>
+              ))}
             </div>
-          ))}
-        {!task.attachedFile && !task.completedFile && (
-          <small className="text-muted">Không có file đính kèm</small>
-        )}
+          )}
+
+        {task.completedFiles &&
+          Array.isArray(task.completedFiles) &&
+          task.completedFiles.length > 0 && (
+            <div>
+              <small className="text-success fw-bold d-block mb-1">
+                File hoàn thành:
+              </small>
+              {task.completedFiles.map((file, idx) => (
+                <div key={idx} className="d-flex align-items-center gap-2">
+                  <i className="bi bi-file-check text-success"></i>
+                  <a
+                    href={`http://localhost:5000/uploads/${file}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-success small text-decoration-underline"
+                  >
+                    File {idx + 1}: {file}
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
       </div>
 
       {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}

@@ -1,4 +1,4 @@
-// client/src/pages/ReviewTask.jsx – PHIÊN BẢN HOÀN CHỈNH 2025
+// client/src/pages/ReviewTask.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -109,7 +109,7 @@ export default function ReviewTask() {
                     <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
                       <ImageDisplay
                         imageField={task.beforeImage}
-                        attachedFile={task.attachedFile}
+                        attachedFile={task.attachedFiles}
                         type="before"
                       />
                     </div>
@@ -129,11 +129,26 @@ export default function ReviewTask() {
 
                 {/* MÔ TẢ */}
                 <div className="px-4 py-3">
-                  <span className="text-primary fw-bold small d-block mb-1">
-                    Mô tả công việc:
-                  </span>
-                  <p className="text-primary mb-0 small lh-lg">
-                    {task.description || "Không có mô tả"}
+                  <div>
+                    <span className="text-primary fw-bold small">
+                      Mô tả công việc:
+                    </span>
+                  </div>
+                  <p
+                    className="text-primary mb-0"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      lineHeight: "1.4em",
+                      height: "2.8em",
+                      fontSize: "0.9rem",
+                      fontWeight: "500",
+                    }}
+                    title={task.description}
+                  >
+                    {task.description || "No description"}
                   </p>
                 </div>
 
@@ -149,48 +164,60 @@ export default function ReviewTask() {
                   </div>
                 )}
 
-                {/* FILE ĐÍNH KÈM */}
-                <div className="px-4 py-3 bg-light border-top border-bottom">
-                  <small className="text-muted fw-bold d-block mb-2">
-                    File đính kèm:
-                  </small>
-
-                  {task.attachedFile && (
-                    <div className="d-flex align-items-center gap-2 mb-2">
-                      <i className="bi bi-file-earmark-text text-primary fs-5"></i>
-                      <a
-                        href={`http://localhost:5000/uploads/${task.attachedFile}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary text-decoration-underline fw-medium small"
-                      >
-                        File yêu cầu:{" "}
-                        {task.attachedFile.length > 35
-                          ? task.attachedFile.substring(0, 32) + "..."
-                          : task.attachedFile}
-                      </a>
-                    </div>
-                  )}
-
-                  {Array.isArray(task.completedFiles) &&
-                    task.completedFiles.map((file, idx) => (
-                      <div
-                        key={idx}
-                        className="d-flex align-items-center gap-2"
-                      >
-                        <i className="bi bi-file-check text-success"></i>
-                        <a
-                          href={`http://localhost:5000/uploads/${file}`}
-                          target="_blank"
-                        >
-                          File hoàn thành {idx + 1}: {file}
-                        </a>
+                <div className="mx-3 mt-1">
+                  {/* File khi giao việc */}
+                  {task.attachedFiles &&
+                    Array.isArray(task.attachedFiles) &&
+                    task.attachedFiles.length > 0 && (
+                      <div className="mb-3">
+                        <small className="text-muted d-block">
+                          File yêu cầu:
+                        </small>
+                        {task.attachedFiles.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="d-flex align-items-center gap-2 mb-1"
+                          >
+                            <i className="bi bi-file-earmark-text text-primary"></i>
+                            <a
+                              href={`http://localhost:5000/uploads/${file}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary small text-decoration-underline"
+                            >
+                              File {idx + 1}: {file}
+                            </a>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
 
-                  {!task.attachedFile && !task.completedFile && (
-                    <small className="text-muted">Không có file đính kèm</small>
-                  )}
+                  {/* File hoàn thành */}
+                  {task.completedFiles &&
+                    Array.isArray(task.completedFiles) &&
+                    task.completedFiles.length > 0 && (
+                      <div className="mb-3">
+                        <small className="text-success fw-bold d-block mb-1">
+                          File hoàn thành:
+                        </small>
+                        {task.completedFiles.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="d-flex align-items-center gap-2"
+                          >
+                            <i className="bi bi-file-check text-success"></i>
+                            <a
+                              href={`http://localhost:5000/uploads/${file}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-success small text-decoration-underline"
+                            >
+                              File {idx + 1}: {file}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                 </div>
 
                 {/* GHI CHÚ (TỰ DO NHẬP) */}

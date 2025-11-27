@@ -90,10 +90,10 @@ export default function TaskDetail() {
                 {/* // Ảnh TRƯỚC */}
                 <div className="row g-3 px-4 pt-3">
                   <div className="col-6 position-relative">
-                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
+                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
                       <ImageDisplay
                         imageField={task.beforeImage}
-                        attachedFile={task.attachedFile}
+                        attachedFile={task.attachedFiles}
                         type="before"
                       />
                     </div>
@@ -103,7 +103,7 @@ export default function TaskDetail() {
                   </div>
                   {/* // Ảnh SAU */}
                   <div className="col-6 position-relative">
-                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light">
+                    <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
                       <ImageDisplay imageField={task.afterImage} type="after" />
                     </div>
                     <div className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold small">
@@ -155,39 +155,60 @@ export default function TaskDetail() {
                   </div>
                 )}
                 {/* FILE */}
-                <div className="px-4 py-3">
-                  <small className="text-muted fw-bold d-block mb-2">
-                    File đính kèm:
-                  </small>
-                  {task.attachedFile && (
-                    <div className="d-flex align-items-center gap-2 mb-1">
-                      <i className="bi bi-file-earmark-text text-primary"></i>
-                      <a
-                        href={`http://localhost:5000/uploads/${task.attachedFile}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary small text-decoration-underline text-truncate d-block"
-                        style={{ maxWidth: "280px" }}
-                      >
-                        File yêu cầu: {task.attachedFile}
-                      </a>
-                    </div>
-                  )}
-                  {Array.isArray(task.completedFiles) &&
-                    task.completedFiles.map((file, idx) => (
-                      <div
-                        key={idx}
-                        className="d-flex align-items-center gap-2"
-                      >
-                        <i className="bi bi-file-check text-success"></i>
-                        <a
-                          href={`http://localhost:5000/uploads/${file}`}
-                          target="_blank"
-                        >
-                          File hoàn thành {idx + 1}: {file}
-                        </a>
+                <div className="mx-3 mt-1">
+                  {/* File khi giao việc */}
+                  {task.attachedFiles &&
+                    Array.isArray(task.attachedFiles) &&
+                    task.attachedFiles.length > 0 && (
+                      <div className="mb-3">
+                        <small className="text-muted d-block">
+                          File yêu cầu:
+                        </small>
+                        {task.attachedFiles.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="d-flex align-items-center gap-2 mb-1"
+                          >
+                            <i className="bi bi-file-earmark-text text-primary"></i>
+                            <a
+                              href={`http://localhost:5000/uploads/${file}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary small text-decoration-underline"
+                            >
+                              File {idx + 1}: {file}
+                            </a>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
+
+                  {/* File hoàn thành */}
+                  {task.completedFiles &&
+                    Array.isArray(task.completedFiles) &&
+                    task.completedFiles.length > 0 && (
+                      <div className="mb-3">
+                        <small className="text-success fw-bold d-block mb-1">
+                          File hoàn thành:
+                        </small>
+                        {task.completedFiles.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="d-flex align-items-center gap-2"
+                          >
+                            <i className="bi bi-file-check text-success"></i>
+                            <a
+                              href={`http://localhost:5000/uploads/${file}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-success small text-decoration-underline"
+                            >
+                              File {idx + 1}: {file}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                 </div>
                 {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}
                 {task.reviewNote && (
@@ -264,7 +285,7 @@ export default function TaskDetail() {
 
                     {["ongoing", "rejected"].includes(task.status) && (
                       <button
-                        className="btn btn-outline-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                        className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                         onClick={() => navigate(`/improve/${task._id}`)}
                         style={{ minWidth: "110px" }}
                       >

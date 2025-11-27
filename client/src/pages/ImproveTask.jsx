@@ -1,4 +1,4 @@
-// client/src/pages/ImproveTask.jsx – PHIÊN BẢN HOÀN HẢO NHẤT, ĐẸP NHƯ TASKCARD, KHÔNG BẮT BUỘC ẢNH
+// client/src/pages/ImproveTask.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../services/api";
@@ -88,7 +88,7 @@ export default function ImproveTask() {
 
     if (afterImage) formData.append("afterImage", afterImage);
     completedFiles.forEach((item) =>
-      formData.append("completedFiles", item.file)
+      formData.append("completedFile", item.file)
     );
     if (noteToBoss.trim()) formData.append("improveNote", noteToBoss.trim());
 
@@ -139,12 +139,12 @@ export default function ImproveTask() {
                 </div>
 
                 {/* ẢNH TRƯỚC - SAU */}
-                <div className="row g-3 px-4 pt-3">
+                <div className="row g-2 px-3 pt-2">
                   <div className="col-6 position-relative">
                     <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
                       <ImageDisplay
                         imageField={task.beforeImage}
-                        attachedFile={task.attachedFile}
+                        attachedFile={task.attachedFiles}
                         type="before"
                       />
                     </div>
@@ -174,8 +174,26 @@ export default function ImproveTask() {
 
                 {/* MÔ TẢ + LÝ DO KHÔNG ĐẠT */}
                 <div className="px-4 py-3">
-                  <p className="text-primary small mb-2">
-                    <strong>Mô tả:</strong> {task.description}
+                  <div>
+                    <span className="text-primary fw-bold small">
+                      Mô tả công việc:
+                    </span>
+                  </div>
+                  <p
+                    className="text-primary mb-0"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      lineHeight: "1.4em",
+                      height: "2.8em",
+                      fontSize: "0.9rem",
+                      fontWeight: "500",
+                    }}
+                    title={task.description}
+                  >
+                    {task.description || "No description"}
                   </p>
                   {task.reviewNote && (
                     <div className="alert alert-danger py-2 px-3 small rounded-3 border-0">
@@ -186,8 +204,8 @@ export default function ImproveTask() {
 
                 {/* UPLOAD ẢNH SAU (KHÔNG BẮT BUỘC) */}
                 <div className="px-4 pb-3">
-                  <label className="form-label text-success fw-bold small">
-                    Ảnh sau khi cải thiện (không bắt buộc)
+                  <label className="form-label text-dark fw-bold small">
+                    After images
                   </label>
                   <input
                     type="file"
@@ -217,7 +235,7 @@ export default function ImproveTask() {
 
                 {/* UPLOAD FILE HOÀN THÀNH */}
                 <div className="px-4 pb-3">
-                  <label className="form-label text-success fw-bold small">
+                  <label className="form-label text-dark fw-bold small">
                     File hoàn thành (Ấn ctr để chọn nhiều file)
                   </label>
                   <input
@@ -284,8 +302,8 @@ export default function ImproveTask() {
 
                 {/* GHI CHÚ */}
                 <div className="px-4 pb-3">
-                  <label className="form-label text-success fw-bold small">
-                    Ghi chú cho sếp
+                  <label className="form-label text-dark fw-bold small">
+                    Feedback
                   </label>
                   <textarea
                     className="form-control form-control-sm"
@@ -297,11 +315,11 @@ export default function ImproveTask() {
                 </div>
 
                 {/* NÚT GỬI */}
-                <div className="p-4 bg-white border-top text-center">
+                <div className="p-4 bg-white justify-content-center border-top text-center">
                   <div className="row g-3">
                     <div className="col-6">
                       <button
-                        className="btn btn-outline-secondary w-100 py-2 fw-bold rounded-pill"
+                        className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                         onClick={() => navigate(-1)}
                         disabled={submitting}
                       >
@@ -310,7 +328,7 @@ export default function ImproveTask() {
                     </div>
                     <div className="col-6">
                       <button
-                        className="btn btn-success w-100 py-2 fw-bold rounded-pill shadow-sm"
+                        className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                         onClick={handleSubmit}
                         disabled={
                           submitting ||
