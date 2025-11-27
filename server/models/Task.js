@@ -34,8 +34,18 @@ const taskSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    attachedFiles: [String],
-    completedFiles: [String],
+    attachedFiles: [
+      {
+        original: String,
+        stored: String,
+      },
+    ],
+    completedFiles: [
+      {
+        original: String,
+        stored: String,
+      },
+    ],
   },
   { timestamps: true }
 );

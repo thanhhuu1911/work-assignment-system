@@ -292,7 +292,7 @@ export default function NewIssue() {
                         onChange={handleBeforeImageChange}
                       />
                       {beforePreview && (
-                        <div className="mt-4 d-flex justify-content-center">
+                        <div className="mt-3 d-flex justify-content-center">
                           <div className="position-relative">
                             <img
                               src={beforePreview}
@@ -320,7 +320,7 @@ export default function NewIssue() {
                     {/* FILE ĐÍNH KÈM – NHẤN LÀ MỞ TAB MỚI */}
                     <div className="mt-2">
                       <label className="form-label small fw-semibold text-dark">
-                        File
+                        File (Ctrl để chọn nhiều file)
                       </label>
                       <input
                         type="file"
@@ -416,7 +416,7 @@ export default function NewIssue() {
                         type="submit"
                         className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                       >
-                        GIAO VIỆC
+                        Giao việc
                       </button>
                     </div>
                   </form>

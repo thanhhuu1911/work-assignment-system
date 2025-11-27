@@ -7,8 +7,18 @@ const storage = multer.diskStorage({
     cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+    // TẠO TÊN MỚI = TÊN GỐC + TIMESTAMP + EXT
+    const ext = path.extname(file.originalname);
+    const baseName = path.basename(file.originalname, ext);
+    // Làm sạch tên file (loại bỏ ký tự đặc biệt nếu cần)
+    const cleanName = baseName.replace(/[^a-zA-Z0-9_-]/g, "_");
+    const uniqueName = `${cleanName}-${Date.now()}${ext}`;
+
+    // LƯU TÊN GỐC VÀO FILE OBJECT ĐỂ DÙNG SAU
+    file.displayName = file.originalname;
+    file.storedName = uniqueName;
+
+    cb(null, uniqueName);
   },
 });
 

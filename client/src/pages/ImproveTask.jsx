@@ -214,7 +214,7 @@ export default function ImproveTask() {
                     onChange={handleAfterImageChange}
                   />
                   {afterPreview && (
-                    <div className="mt-3 position-relative d-inline-block">
+                    <div className="mt-3 position-relative d-flex justify-content-center">
                       <img
                         src={afterPreview}
                         alt="Preview"
@@ -236,7 +236,7 @@ export default function ImproveTask() {
                 {/* UPLOAD FILE HOÀN THÀNH */}
                 <div className="px-4 pb-3">
                   <label className="form-label text-dark fw-bold small">
-                    File hoàn thành (Ấn ctr để chọn nhiều file)
+                    File hoàn thành (ctrl để chọn nhiều file)
                   </label>
                   <input
                     type="file"
@@ -289,7 +289,7 @@ export default function ImproveTask() {
                           <button
                             type="button"
                             onClick={() => removeFile(idx)}
-                            className="btn btn-sm btn-outline-danger rounded-circle"
+                            className="btn btn-sm btn-danger rounded-circle"
                             style={{ width: "28px", height: "28px" }}
                           >
                             X
@@ -315,30 +315,24 @@ export default function ImproveTask() {
                 </div>
 
                 {/* NÚT GỬI */}
-                <div className="p-4 bg-white justify-content-center border-top text-center">
-                  <div className="row g-3">
-                    <div className="col-6">
-                      <button
-                        className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
-                        onClick={() => navigate(-1)}
-                        disabled={submitting}
-                      >
-                        Quay lại
-                      </button>
-                    </div>
-                    <div className="col-6">
-                      <button
-                        className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
-                        onClick={handleSubmit}
-                        disabled={
-                          submitting ||
-                          (!afterImage && completedFiles.length === 0)
-                        }
-                      >
-                        {submitting ? "Đang gửi..." : "GỬI DUYỆT"}
-                      </button>
-                    </div>
-                  </div>
+                <div className="d-flex justify-content-center gap-4 mb-3">
+                  <button
+                    className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                    onClick={() => navigate(-1)}
+                    disabled={submitting}
+                  >
+                    Quay lại
+                  </button>
+
+                  <button
+                    className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                    onClick={handleSubmit}
+                    disabled={
+                      submitting || (!afterImage && completedFiles.length === 0)
+                    }
+                  >
+                    {submitting ? "Đang gửi..." : "Gửi duyệt"}
+                  </button>
                 </div>
               </div>
             </div>

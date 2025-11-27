@@ -231,14 +231,14 @@ export default function Dashboard() {
             <div className="ms-auto d-flex gap-2">
               {canAssignTask && (
                 <button
-                  className="btn btn-primary px-4"
+                  className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                   onClick={() => navigate("/new-issue")}
                 >
                   {t("create_task")}
                 </button>
               )}
               <button
-                className="btn btn-primary px-4"
+                className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                 onClick={() => {
                   // reset các filter về mặc định
                   setStatusFilter("all");

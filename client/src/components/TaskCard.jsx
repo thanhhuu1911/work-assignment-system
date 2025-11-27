@@ -28,17 +28,29 @@ export default function TaskCard({ task }) {
     return false;
   };
 
+  const getFileName = (file) => {
+    if (!file) return "File";
+    if (typeof file === "string") return file;
+    return file.original || "File không tên";
+  };
+
+  const getFilePath = (file) => {
+    if (!file) return "#";
+    if (typeof file === "string") return file;
+    return file.stored || file;
+  };
+
   const getStatusText = () => {
     if (task.status === "approved") return "Hoàn thành";
     if (task.isOverdue) return "Quá hạn";
-    if (task.reviewNote) return "Không đạt";
+    if (task.status === "rejected" && task.reviewNote) return "Không đạt"; // ← CHỈ KHI REJECTED MỚI HIỆN "KHÔNG ĐẠT"
     return t(task.status);
   };
 
   const getStatusColor = () => {
     if (task.status === "approved") return "success";
-    if (task.isOverdue) return "danger"; // QUÁ HẠN → ĐỎ LUÔN
-    if (task.reviewNote) return "danger"; // BỊ REJECT → ĐỎ LUÔN
+    if (task.isOverdue) return "danger";
+    if (task.status === "rejected") return "danger"; // ← CHỈ KHI REJECTED MỚI ĐỎ
     return STATUS_COLORS[task.status] || "secondary";
   };
 
@@ -95,7 +107,7 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
-      <div className="px-3  flex-shrink-0">
+      <div className="px-2  flex-shrink-0">
         <div>
           <span className="text-primary fw-bold small">Mô tả công việc:</span>
         </div>
@@ -117,44 +129,25 @@ export default function TaskCard({ task }) {
         </p>
       </div>
 
-      {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
-      {task.improveNote && (
-        <div className="mx-1  px-1">
-          <div className="d-flex align-items-start gap-2">
-            <i className="bi bi-chat-dots-fill text-primary"></i>
-            <div className="flex-grow-1">
-              <small className="text-primary fw-bold d-block">
-                {task.assignee?.name || "Nhân viên"} đã nhắn:
-              </small>
-              <p
-                className="mb-0 text-primary small lh-sm"
-                style={{ fontStyle: "italic" }}
-              >
-                “{task.improveNote}”
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="mx-3 mt-1">
-        {/* File khi giao việc */}
+      {/* <div className="mx-2 mt-1">
+        
         {task.attachedFiles &&
           Array.isArray(task.attachedFiles) &&
           task.attachedFiles.length > 0 && (
             <div className="mb-2">
-              <small className="text-muted d-block">File yêu cầu:</small>
+              <small className="text-dark fw-bold d-block">File yêu cầu:</small>
               {task.attachedFiles.map((file, idx) => (
                 <div key={idx} className="d-flex align-items-center gap-2 mb-1">
                   <i className="bi bi-file-earmark-text text-primary"></i>
                   <a
-                    href={`http://localhost:5000/uploads/${file}`}
+                    href={`http://localhost:5000/uploads/${getFilePath(file)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-primary small text-decoration-underline text-truncate d-inline-block"
                     style={{ maxWidth: "200px" }}
+                    title={getFileName(file)}
                   >
-                    File {idx + 1}: {file}
+                    {getFileName(file)}
                   </a>
                 </div>
               ))}
@@ -172,38 +165,55 @@ export default function TaskCard({ task }) {
                 <div key={idx} className="d-flex align-items-center gap-2">
                   <i className="bi bi-file-check text-success"></i>
                   <a
-                    href={`http://localhost:5000/uploads/${file}`}
+                    href={`http://localhost:5000/uploads/${getFilePath(file)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-success small text-decoration-underline"
+                    className="text-success small text-decoration-underline text-truncate"
+                    title={getFileName(file)}
                   >
-                    File {idx + 1}: {file}
+                    {getFileName(file)}
                   </a>
                 </div>
               ))}
             </div>
           )}
-      </div>
+      </div> */}
 
-      {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}
+      {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
+      {task.improveNote && (
+        <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
+          <div className="d-flex align-items-start gap-2">
+            <i className="bi bi-chat-dots-fill text-primary"></i>
+            <div className="flex-grow-1">
+              <small className="text-primary fw-bold d-block">
+                {task.assignee?.name || "Nhân viên"} đã nhắn:
+              </small>
+              <p
+                className="mb-0 text-primary small lh-sm"
+                style={{ fontStyle: "italic" }}
+              >
+                “{task.improveNote}”
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* GHI CHÚ DUYỆT – HIỆN LUÔN KHI CÓ reviewNote, DÙ ĐÃ APPROVED HAY REJECTED */}
       {task.reviewNote && (
-        <div
-          className={`mx-2 mt-1 p-1 rounded-3 border ${
-            task.status === "approved"
-              ? "bg-primary bg-opacity-10 border-primary"
-              : "bg-danger bg-opacity-10 border-danger"
-          }`}
-        >
+        <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
           <small
             className={`fw-bold d-block ${
-              task.status === "approved" ? "text-primary" : "text-danger"
+              task.status === "approved" ? "text-success" : "text-danger"
             }`}
           >
-            {task.status === "approved" ? "Ghi chú:" : "Lý do không đạt:"}
+            {task.status === "approved"
+              ? "Ghi chú từ sếp:"
+              : "Lý do không đạt:"}
           </small>
           <p
             className={`mb-0 small lh-sm ${
-              task.status === "approved" ? "text-primary" : "text-danger"
+              task.status === "approved" ? "text-success" : "text-danger"
             } fst-italic`}
           >
             “{task.reviewNote}”
@@ -251,24 +261,25 @@ export default function TaskCard({ task }) {
           </div>
         </div>
 
-        <div className="d-flex gap-2">
+        <div className="d-flex justify-content-center gap-2">
           <button
-            className="btn btn-outline-primary btn-sm flex-fill py-2 fw-bold"
+            className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
             onClick={() => navigate(`/task/${task._id}`)}
           >
             {t("view_detail")}
           </button>
-          {["ongoing", "processing", "review"].includes(task.status) && (
-            <button
-              className="btn btn-outline-success btn-sm flex-fill py-2 fw-bold"
-              onClick={() => navigate(`/improve/${task._id}`)}
-            >
-              {t("improve")}
-            </button>
-          )}
+          {!task.isOverdue &&
+            ["ongoing", "processing", "review"].includes(task.status) && (
+              <button
+                className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                onClick={() => navigate(`/improve/${task._id}`)}
+              >
+                {t("improve")}
+              </button>
+            )}
           {canReview && task.status === "review" && (
             <button
-              className="btn btn-info btn-sm flex-fill py-2 text-white fw-bold"
+              className="btn btn-info btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm text-white"
               onClick={() => navigate(`/review/${task._id}`)}
             >
               {t("review")}

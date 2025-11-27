@@ -63,6 +63,18 @@ export default function TaskDetail() {
     rejected: { color: "bg-danger", text: "Không đạt" },
   }[task.status] || { color: "bg-secondary", text: task.status };
 
+  const getFileName = (file) => {
+    if (!file) return "File";
+    if (typeof file === "string") return file;
+    return file.original || "File không tên";
+  };
+
+  const getFilePath = (file) => {
+    if (!file) return "#";
+    if (typeof file === "string") return file;
+    return file.stored || file;
+  };
+
   return (
     <div className="d-flex flex-column min-vh-100 bg-light">
       <Header />
@@ -135,9 +147,73 @@ export default function TaskDetail() {
                     {task.description || "No description"}
                   </p>
                 </div>
-                {/* LỜI NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – DÁN NGAY ĐÂY */}
+
+                <div className="mx-2 mt-1">
+                  {/* File khi giao việc */}
+                  {task.attachedFiles &&
+                    Array.isArray(task.attachedFiles) &&
+                    task.attachedFiles.length > 0 && (
+                      <div className="mb-2">
+                        <small className="text-dark fw-bold d-block">
+                          File yêu cầu:
+                        </small>
+                        {task.attachedFiles.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="d-flex align-items-center gap-2 mb-1"
+                          >
+                            <i className="bi bi-file-earmark-text text-primary"></i>
+                            <a
+                              href={`http://localhost:5000/uploads/${getFilePath(
+                                file
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary small text-decoration-underline text-truncate d-inline-block"
+                              style={{ maxWidth: "200px" }}
+                              title={getFileName(file)}
+                            >
+                              {getFileName(file)}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                  {/* File hoàn thành */}
+                  {task.completedFiles &&
+                    Array.isArray(task.completedFiles) &&
+                    task.completedFiles.length > 0 && (
+                      <div>
+                        <small className="text-success fw-bold d-block mb-1">
+                          File hoàn thành:
+                        </small>
+                        {task.completedFiles.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="d-flex align-items-center gap-2"
+                          >
+                            <i className="bi bi-file-check text-success"></i>
+                            <a
+                              href={`http://localhost:5000/uploads/${getFilePath(
+                                file
+                              )}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-success small text-decoration-underline text-truncate"
+                              title={getFileName(file)}
+                            >
+                              {getFileName(file)}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                </div>
+
+                {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
                 {task.improveNote && (
-                  <div className="mx-1  px-1">
+                  <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
                     <div className="d-flex align-items-start gap-2">
                       <i className="bi bi-chat-dots-fill text-primary"></i>
                       <div className="flex-grow-1">
@@ -154,86 +230,25 @@ export default function TaskDetail() {
                     </div>
                   </div>
                 )}
-                {/* FILE */}
-                <div className="mx-3 mt-1">
-                  {/* File khi giao việc */}
-                  {task.attachedFiles &&
-                    Array.isArray(task.attachedFiles) &&
-                    task.attachedFiles.length > 0 && (
-                      <div className="mb-3">
-                        <small className="text-muted d-block">
-                          File yêu cầu:
-                        </small>
-                        {task.attachedFiles.map((file, idx) => (
-                          <div
-                            key={idx}
-                            className="d-flex align-items-center gap-2 mb-1"
-                          >
-                            <i className="bi bi-file-earmark-text text-primary"></i>
-                            <a
-                              href={`http://localhost:5000/uploads/${file}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary small text-decoration-underline"
-                            >
-                              File {idx + 1}: {file}
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    )}
 
-                  {/* File hoàn thành */}
-                  {task.completedFiles &&
-                    Array.isArray(task.completedFiles) &&
-                    task.completedFiles.length > 0 && (
-                      <div className="mb-3">
-                        <small className="text-success fw-bold d-block mb-1">
-                          File hoàn thành:
-                        </small>
-                        {task.completedFiles.map((file, idx) => (
-                          <div
-                            key={idx}
-                            className="d-flex align-items-center gap-2"
-                          >
-                            <i className="bi bi-file-check text-success"></i>
-                            <a
-                              href={`http://localhost:5000/uploads/${file}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-success small text-decoration-underline"
-                            >
-                              File {idx + 1}: {file}
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                </div>
-                {/* LÝ DO KHÔNG ĐẠT – NẰM DƯỚI TIN NHẮN, ĐỎ RÕ RÀNG */}
+                {/* GHI CHÚ DUYỆT – HIỆN LUÔN KHI CÓ reviewNote, DÙ ĐÃ APPROVED HAY REJECTED */}
                 {task.reviewNote && (
-                  <div
-                    className={`mx-2 mt-1 p-1 rounded-3 border ${
-                      task.status === "approved"
-                        ? "bg-primary bg-opacity-10 border-primary"
-                        : "bg-danger bg-opacity-10 border-danger"
-                    }`}
-                  >
+                  <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
                     <small
                       className={`fw-bold d-block ${
                         task.status === "approved"
-                          ? "text-primary"
+                          ? "text-success"
                           : "text-danger"
                       }`}
                     >
                       {task.status === "approved"
-                        ? "Ghi chú:"
+                        ? "Ghi chú từ sếp:"
                         : "Lý do không đạt:"}
                     </small>
                     <p
                       className={`mb-0 small lh-sm ${
                         task.status === "approved"
-                          ? "text-primary"
+                          ? "text-success"
                           : "text-danger"
                       } fst-italic`}
                     >

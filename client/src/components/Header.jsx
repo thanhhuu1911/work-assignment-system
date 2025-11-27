@@ -16,7 +16,7 @@ export default function Header() {
       a_manager: "A.Manager",
       manager: "Manager",
     };
-    return roleMap[role] || "Staff";
+    return roleMap[role] || "member";
   };
 
   const handleLogout = () => {

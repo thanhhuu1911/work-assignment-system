@@ -38,6 +38,18 @@ export default function ReviewTask() {
     fetchTask();
   }, [id, navigate]);
 
+  const getFileName = (file) => {
+    if (!file) return "File";
+    if (typeof file === "string") return file;
+    return file.original || "File không tên";
+  };
+
+  const getFilePath = (file) => {
+    if (!file) return "#";
+    if (typeof file === "string") return file;
+    return file.stored || file;
+  };
+
   const handleAction = async (action) => {
     // Chỉ kiểm tra bắt buộc khi TỪ CHỐI
     if (action === "reject" && !note.trim()) {
@@ -128,7 +140,7 @@ export default function ReviewTask() {
                 </div>
 
                 {/* MÔ TẢ */}
-                <div className="px-4 py-3">
+                <div className="px-2 py-2">
                   <div>
                     <span className="text-primary fw-bold small">
                       Mô tả công việc:
@@ -152,25 +164,13 @@ export default function ReviewTask() {
                   </p>
                 </div>
 
-                {/* TIN NHẮN CẢI THIỆN */}
-                {task.improveNote && (
-                  <div className="mx-4 my-2 p-3 bg-primary bg-opacity-10 rounded-3">
-                    <small className="text-primary fw-bold d-block">
-                      {task.assignee?.name} đã nhắn:
-                    </small>
-                    <p className="text-primary mb-0 fst-italic ms-3">
-                      “{task.improveNote}”
-                    </p>
-                  </div>
-                )}
-
-                <div className="mx-3 mt-1">
+                <div className="mx-2 mt-0">
                   {/* File khi giao việc */}
                   {task.attachedFiles &&
                     Array.isArray(task.attachedFiles) &&
                     task.attachedFiles.length > 0 && (
-                      <div className="mb-3">
-                        <small className="text-muted d-block">
+                      <div className="mb-2">
+                        <small className="text-dark fw-bold d-block">
                           File yêu cầu:
                         </small>
                         {task.attachedFiles.map((file, idx) => (
@@ -180,12 +180,16 @@ export default function ReviewTask() {
                           >
                             <i className="bi bi-file-earmark-text text-primary"></i>
                             <a
-                              href={`http://localhost:5000/uploads/${file}`}
+                              href={`http://localhost:5000/uploads/${getFilePath(
+                                file
+                              )}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-primary small text-decoration-underline"
+                              className="text-primary small text-decoration-underline text-truncate d-inline-block"
+                              style={{ maxWidth: "200px" }}
+                              title={getFileName(file)}
                             >
-                              File {idx + 1}: {file}
+                              {getFileName(file)}
                             </a>
                           </div>
                         ))}
@@ -196,7 +200,7 @@ export default function ReviewTask() {
                   {task.completedFiles &&
                     Array.isArray(task.completedFiles) &&
                     task.completedFiles.length > 0 && (
-                      <div className="mb-3">
+                      <div>
                         <small className="text-success fw-bold d-block mb-1">
                           File hoàn thành:
                         </small>
@@ -207,18 +211,67 @@ export default function ReviewTask() {
                           >
                             <i className="bi bi-file-check text-success"></i>
                             <a
-                              href={`http://localhost:5000/uploads/${file}`}
+                              href={`http://localhost:5000/uploads/${getFilePath(
+                                file
+                              )}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-success small text-decoration-underline"
+                              className="text-success small text-decoration-underline text-truncate"
+                              title={getFileName(file)}
                             >
-                              File {idx + 1}: {file}
+                              {getFileName(file)}
                             </a>
                           </div>
                         ))}
                       </div>
                     )}
                 </div>
+
+                {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
+                {task.improveNote && (
+                  <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
+                    <div className="d-flex align-items-start gap-2">
+                      <i className="bi bi-chat-dots-fill text-primary"></i>
+                      <div className="flex-grow-1">
+                        <small className="text-primary fw-bold d-block">
+                          {task.assignee?.name || "Nhân viên"} đã nhắn:
+                        </small>
+                        <p
+                          className="mb-0 text-primary small lh-sm"
+                          style={{ fontStyle: "italic" }}
+                        >
+                          “{task.improveNote}”
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* GHI CHÚ DUYỆT – HIỆN LUÔN KHI CÓ reviewNote, DÙ ĐÃ APPROVED HAY REJECTED */}
+                {task.reviewNote && (
+                  <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
+                    <small
+                      className={`fw-bold d-block ${
+                        task.status === "approved"
+                          ? "text-success"
+                          : "text-danger"
+                      }`}
+                    >
+                      {task.status === "approved"
+                        ? "Ghi chú từ sếp:"
+                        : "Lý do không đạt:"}
+                    </small>
+                    <p
+                      className={`mb-0 small lh-sm ${
+                        task.status === "approved"
+                          ? "text-success"
+                          : "text-danger"
+                      } fst-italic`}
+                    >
+                      “{task.reviewNote}”
+                    </p>
+                  </div>
+                )}
 
                 {/* GHI CHÚ (TỰ DO NHẬP) */}
                 <div className="px-4 py-3 border-top">
@@ -248,7 +301,7 @@ export default function ReviewTask() {
                 {/* NÚT HÀNH ĐỘNG – CÓ "QUAY LẠI" */}
                 <div className="p-4 bg-white border-top d-flex justify-content-center gap-3">
                   <button
-                    className="btn btn-outline-primary px-4 py-2 fw-bold rounded-pill shadow-sm"
+                    className="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm"
                     onClick={() => navigate(-1)}
                     disabled={!!submitting}
                   >
@@ -256,19 +309,19 @@ export default function ReviewTask() {
                   </button>
 
                   <button
-                    className="btn btn-outline-success px-5 py-2 fw-bold rounded-pill shadow-sm"
+                    className="btn btn-success px-4 py-2 fw-bold rounded-pill shadow-sm"
                     onClick={() => handleAction("approve")}
                     disabled={!!submitting}
                   >
-                    {submitting === "approve" ? "Đang duyệt..." : "DUYỆT"}
+                    {submitting === "approve" ? "Đang duyệt..." : "Duyệt"}
                   </button>
 
                   <button
-                    className="btn btn-outline-danger px-5 py-2 fw-bold rounded-pill shadow-sm"
+                    className="btn btn-danger px-4 py-2 fw-bold rounded-pill shadow-sm"
                     onClick={() => handleAction("reject")}
                     disabled={!!submitting}
                   >
-                    {submitting === "reject" ? "Đang xử lý..." : "TỪ CHỐI"}
+                    {submitting === "reject" ? "Đang xử lý..." : "Từ chối"}
                   </button>
                 </div>
               </div>

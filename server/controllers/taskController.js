@@ -26,8 +26,16 @@ export const createTask = async (req, res) => {
       // Xử lý nhiều file đính kèm khi tạo task
       attachedFiles: req.files?.attachedFile
         ? Array.isArray(req.files.attachedFile)
-          ? req.files.attachedFile.map((f) => f.filename)
-          : [req.files.attachedFile[0].filename]
+          ? req.files.attachedFile.map((f) => ({
+              original: f.originalname, // ← TÊN GỐC ĐẸP
+              stored: f.filename, // ← TÊN TRONG SERVER
+            }))
+          : [
+              {
+                original: req.files.attachedFile[0].originalname,
+                stored: req.files.attachedFile[0].filename,
+              },
+            ]
         : [],
     });
 
@@ -106,12 +114,15 @@ export const improveTask = async (req, res) => {
       task.afterImage = req.files.afterImage[0].filename;
 
     if (req.files?.completedFile) {
-      const files = Array.isArray(req.files.completedFile)
+      const uploadedFiles = Array.isArray(req.files.completedFile)
         ? req.files.completedFile
-        : [req.files.completedFile];
-      task.completedFiles = files.map((f) => f.filename);
-    }
+        : [req.files.completedFile[0]].filter(Boolean);
 
+      task.completedFiles = uploadedFiles.map((f) => ({
+        original: f.originalname, // ← TÊN ĐẸP ĐỂ HIỆN CHO USER
+        stored: f.filename, // ← TÊN THẬT TRONG THƯ MỤC uploads
+      }));
+    }
     if (req.body.improveNote) task.improveNote = req.body.improveNote.trim();
 
     task.status = "review";
@@ -129,22 +140,35 @@ export const improveTask = async (req, res) => {
 
 export const reviewTask = async (req, res) => {
   const { status, reviewNote } = req.body;
+
   try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
-      {
-        status,
-        reviewedAt: new Date(),
-        reviewNote:
-          status === "rejected" ? reviewNote?.trim() || "Không đạt" : null,
-      },
-      { new: true }
-    )
+    const updateData = {
+      status,
+      reviewedAt: new Date(),
+    };
+
+    // QUY TẮC HOÀN HẢO NHẤT:
+    // - Nếu sếp có ghi gì → lưu lại (dù duyệt hay từ chối)
+    // - Nếu duyệt + không ghi gì → để reviewNote = null (không bắt buộc)
+    // - Nếu từ chối + không ghi gì → tự động điền "Không đạt"
+    if (reviewNote?.trim()) {
+      updateData.reviewNote = reviewNote.trim();
+    } else if (status === "rejected") {
+      updateData.reviewNote = "Không đạt"; // bắt buộc có lý do khi reject
+    }
+    // nếu duyệt + không ghi gì → KHÔNG làm gì cả → reviewNote vẫn null → chuẩn!
+
+    const task = await Task.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    })
       .populate("assignedBy", "name")
-      .populate("assignee", "name group"); // ĐÃ SỬA: populate đúng
+      .populate("assignee", "name group");
+
+    if (!task) return res.status(404).json({ message: "Không tìm thấy task" });
 
     res.json({ message: "Duyệt thành công!", task });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: "Lỗi server" });
   }
 };
