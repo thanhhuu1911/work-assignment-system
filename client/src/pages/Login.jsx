@@ -72,6 +72,12 @@ export default function Login() {
               />
             </div>
             <button type="submit" className="btn btn-primary w-100 btn-lg">
+              <img
+                src="/login.png"
+                alt="login"
+                className="me-2"
+                style={{ width: "25px", height: "25px" }}
+              />
               {t("login")}
             </button>
           </form>

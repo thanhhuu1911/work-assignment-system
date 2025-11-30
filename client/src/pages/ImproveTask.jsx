@@ -5,11 +5,13 @@ import api from "../services/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ImageDisplay from "../components/ImageDisplay";
+import { showToast } from "../components/Toast";
+import { useTranslation } from "react-i18next";
 
 export default function ImproveTask() {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const { t } = useTranslation();
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -28,13 +30,13 @@ export default function ImproveTask() {
         const res = await api.get(`/tasks/${id}`);
         const taskData = res.data;
         if (!["ongoing", "rejected", "review"].includes(taskData.status)) {
-          alert("Không thể cải thiện công việc này!");
+          showToast("Không thể cải thiện công việc này!", "warning");
           navigate("/dashboard");
           return;
         }
         setTask(taskData);
       } catch (err) {
-        alert("Lỗi tải công việc");
+        showToast("Lỗi tải công việc", "error");
         navigate("/dashboard");
       } finally {
         setLoading(false);
@@ -80,7 +82,10 @@ export default function ImproveTask() {
   const handleSubmit = async () => {
     // Chỉ cần có ít nhất 1 ảnh hoặc 1 file là được gửi
     if (!afterImage && completedFiles.length === 0) {
-      return alert("Vui lòng chọn ít nhất 1 ảnh 'Sau' hoặc 1 file hoàn thành!");
+      return showToast(
+        "Vui lòng chọn ít nhất 1 ảnh 'Sau' hoặc 1 file hoàn thành!",
+        "warning"
+      );
     }
 
     setSubmitting(true);
@@ -94,10 +99,12 @@ export default function ImproveTask() {
 
     try {
       await api.put(`/tasks/${id}/improve`, formData);
-      alert("Gửi duyệt thành công!");
+      showToast("Gửi duyệt thành công!", "success");
       navigate("/dashboard");
     } catch (err) {
-      alert("Lỗi: " + (err.response?.data?.message || "Server error"));
+      showToast(
+        "Lỗi: " + (err.response?.data?.message || "Server error", "error")
+      );
     } finally {
       setSubmitting(false);
     }

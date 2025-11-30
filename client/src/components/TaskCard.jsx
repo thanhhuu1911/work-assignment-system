@@ -2,6 +2,7 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import ImageDisplay from "./ImageDisplay";
+import { showToast } from "./Toast";
 
 const STATUS_COLORS = {
   ongoing: "warning",
@@ -129,8 +130,7 @@ export default function TaskCard({ task }) {
         </p>
       </div>
 
-      {/* <div className="mx-2 mt-1">
-        
+      <div className="mx-2 mt-1">
         {task.attachedFiles &&
           Array.isArray(task.attachedFiles) &&
           task.attachedFiles.length > 0 && (
@@ -158,17 +158,17 @@ export default function TaskCard({ task }) {
           Array.isArray(task.completedFiles) &&
           task.completedFiles.length > 0 && (
             <div>
-              <small className="text-success fw-bold d-block mb-1">
+              <small className="text-dark fw-bold d-block mb-1">
                 File hoàn thành:
               </small>
               {task.completedFiles.map((file, idx) => (
                 <div key={idx} className="d-flex align-items-center gap-2">
-                  <i className="bi bi-file-check text-success"></i>
+                  <i className="bi bi-file-check text-primary"></i>
                   <a
                     href={`http://localhost:5000/uploads/${getFilePath(file)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-success small text-decoration-underline text-truncate"
+                    className="text-primary small text-decoration-underline text-truncate"
                     title={getFileName(file)}
                   >
                     {getFileName(file)}
@@ -177,19 +177,19 @@ export default function TaskCard({ task }) {
               ))}
             </div>
           )}
-      </div> */}
+      </div>
 
       {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
       {task.improveNote && (
         <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
           <div className="d-flex align-items-start gap-2">
-            <i className="bi bi-chat-dots-fill text-primary"></i>
+            <i className="bi bi-chat-dots-fill text-dark"></i>
             <div className="flex-grow-1">
-              <small className="text-primary fw-bold d-block">
+              <small className="text-dark fw-bold d-block">
                 {task.assignee?.name || "Nhân viên"} đã nhắn:
               </small>
               <p
-                className="mb-0 text-primary small lh-sm"
+                className="mb-0 text-dark small lh-sm"
                 style={{ fontStyle: "italic" }}
               >
                 “{task.improveNote}”
@@ -204,16 +204,16 @@ export default function TaskCard({ task }) {
         <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
           <small
             className={`fw-bold d-block ${
-              task.status === "approved" ? "text-success" : "text-danger"
+              task.status === "approved" ? "text-dark" : "text-danger"
             }`}
           >
             {task.status === "approved"
-              ? "Ghi chú từ sếp:"
+              ? "Feedback từ Leader:"
               : "Lý do không đạt:"}
           </small>
           <p
             className={`mb-0 small lh-sm ${
-              task.status === "approved" ? "text-success" : "text-danger"
+              task.status === "approved" ? "text-dark" : "text-danger"
             } fst-italic`}
           >
             “{task.reviewNote}”
@@ -263,7 +263,7 @@ export default function TaskCard({ task }) {
 
         <div className="d-flex justify-content-center gap-2">
           <button
-            className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+            className="btn btn-primary btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
             onClick={() => navigate(`/task/${task._id}`)}
           >
             {t("view_detail")}
@@ -271,7 +271,7 @@ export default function TaskCard({ task }) {
           {!task.isOverdue &&
             ["ongoing", "processing", "review"].includes(task.status) && (
               <button
-                className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                className="btn btn-success btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
                 onClick={() => navigate(`/improve/${task._id}`)}
               >
                 {t("improve")}
@@ -279,7 +279,7 @@ export default function TaskCard({ task }) {
             )}
           {canReview && task.status === "review" && (
             <button
-              className="btn btn-info btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm text-white"
+              className="btn btn-info btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm text-white"
               onClick={() => navigate(`/review/${task._id}`)}
             >
               {t("review")}

@@ -33,8 +33,8 @@ export default function Header() {
             src="http://localhost:5000/images/Logo_ME.jpg"
             alt="ME Logo"
             style={{
-              width: 65,
-              height: 65,
+              width: 70,
+              height: 70,
               borderRadius: "70%",
               marginRight: "12px",
               border: "2px solid #ffffffb4",
@@ -62,6 +62,12 @@ export default function Header() {
             className="btn btn-outline-danger btn-sm px-3"
             onClick={handleLogout}
           >
+            <img
+              src="/logout.png"
+              alt="logout"
+              className="me-2"
+              style={{ width: "20px", height: "20px" }}
+            />
             {t("logout")}
           </button>
         </div>

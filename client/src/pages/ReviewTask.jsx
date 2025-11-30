@@ -6,6 +6,7 @@ import api from "../services/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ImageDisplay from "../components/ImageDisplay";
+import { showToast } from "../components/Toast";
 
 export default function ReviewTask() {
   const { t } = useTranslation();
@@ -23,13 +24,13 @@ export default function ReviewTask() {
         const res = await api.get(`/tasks/${id}`);
         const taskData = res.data;
         if (taskData.status !== "review") {
-          alert("Công việc không ở trạng thái chờ duyệt");
+          showToast("Công việc không ở trạng thái chờ duyệt", "warning");
           navigate("/dashboard");
           return;
         }
         setTask(taskData);
       } catch (err) {
-        alert("Lỗi tải công việc");
+        showToast("Lỗi tải công việc", "error");
         navigate("/dashboard");
       } finally {
         setLoading(false);
@@ -71,10 +72,15 @@ export default function ReviewTask() {
 
       await api.put(`/tasks/${id}/review`, payload);
 
-      alert(action === "approve" ? "ĐÃ DUYỆT THÀNH CÔNG!" : "ĐÃ TỪ CHỐI!");
+      showToast(
+        action === "approve" ? "ĐÃ DUYỆT THÀNH CÔNG!" : "ĐÃ TỪ CHỐI!",
+        action === "approve" ? "success" : "warning"
+      );
       navigate("/dashboard");
     } catch (err) {
-      alert("Lỗi: " + (err.response?.data?.message || "Server error"));
+      showToast(
+        "Lỗi: " + (err.response?.data?.message || "Server error", "error")
+      );
     } finally {
       setSubmitting("");
     }
@@ -201,7 +207,7 @@ export default function ReviewTask() {
                     Array.isArray(task.completedFiles) &&
                     task.completedFiles.length > 0 && (
                       <div>
-                        <small className="text-success fw-bold d-block mb-1">
+                        <small className="text-dark fw-bold d-block mb-1">
                           File hoàn thành:
                         </small>
                         {task.completedFiles.map((file, idx) => (
@@ -209,14 +215,14 @@ export default function ReviewTask() {
                             key={idx}
                             className="d-flex align-items-center gap-2"
                           >
-                            <i className="bi bi-file-check text-success"></i>
+                            <i className="bi bi-file-check text-primary"></i>
                             <a
                               href={`http://localhost:5000/uploads/${getFilePath(
                                 file
                               )}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-success small text-decoration-underline text-truncate"
+                              className="text-primary small text-decoration-underline text-truncate"
                               title={getFileName(file)}
                             >
                               {getFileName(file)}
@@ -231,13 +237,13 @@ export default function ReviewTask() {
                 {task.improveNote && (
                   <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
                     <div className="d-flex align-items-start gap-2">
-                      <i className="bi bi-chat-dots-fill text-primary"></i>
+                      <i className="bi bi-chat-dots-fill text-dark"></i>
                       <div className="flex-grow-1">
-                        <small className="text-primary fw-bold d-block">
+                        <small className="text-dark fw-bold d-block">
                           {task.assignee?.name || "Nhân viên"} đã nhắn:
                         </small>
                         <p
-                          className="mb-0 text-primary small lh-sm"
+                          className="mb-0 text-dark small lh-sm"
                           style={{ fontStyle: "italic" }}
                         >
                           “{task.improveNote}”
@@ -252,20 +258,16 @@ export default function ReviewTask() {
                   <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
                     <small
                       className={`fw-bold d-block ${
-                        task.status === "approved"
-                          ? "text-success"
-                          : "text-danger"
+                        task.status === "approved" ? "text-dark" : "text-danger"
                       }`}
                     >
                       {task.status === "approved"
-                        ? "Ghi chú từ sếp:"
+                        ? "Feedback từ Leader:"
                         : "Lý do không đạt:"}
                     </small>
                     <p
                       className={`mb-0 small lh-sm ${
-                        task.status === "approved"
-                          ? "text-success"
-                          : "text-danger"
+                        task.status === "approved" ? "text-dark" : "text-danger"
                       } fst-italic`}
                     >
                       “{task.reviewNote}”

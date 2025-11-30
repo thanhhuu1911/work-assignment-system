@@ -6,6 +6,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import TaskCard from "../components/TaskCard";
 import api from "../services/api";
+import { showToast } from "../components/Toast";
 
 const STATUS_FILTERS = [
   { key: "all", label: "all_status", color: "dark" },
@@ -52,7 +53,7 @@ export default function Dashboard() {
       );
       setTasks(sorted); // ← backend đã có isOverdue rồi!
     } catch (err) {
-      alert("Failed to load tasks");
+      showToast("Failed to load tasks", "error");
     }
     setLoading(false);
   };
@@ -234,6 +235,11 @@ export default function Dashboard() {
                   className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                   onClick={() => navigate("/new-issue")}
                 >
+                  <img
+                    src="/add.png"
+                    alt="add"
+                    style={{ width: "25px", height: "25px" }}
+                  />
                   {t("create_task")}
                 </button>
               )}
@@ -250,6 +256,11 @@ export default function Dashboard() {
                   loadTasks();
                 }}
               >
+                <img
+                  src="/reset.png"
+                  alt="reset"
+                  style={{ width: "25px", height: "25px" }}
+                />
                 {t("reload")}
               </button>
             </div>

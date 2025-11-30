@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import api from "../services/api";
-
+import { showToast } from "../components/Toast";
 export default function NewIssue() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ export default function NewIssue() {
         setUsers(userRes.data.data);
         setCurrentUser(storedUser);
       } catch (err) {
-        alert("Failed to load data");
+        showToast("Failed to load data", "error");
       } finally {
         setLoading(false);
       }
@@ -142,10 +142,10 @@ export default function NewIssue() {
 
     try {
       await api.post("/tasks", formData);
-      alert("Task assigned successfully!");
+      showToast("Task assigned!", "Thành công!");
       navigate("/dashboard");
     } catch (err) {
-      alert("Error: " + (err.response?.data?.message || "Failed"));
+      showToast("Error: " + (err.response?.data?.message || "Failed", "error"));
     }
   };
 

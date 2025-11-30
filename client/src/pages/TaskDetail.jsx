@@ -6,7 +6,7 @@ import api from "../services/api";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import ImageDisplay from "../components/ImageDisplay";
-
+import { showToast } from "../components/Toast";
 export default function TaskDetail() {
   const { t } = useTranslation();
   const { id } = useParams();
@@ -21,7 +21,7 @@ export default function TaskDetail() {
         setTask(res.data);
       } catch (err) {
         const msg = err.response?.data?.message || "Không tải được công việc";
-        alert(msg);
+        showToast(msg, "error");
         navigate("/dashboard");
       } finally {
         setLoading(false);
@@ -185,7 +185,7 @@ export default function TaskDetail() {
                     Array.isArray(task.completedFiles) &&
                     task.completedFiles.length > 0 && (
                       <div>
-                        <small className="text-success fw-bold d-block mb-1">
+                        <small className="text-dark fw-bold d-block mb-1">
                           File hoàn thành:
                         </small>
                         {task.completedFiles.map((file, idx) => (
@@ -193,14 +193,14 @@ export default function TaskDetail() {
                             key={idx}
                             className="d-flex align-items-center gap-2"
                           >
-                            <i className="bi bi-file-check text-success"></i>
+                            <i className="bi bi-file-check text-primary"></i>
                             <a
                               href={`http://localhost:5000/uploads/${getFilePath(
                                 file
                               )}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-success small text-decoration-underline text-truncate"
+                              className="text-primary small text-decoration-underline text-truncate"
                               title={getFileName(file)}
                             >
                               {getFileName(file)}
@@ -215,13 +215,13 @@ export default function TaskDetail() {
                 {task.improveNote && (
                   <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
                     <div className="d-flex align-items-start gap-2">
-                      <i className="bi bi-chat-dots-fill text-primary"></i>
+                      <i className="bi bi-chat-dots-fill text-dark"></i>
                       <div className="flex-grow-1">
-                        <small className="text-primary fw-bold d-block">
+                        <small className="text-dark fw-bold d-block">
                           {task.assignee?.name || "Nhân viên"} đã nhắn:
                         </small>
                         <p
-                          className="mb-0 text-primary small lh-sm"
+                          className="mb-0 text-dark small lh-sm"
                           style={{ fontStyle: "italic" }}
                         >
                           “{task.improveNote}”
@@ -236,20 +236,16 @@ export default function TaskDetail() {
                   <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
                     <small
                       className={`fw-bold d-block ${
-                        task.status === "approved"
-                          ? "text-success"
-                          : "text-danger"
+                        task.status === "approved" ? "text-dark" : "text-danger"
                       }`}
                     >
                       {task.status === "approved"
-                        ? "Ghi chú từ sếp:"
+                        ? "Feedback từ Leader:"
                         : "Lý do không đạt:"}
                     </small>
                     <p
                       className={`mb-0 small lh-sm ${
-                        task.status === "approved"
-                          ? "text-success"
-                          : "text-danger"
+                        task.status === "approved" ? "text-dark" : "text-danger"
                       } fst-italic`}
                     >
                       “{task.reviewNote}”

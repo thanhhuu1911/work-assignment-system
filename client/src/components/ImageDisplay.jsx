@@ -7,7 +7,7 @@ const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
     return (
       <img
         src={`http://localhost:5000/uploads/${imageField}`}
-        alt={isBefore ? "Trước" : "Sau"}
+        alt={isBefore ? "Before" : "After"}
         className="w-100 h-100 img-fluid object-fit-contain bg-white p-1"
         onError={(e) => {
           e.target.src = "https://via.placeholder.com/600?text=No+Image";
@@ -22,7 +22,7 @@ const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
       <div className="d-flex align-items-center justify-content-center bg-white h-100">
         <img
           src="/logo-company.png"
-          alt="Logo công ty"
+          alt="Company Logo"
           className="img-fluid"
           style={{ maxHeight: "75%", maxWidth: "75%" }}
         />
@@ -38,7 +38,7 @@ const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
           isBefore ? "bi-image" : "bi-camera-fill text-success"
         } fs-1 opacity-50`}
       />
-      <small className="mt-2">Chưa có ảnh</small>
+      <small className="mt-2">No image</small>
     </div>
   );
 };

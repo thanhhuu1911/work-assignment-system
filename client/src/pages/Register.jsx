@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
+import { showToast } from "../components/Toast";
 
 export default function Register() {
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ export default function Register() {
         delete payload.group;
       }
       await api.post("/auth/register", payload);
-      alert("Registration successful! Please log in.");
+      showToast("Registration successful! Please log in.", "success");
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
@@ -136,6 +137,12 @@ export default function Register() {
             </div>
 
             <button type="submit" className="btn btn-primary w-100 fw-bold">
+              <img
+                src="/signup.png"
+                alt="signup"
+                className="me-2"
+                style={{ width: "25px", height: "25px" }}
+              />
               {t("register")}
             </button>
           </form>

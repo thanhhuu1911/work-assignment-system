@@ -1,10 +1,6 @@
 // client/src/components/Footer.jsx
-import { useTranslation } from "react-i18next";
-import LanguageToggle from "./LanguageToggle";
 
 export default function Footer() {
-  const { t } = useTranslation();
-
   return (
     <>
       {/* ĐẨY FOOTER XUỐNG DƯỚI BẰNG FLEX */}
