@@ -1,9 +1,8 @@
 // client/src/components/TaskCard.jsx
-import { useTranslation } from "react-i18next";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageDisplay from "./ImageDisplay";
-import { showToast } from "./Toast";
-
+import { useTranslation } from "react-i18next";
 const STATUS_COLORS = {
   ongoing: "warning",
   processing: "primary",
@@ -13,10 +12,10 @@ const STATUS_COLORS = {
 };
 
 export default function TaskCard({ task }) {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-
+  const [isExpanded, setIsExpanded] = useState(false); // ← Trạng thái collapse
+  const { t } = useTranslation();
   const canReview = () => {
     if (!currentUser?.role) return false;
     if (["manager", "a_manager"].includes(currentUser.role)) return true;
@@ -44,19 +43,30 @@ export default function TaskCard({ task }) {
   const getStatusText = () => {
     if (task.status === "approved") return "Hoàn thành";
     if (task.isOverdue) return "Quá hạn";
-    if (task.status === "rejected" && task.reviewNote) return "Không đạt"; // ← CHỈ KHI REJECTED MỚI HIỆN "KHÔNG ĐẠT"
-    return t(task.status);
+    if (task.status === "rejected" && task.reviewNote) return "Không đạt";
+    const statusMap = {
+      ongoing: "Đang thực hiện",
+      processing: "Đang thực hiện",
+      review: "Chờ duyệt",
+    };
+    return statusMap[task.status] || task.status;
   };
 
   const getStatusColor = () => {
     if (task.status === "approved") return "success";
     if (task.isOverdue) return "danger";
-    if (task.status === "rejected") return "danger"; // ← CHỈ KHI REJECTED MỚI ĐỎ
+    if (task.status === "rejected") return "danger";
     return STATUS_COLORS[task.status] || "secondary";
   };
 
+  // Tóm tắt cho collapse
+  const reqFilesCount = task.attachedFiles?.length || 0;
+  const compFilesCount = task.completedFiles?.length || 0;
+  const hasFeedback = !!(task.improveNote || task.reviewNote);
+
   return (
     <div className="card h-100 shadow-lg border-0 rounded-4 overflow-hidden d-flex flex-column">
+      {/* Header */}
       <div className="card-header bg-white border-0 py-2 px-3 flex-shrink-0">
         <div className="d-flex justify-content-between align-items-center">
           <div
@@ -75,9 +85,8 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
-      {/* === 2 Ô ẢNH TRƯỚC - SAU – ĐÃ SỬA HOÀN HẢO 100% === */}
+      {/* Ảnh trước - sau */}
       <div className="row g-2 px-3 pt-2">
-        {/* ẢNH TRƯỚC */}
         <div className="col-6 position-relative">
           <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
             <ImageDisplay
@@ -90,11 +99,9 @@ export default function TaskCard({ task }) {
             className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold"
             style={{ fontSize: "0.7rem" }}
           >
-            {t("before")}
+            Trước
           </small>
         </div>
-
-        {/* ẢNH SAU – BÂY GIỜ ĐẸP, KHÔNG CÒN BỰ, KHÔNG MÉO */}
         <div className="col-6 position-relative">
           <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
             <ImageDisplay imageField={task.afterImage} type="after" />
@@ -103,12 +110,13 @@ export default function TaskCard({ task }) {
             className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold"
             style={{ fontSize: "0.7rem" }}
           >
-            {t("after")}
+            Sau
           </small>
         </div>
       </div>
 
-      <div className="px-2  flex-shrink-0">
+      {/* Mô tả */}
+      <div className="px-3 flex-shrink-0">
         <div>
           <span className="text-primary fw-bold small">Mô tả công việc:</span>
         </div>
@@ -126,106 +134,42 @@ export default function TaskCard({ task }) {
           }}
           title={task.description}
         >
-          {task.description || "No description"}
+          {task.description || "Không có mô tả"}
         </p>
       </div>
 
-      <div className="mx-2 mt-1">
-        {task.attachedFiles &&
-          Array.isArray(task.attachedFiles) &&
-          task.attachedFiles.length > 0 && (
-            <div className="mb-2">
-              <small className="text-dark fw-bold d-block">File yêu cầu:</small>
-              {task.attachedFiles.map((file, idx) => (
-                <div key={idx} className="d-flex align-items-center gap-2 mb-1">
-                  <i className="bi bi-file-earmark-text text-primary"></i>
-                  <a
-                    href={`http://localhost:5000/uploads/${getFilePath(file)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary small text-decoration-underline text-truncate d-inline-block"
-                    style={{ maxWidth: "200px" }}
-                    title={getFileName(file)}
-                  >
-                    {getFileName(file)}
-                  </a>
-                </div>
-              ))}
+      {/* KHỐI COLLAPSE SIÊU ĐẸP */}
+      <div className="mx-3 mt-1">
+        <div
+          className="bg-light border rounded-3 p-2 cursor-pointer user-select-none"
+          onClick={() => setIsExpanded(!isExpanded)}
+          style={{ transition: "all 0.3s" }}
+        >
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="small fw-bold text-primary">
+              File yêu cầu: {reqFilesCount} file{reqFilesCount > 0 && "s"}
+              <br />
+              File hoàn thành: {compFilesCount} file{compFilesCount > 0 && "s"}
+              <br />
+              <span className={hasFeedback ? "text-success" : "text-muted"}>
+                Feedback: {hasFeedback ? "Có ghi chú" : "hiện tại chưa có"}
+              </span>
             </div>
-          )}
-
-        {task.completedFiles &&
-          Array.isArray(task.completedFiles) &&
-          task.completedFiles.length > 0 && (
-            <div>
-              <small className="text-dark fw-bold d-block mb-1">
-                File hoàn thành:
-              </small>
-              {task.completedFiles.map((file, idx) => (
-                <div key={idx} className="d-flex align-items-center gap-2">
-                  <i className="bi bi-file-check text-primary"></i>
-                  <a
-                    href={`http://localhost:5000/uploads/${getFilePath(file)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-primary small text-decoration-underline text-truncate"
-                    title={getFileName(file)}
-                  >
-                    {getFileName(file)}
-                  </a>
-                </div>
-              ))}
-            </div>
-          )}
-      </div>
-
-      {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
-      {task.improveNote && (
-        <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
-          <div className="d-flex align-items-start gap-2">
-            <i className="bi bi-chat-dots-fill text-dark"></i>
-            <div className="flex-grow-1">
-              <small className="text-dark fw-bold d-block">
-                {task.assignee?.name || "Nhân viên"} đã nhắn:
-              </small>
-              <p
-                className="mb-0 text-dark small lh-sm"
-                style={{ fontStyle: "italic" }}
-              >
-                “{task.improveNote}”
-              </p>
-            </div>
+            <i
+              className={`bi bi-chevron-${
+                isExpanded ? "up" : "down"
+              } fs-5 text-primary`}
+            ></i>
           </div>
         </div>
-      )}
+      </div>
 
-      {/* GHI CHÚ DUYỆT – HIỆN LUÔN KHI CÓ reviewNote, DÙ ĐÃ APPROVED HAY REJECTED */}
-      {task.reviewNote && (
-        <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
-          <small
-            className={`fw-bold d-block ${
-              task.status === "approved" ? "text-dark" : "text-danger"
-            }`}
-          >
-            {task.status === "approved"
-              ? "Feedback từ Leader:"
-              : "Lý do không đạt:"}
-          </small>
-          <p
-            className={`mb-0 small lh-sm ${
-              task.status === "approved" ? "text-dark" : "text-danger"
-            } fst-italic`}
-          >
-            “{task.reviewNote}”
-          </p>
-        </div>
-      )}
-      {/* KHÓA CỨNG PHẦN DƯỚI – CHỈ THAY ĐOẠN NÀY */}
+      {/* Phần dưới cùng - thông tin + nút */}
       <div className="mt-auto p-3 pt-2 bg-white border-top">
         <div className="row text-dark mb-3" style={{ fontSize: "0.8rem" }}>
           <div className="col-6">
             <div className="d-flex align-items-center mb-1">
-              <strong className="me-1 text-nowrap">{t("assigned_by")}:</strong>
+              <strong className="me-1 text-nowrap">Người giao:</strong>
               <span
                 className="text-truncate d-inline-block"
                 style={{ maxWidth: "70px" }}
@@ -235,7 +179,7 @@ export default function TaskCard({ task }) {
               </span>
             </div>
             <div className="d-flex align-items-center">
-              <strong className="me-1 text-nowrap">{t("created")}:</strong>
+              <strong className="me-1 text-nowrap">Ngày tạo:</strong>
               <span className="text-nowrap">
                 {new Date(task.createdAt).toLocaleDateString("vi-VN")}
               </span>
@@ -243,7 +187,7 @@ export default function TaskCard({ task }) {
           </div>
           <div className="col-6">
             <div className="d-flex align-items-center mb-1">
-              <strong className="me-1 text-nowrap">{t("assignee")}:</strong>
+              <strong className="me-1 text-nowrap">Người thực hiện:</strong>
               <span
                 className="text-truncate d-inline-block"
                 style={{ maxWidth: "70px" }}
@@ -253,7 +197,7 @@ export default function TaskCard({ task }) {
               </span>
             </div>
             <div className="d-flex align-items-center">
-              <strong className="me-1 text-nowrap">{t("deadline")}:</strong>
+              <strong className="me-1 text-nowrap">Hạn chót:</strong>
               <span className="text-nowrap">
                 {new Date(task.dueDate).toLocaleDateString("vi-VN")}
               </span>
@@ -266,7 +210,7 @@ export default function TaskCard({ task }) {
             className="btn btn-primary btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
             onClick={() => navigate(`/task/${task._id}`)}
           >
-            {t("view_detail")}
+            Xem chi tiết
           </button>
           {!task.isOverdue &&
             ["ongoing", "processing", "review"].includes(task.status) && (
@@ -274,7 +218,7 @@ export default function TaskCard({ task }) {
                 className="btn btn-success btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
                 onClick={() => navigate(`/improve/${task._id}`)}
               >
-                {t("improve")}
+                Cải thiện
               </button>
             )}
           {canReview && task.status === "review" && (
@@ -282,12 +226,11 @@ export default function TaskCard({ task }) {
               className="btn btn-info btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm text-white"
               onClick={() => navigate(`/review/${task._id}`)}
             >
-              {t("review")}
+              Duyệt
             </button>
           )}
         </div>
       </div>
-      {/* KẾT THÚC KHÓA CỨNG */}
     </div>
   );
 }

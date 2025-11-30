@@ -53,7 +53,7 @@ export default function Dashboard() {
       );
       setTasks(sorted); // ← backend đã có isOverdue rồi!
     } catch (err) {
-      showToast("Failed to load tasks", "error");
+      showToast("Failed to load tasks", "Có lỗi xảy ra!");
     }
     setLoading(false);
   };
@@ -238,6 +238,7 @@ export default function Dashboard() {
                   <img
                     src="/add.png"
                     alt="add"
+                    class="me-1"
                     style={{ width: "25px", height: "25px" }}
                   />
                   {t("create_task")}
@@ -259,6 +260,7 @@ export default function Dashboard() {
                 <img
                   src="/reset.png"
                   alt="reset"
+                  class="me-1"
                   style={{ width: "25px", height: "25px" }}
                 />
                 {t("reload")}

@@ -65,7 +65,7 @@ export default function Header() {
             <img
               src="/logout.png"
               alt="logout"
-              className="me-2"
+              className="me-1"
               style={{ width: "20px", height: "20px" }}
             />
             {t("logout")}

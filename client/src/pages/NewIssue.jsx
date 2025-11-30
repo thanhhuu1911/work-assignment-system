@@ -34,7 +34,7 @@ export default function NewIssue() {
         setUsers(userRes.data.data);
         setCurrentUser(storedUser);
       } catch (err) {
-        showToast("Failed to load data", "error");
+        showToast("Failed to load data", "Có lỗi xảy ra!");
       } finally {
         setLoading(false);
       }
@@ -60,8 +60,17 @@ export default function NewIssue() {
     return (
       <>
         <Header />
-        <div className="container py-5 text-center">
-          <div className="alert alert-warning d-inline-block">No access</div>
+        <div>
+          <Header />
+          <div className="d-flex flex-column justify-content-center align-items-center py-5">
+            <div
+              className="spinner-border text-primary mb-3"
+              style={{ width: "3rem", height: "3rem" }}
+            >
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <Footer />
         </div>
         <Footer />
       </>
@@ -145,7 +154,9 @@ export default function NewIssue() {
       showToast("Task assigned!", "Thành công!");
       navigate("/dashboard");
     } catch (err) {
-      showToast("Error: " + (err.response?.data?.message || "Failed", "error"));
+      showToast(
+        "Error: " + (err.response?.data?.message || "Failed", "Có lỗi xảy ra!")
+      );
     }
   };
 
@@ -256,7 +267,7 @@ export default function NewIssue() {
                         </label>
                         <input
                           type="date"
-                          className="form-control form-control-sm"
+                          className="form-control form-control-md shadow-sm rounded-3"
                           value={form.startDate}
                           onChange={(e) =>
                             setForm({ ...form, startDate: e.target.value })
@@ -270,7 +281,7 @@ export default function NewIssue() {
                         </label>
                         <input
                           type="date"
-                          className="form-control form-control-sm"
+                          className="form-control form-control-md shadow-sm rounded-3"
                           value={form.dueDate}
                           onChange={(e) =>
                             setForm({ ...form, dueDate: e.target.value })
@@ -299,7 +310,7 @@ export default function NewIssue() {
                               alt="Before preview"
                               className="img-fluid rounded-4 shadow-lg border"
                               style={{
-                                maxHeight: "320px",
+                                maxHeight: "200px",
                                 maxWidth: "100%",
                                 objectFit: "contain",
                               }}
@@ -337,23 +348,28 @@ export default function NewIssue() {
                           </small>
                           <div className="row g-3">
                             {attachedFiles.map((item, idx) => (
-                              <div key={idx} className="col-12">
-                                <div className="d-flex align-items-center justify-content-between bg-light rounded-4 px-4 py-3 border shadow-sm hover-shadow transition">
-                                  <div className="d-flex align-items-center gap-3 flex-grow-1 text-truncate">
-                                    {/* Icon preview */}
+                              <div key={idx} className="mb-2">
+                                <div className="d-flex align-items-center justify-content-between bg-white border rounded-4 px-3 py-2 hover-shadow transition-all shadow-sm">
+                                  {/* Tên file + icon nhỏ xinh */}
+                                  <div className="d-flex align-items-center gap-2 flex-grow-1 text-truncate">
+                                    {/* Icon nhỏ gọn */}
                                     {item.isImage ? (
                                       <img
                                         src={item.preview}
                                         alt="preview"
-                                        className="rounded-3 border"
+                                        className="rounded border"
                                         style={{
-                                          width: "56px",
-                                          height: "56px",
+                                          width: "32px",
+                                          height: "32px",
                                           objectFit: "cover",
                                         }}
                                       />
                                     ) : (
-                                      <i className="bi bi-file-earmark-text-fill text-primary fs-3"></i>
+                                      <i
+                                        className="bi bi-file-earmark-pdf-fill text-danger"
+                                        style={{ fontSize: "20px" }}
+                                      ></i>
+                                      // hoặc dùng: bi-file-earmark-text-fill, bi-file-earmark-word-fill, v.v.
                                     )}
 
                                     {/* Tên file – nhấn là mở đúng nội dung */}
@@ -380,7 +396,7 @@ export default function NewIssue() {
                                       >
                                         {item.name}
                                       </span>
-                                      <div className="text-muted small">
+                                      <div className="text-dark small">
                                         {(item.size / 1024 / 1024).toFixed(2)}{" "}
                                         MB
                                       </div>

@@ -27,7 +27,7 @@ export default function Register() {
         delete payload.group;
       }
       await api.post("/auth/register", payload);
-      showToast("Registration successful! Please log in.", "success");
+      showToast("Registration successful! Please log in.", "Thành công!");
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
@@ -43,7 +43,7 @@ export default function Register() {
         style={{ maxWidth: "520px", width: "100%" }}
       >
         <div className="card-body p-5">
-          <h2 className="text-center mb-4 fw-bold text-primary">
+          <h2 className="text-center mb-4 fw-bold text-dark">
             {t("register")}
           </h2>
           {error && <div className="alert alert-danger">{error}</div>}

@@ -24,13 +24,13 @@ export default function ReviewTask() {
         const res = await api.get(`/tasks/${id}`);
         const taskData = res.data;
         if (taskData.status !== "review") {
-          showToast("Công việc không ở trạng thái chờ duyệt", "warning");
+          showToast("Công việc không ở trạng thái chờ duyệt", "Cảnh báo!");
           navigate("/dashboard");
           return;
         }
         setTask(taskData);
       } catch (err) {
-        showToast("Lỗi tải công việc", "error");
+        showToast("Lỗi tải công việc", "Có lỗi xảy ra!");
         navigate("/dashboard");
       } finally {
         setLoading(false);
@@ -74,12 +74,13 @@ export default function ReviewTask() {
 
       showToast(
         action === "approve" ? "ĐÃ DUYỆT THÀNH CÔNG!" : "ĐÃ TỪ CHỐI!",
-        action === "approve" ? "success" : "warning"
+        action === "approve" ? "Thành công!" : "Cảnh báo!"
       );
       navigate("/dashboard");
     } catch (err) {
       showToast(
-        "Lỗi: " + (err.response?.data?.message || "Server error", "error")
+        "Lỗi: " +
+          (err.response?.data?.message || "Server error", "Có lỗi xảy ra!")
       );
     } finally {
       setSubmitting("");
@@ -88,13 +89,18 @@ export default function ReviewTask() {
 
   if (loading || !task) {
     return (
-      <div className="d-flex flex-column min-vh-100">
+      <>
         <Header />
-        <main className="flex-grow-1 bg-light py-5 text-center">
-          <div className="spinner-border text-primary" />
-        </main>
+        <div className="d-flex flex-column justify-content-center align-items-center py-5">
+          <div
+            className="spinner-border text-primary mb-3"
+            style={{ width: "3rem", height: "3rem" }}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
         <Footer />
-      </div>
+      </>
     );
   }
 
@@ -146,7 +152,7 @@ export default function ReviewTask() {
                 </div>
 
                 {/* MÔ TẢ */}
-                <div className="px-2 py-2">
+                <div className="px-4 py-2">
                   <div>
                     <span className="text-primary fw-bold small">
                       Mô tả công việc:

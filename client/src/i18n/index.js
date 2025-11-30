@@ -125,7 +125,7 @@ i18n
           // === FILTERS ===
           "Vị Trí": "Vị Trí",
           Nhóm: "Nhóm",
-          Tên: "Tên",
+          Tên: "Tên nhân viên",
 
           // === TASK INFO ===
           assigned_by: "Người giao",
@@ -190,98 +190,9 @@ i18n
           welcome: "Chào mừng",
         },
       },
-
-      ko: {
-        translation: {
-          // === AUTH ===
-          login: "로그인",
-          register: "회원가입",
-          logout: "로그아웃",
-
-          // === DASHBOARD & STATUS ===
-          task_list: "작업 목록",
-          reload: "새로고침",
-          all_status: "모든 상태",
-          ongoing: "진행 중",
-          review: "검토", // ← Nút, filter, tiêu đề
-          approved: "승인됨",
-          rejected: "반려됨",
-          overdue: "기한 초과",
-
-          // === BADGE TEXT ===
-          "Chờ duyệt": "검토 대기",
-          "Đang cải thiện": "개선 중",
-          "Không đạt": "반려됨",
-          "Quá hạn": "기한 초과",
-
-          // === FILTERS ===
-          "Vị Trí": "위치",
-          Nhóm: "그룹",
-          Tên: "이름",
-
-          // === TASK INFO ===
-          assigned_by: "할당자",
-          assignee: "담당자",
-          created: "생성일",
-          deadline: "마감일",
-
-          // === BUTTONS ===
-          view_detail: "상세 보기",
-          improve: "개선",
-          review: "검토",
-          "Duyệt ngay": "즉시 검토",
-          "Cải thiện": "개선",
-          create_task: "작업 생성",
-          assign_task: "작업 할당",
-
-          // === TASKCARD & DETAIL ===
-          before: "전",
-          after: "후",
-          description: "작업 설명",
-          "Mô tả công việc:": "작업 설명:",
-          "Không có mô tả": "설명 없음",
-
-          // === REVIEW TASK PAGE ===
-          "Duyệt công việc": "작업 검토",
-          "DUYỆT NGAY": "즉시 승인",
-          DUYỆT: "승인",
-          "TỪ CHỐI": "반려",
-          "Đang duyệt...": "승인 중...",
-          "Đang từ chối...": "반려 중...",
-          "Ghi chú (bắt buộc nếu từ chối)": "반려 사유 (필수)",
-          "Nhập lý do từ chối...": "반려 사유를 입력하세요...",
-          "Vui lòng nhập lý do trước khi từ chối!": "반려 사유를 입력해주세요!",
-
-          // === IMPROVE TASK PAGE ===
-          GỬI: "제출",
-          "Đang gửi...": "제출 중...",
-          "Quay lại": "돌아가기",
-          feedback: "상사에게 메시지",
-          "vui lòng nhập feedback...": "예: 다시 깔끔하게 수정했습니다!",
-          "Nhấn hoặc Ctrl+V để dán ảnh hoặc file vào":
-            "클릭 또는 Ctrl+V로 이미지/파일 붙여넣기",
-          "Vui lòng chọn ảnh sau khi cải thiện!":
-            "개선된 이미지를 선택해주세요!",
-
-          // === FEEDBACK & NOTES ===
-          "Lý do không đạt:": "반려 사유:",
-          "đã nhắn:": "메시지 전송:",
-          "Nhân viên đã nhắn:": "직원 메시지:",
-
-          // === ALERTS & MESSAGES ===
-          "Gửi duyệt thành công! Sếp sẽ thấy lời nhắn của bạn trên task card":
-            "제출 완료! 상사가 메시지를 확인할 수 있습니다.",
-          "ĐÃ DUYỆT!": "승인 완료!",
-          "ĐÃ TỪ CHỐI!": "반려 완료!",
-          "Công việc không ở trạng thái chờ duyệt": "검토 대기 상태가 아닙니다",
-          "Không thể cải thiện công việc này!": "이 작업은 개선할 수 없습니다!",
-          "Không có công việc nào": "작업이 없습니다",
-          welcome: "환영합니다",
-        },
-      },
     },
-    lng: "vi",
-    fallbackLng: "en",
+    lng: "en",
+    fallbackLng: "vi",
     interpolation: {
       escapeValue: false,
     },

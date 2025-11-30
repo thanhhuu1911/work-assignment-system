@@ -30,13 +30,13 @@ export default function ImproveTask() {
         const res = await api.get(`/tasks/${id}`);
         const taskData = res.data;
         if (!["ongoing", "rejected", "review"].includes(taskData.status)) {
-          showToast("Không thể cải thiện công việc này!", "warning");
+          showToast("Không thể cải thiện công việc này!", "Cảnh báo!");
           navigate("/dashboard");
           return;
         }
         setTask(taskData);
       } catch (err) {
-        showToast("Lỗi tải công việc", "error");
+        showToast("Lỗi tải công việc", "Có lỗi xảy ra!");
         navigate("/dashboard");
       } finally {
         setLoading(false);
@@ -84,7 +84,7 @@ export default function ImproveTask() {
     if (!afterImage && completedFiles.length === 0) {
       return showToast(
         "Vui lòng chọn ít nhất 1 ảnh 'Sau' hoặc 1 file hoàn thành!",
-        "warning"
+        "Cảnh báo!"
       );
     }
 
@@ -99,11 +99,12 @@ export default function ImproveTask() {
 
     try {
       await api.put(`/tasks/${id}/improve`, formData);
-      showToast("Gửi duyệt thành công!", "success");
+      showToast("Gửi duyệt thành công!", "Thành công!");
       navigate("/dashboard");
     } catch (err) {
       showToast(
-        "Lỗi: " + (err.response?.data?.message || "Server error", "error")
+        "Lỗi: " +
+          (err.response?.data?.message || "Server error", "Có lỗi xảy ra")
       );
     } finally {
       setSubmitting(false);
@@ -112,13 +113,18 @@ export default function ImproveTask() {
 
   if (loading || !task) {
     return (
-      <div className="d-flex flex-column min-vh-100">
+      <>
         <Header />
-        <main className="flex-grow-1 bg-light py-5 text-center">
-          <div className="spinner-border text-primary" />
-        </main>
+        <div className="d-flex flex-column justify-content-center align-items-center py-5">
+          <div
+            className="spinner-border text-primary mb-3"
+            style={{ width: "3rem", height: "3rem" }}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
         <Footer />
-      </div>
+      </>
     );
   }
 

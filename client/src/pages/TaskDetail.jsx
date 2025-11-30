@@ -21,7 +21,7 @@ export default function TaskDetail() {
         setTask(res.data);
       } catch (err) {
         const msg = err.response?.data?.message || "Không tải được công việc";
-        showToast(msg, "error");
+        showToast(msg, "Có lỗi xảy ra!");
         navigate("/dashboard");
       } finally {
         setLoading(false);
@@ -34,8 +34,11 @@ export default function TaskDetail() {
     return (
       <>
         <Header />
-        <div className="container py-5 text-center">
-          <div className="spinner-border text-primary" role="status">
+        <div className="d-flex flex-column justify-content-center align-items-center py-5">
+          <div
+            className="spinner-border text-primary mb-3"
+            style={{ width: "3rem", height: "3rem" }}
+          >
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -124,7 +127,7 @@ export default function TaskDetail() {
                   </div>
                 </div>
                 {/* MÔ TẢ CÔNG VIỆC – CÓ TIÊU ĐỀ + ICON ĐẸP */}
-                <div className="px-3  flex-shrink-0">
+                <div className="px-4  flex-shrink-0">
                   <div>
                     <span className="text-primary fw-bold small">
                       Mô tả công việc:
@@ -148,7 +151,7 @@ export default function TaskDetail() {
                   </p>
                 </div>
 
-                <div className="mx-2 mt-1">
+                <div className="mx-4 mt-0">
                   {/* File khi giao việc */}
                   {task.attachedFiles &&
                     Array.isArray(task.attachedFiles) &&
@@ -267,7 +270,7 @@ export default function TaskDetail() {
                     </div>
                     <div className="col-6">
                       <div className="mb-2">
-                        <strong>Người làm:</strong>{" "}
+                        <strong>Người thực hiện:</strong>{" "}
                         {task.assignee?.name || "N/A"}
                       </div>
                       <div>
