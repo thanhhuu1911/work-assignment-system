@@ -24,7 +24,7 @@ i18n
           approved: "Approved",
           rejected: "Rejected",
           overdue: "Overdue",
-
+          rejected_overdue: "Rejected / Overdue",
           // === BADGE TEXT (giữ nguyên để phân biệt trạng thái) ===
           "Chờ duyệt": "Pending Review",
           "Đang cải thiện": "Improving",
@@ -121,7 +121,7 @@ i18n
           "Đang cải thiện": "Đang cải thiện",
           "Không đạt": "Không đạt",
           "Quá hạn": "Quá hạn",
-
+          rejected_overdue: "Quá hạn / Không đạt",
           // === FILTERS ===
           "Vị Trí": "Vị Trí",
           Nhóm: "Nhóm",

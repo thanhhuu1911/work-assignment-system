@@ -18,7 +18,7 @@ export default function Footer() {
       </footer>
 
       {/* CSS TOÀN CỤC – CHỈ CẦN 1 LẦN */}
-      <style jsx global>{`
+      <style>{`
         html,
         body,
         #root {

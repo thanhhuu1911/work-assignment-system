@@ -99,7 +99,7 @@ export default function Register() {
                   Select Role
                 </option>
                 <option value="manager">Manager</option>
-                <option value="a_manager">Assistant Manager</option>
+                {/* <option value="a_manager">Assistant Manager</option> */}
                 <option value="leader">Leader</option>
                 <option value="member">Staff</option>
               </select>

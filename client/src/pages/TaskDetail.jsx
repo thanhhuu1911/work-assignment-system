@@ -236,7 +236,7 @@ export default function TaskDetail() {
 
                 {/* GHI CHÚ DUYỆT – HIỆN LUÔN KHI CÓ reviewNote, DÙ ĐÃ APPROVED HAY REJECTED */}
                 {task.reviewNote && (
-                  <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
+                  <div className="mx-3 mt-1 p-2 rounded-3 border bg-light">
                     <small
                       className={`fw-bold d-block ${
                         task.status === "approved" ? "text-dark" : "text-danger"

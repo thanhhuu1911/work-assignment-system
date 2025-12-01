@@ -17,7 +17,7 @@ const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
   }
 
   // 2. Ảnh trước + có file → hiện logo công ty
-  if (isBefore && attachedFile) {
+  if (isBefore && attachedFile && attachedFile.length > 0) {
     return (
       <div className="d-flex align-items-center justify-content-center bg-white h-100">
         <img

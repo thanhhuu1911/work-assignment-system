@@ -6,6 +6,7 @@ import {
   improveTask,
   getTaskById,
   reviewTask,
+  getTaskStats,
 } from "../controllers/taskController.js";
 import { protect, authorize } from "../middleware/auth.js";
 import { upload } from "../middleware/upload.js"; // upload đã được update ở bước trước
@@ -34,6 +35,7 @@ router.post(
 );
 
 router.get("/", getTasks);
+router.get("/stats", protect, getTaskStats); // Thêm dòng này
 router.get("/:id", getTaskById);
 
 router.put(

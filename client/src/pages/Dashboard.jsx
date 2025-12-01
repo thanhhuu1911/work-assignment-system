@@ -13,7 +13,7 @@ const STATUS_FILTERS = [
   { key: "ongoing", label: "ongoing", color: "warning" },
   { key: "review", label: "review", color: "primary" },
   { key: "approved", label: "approved", color: "success" },
-  { key: "rejected/overdue", label: "rejected/overdue", color: "danger" },
+  { key: "rejected_overdue", label: "rejected_overdue", color: "danger" },
 ];
 
 const POSITIONS = [
@@ -73,7 +73,7 @@ export default function Dashboard() {
     filteredTasks = tasks.filter((t) => t.status === "review");
   } else if (statusFilter === "approved") {
     filteredTasks = tasks.filter((t) => t.status === "approved");
-  } else if (statusFilter === "rejected/overdue") {
+  } else if (statusFilter === "rejected_overdue") {
     filteredTasks = tasks.filter(
       (t) =>
         // 1. Bị reject (có reviewNote + không phải approved)
@@ -131,7 +131,7 @@ export default function Dashboard() {
       return tasks.filter((t) => t.status === "review").length;
     if (key === "approved")
       return tasks.filter((t) => t.status === "approved").length;
-    if (key === "rejected/overdue")
+    if (key === "rejected_overdue")
       return tasks.filter(
         (t) =>
           (t.reviewNote && t.status !== "approved") ||
@@ -154,59 +154,72 @@ export default function Dashboard() {
     <div className="d-flex flex-column min-vh-100">
       <Header />
       <main className="flex-grow-1">
-        <div className="container-fluid py-3 d-flex flex-column h-100">
+        <div className="container-fluid py-1 d-flex flex-column h-100 ">
           {/* 3 BỘ LỌC */}
-          <div className="row g-3 mb-4 justify-content-center">
-            <div className="col-md-3">
-              <select
-                className="form-select form-select-sm"
-                value={positionFilter}
-                onChange={(e) => {
-                  setPositionFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="all">{t("Tất cả nhà máy")}</option>
-                {POSITIONS.map((pos) => (
-                  <option key={pos} value={pos}>
-                    {pos}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-3">
-              <select
-                className="form-select form-select-sm"
-                value={groupFilter}
-                onChange={(e) => {
-                  setGroupFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="all">{t("Nhóm")}</option>
-                {uniqueGroups.map((gr) => (
-                  <option key={gr} value={gr}>
-                    {gr}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="col-md-3">
-              <select
-                className="form-select form-select-sm"
-                value={assigneeFilter}
-                onChange={(e) => {
-                  setAssigneeFilter(e.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="all">{t("Tên nhân viên")}</option>
-                {filteredAssignees.map((u) => (
-                  <option key={u._id} value={u._id}>
-                    {u.name}
-                  </option>
-                ))}
-              </select>
+          <div className="card shadow-sm mb-3 p-3 rounded-pill shadow-sm">
+            <div className="row g-4 justify-content-center">
+              <div className="col-md-3">
+                <label className="form-label small fw-bold text-dark mb-2">
+                  Nhà máy
+                </label>
+                <select
+                  className="form-select form-select-lg rounded-pill shadow-sm"
+                  value={positionFilter}
+                  onChange={(e) => {
+                    setPositionFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="all">Tất cả nhà máy</option>
+                  {POSITIONS.map((pos) => (
+                    <option key={pos} value={pos}>
+                      {pos}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-3">
+                <label className="form-label small fw-bold text-dark mb-2">
+                  Nhóm
+                </label>
+                <select
+                  className="form-select form-select-lg rounded-pill shadow-sm"
+                  value={groupFilter}
+                  onChange={(e) => {
+                    setGroupFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="all">Tất cả nhóm</option>
+                  {uniqueGroups.map((gr) => (
+                    <option key={gr} value={gr}>
+                      {gr}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-md-3">
+                <label className="form-label small fw-bold text-dark mb-2">
+                  Nhân viên
+                </label>
+                <select
+                  className="form-select form-select-lg rounded-pill shadow-sm"
+                  value={assigneeFilter}
+                  onChange={(e) => {
+                    setAssigneeFilter(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="all">Tất cả nhân viên</option>
+                  {filteredAssignees.map((u) => (
+                    <option key={u._id} value={u._id}>
+                      {u.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -232,20 +245,42 @@ export default function Dashboard() {
             <div className="ms-auto d-flex gap-2">
               {canAssignTask && (
                 <button
-                  className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                  className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center "
                   onClick={() => navigate("/new-issue")}
                 >
                   <img
                     src="/add.png"
                     alt="add"
-                    class="me-1"
+                    className="me-1"
                     style={{ width: "25px", height: "25px" }}
                   />
                   {t("create_task")}
                 </button>
               )}
+
+              {/* NÚT THỐNG KÊ MỚI – SIÊU ĐẸP */}
               <button
-                className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center gap-2"
+                onClick={() => navigate("/statistics")}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                >
+                  <path d="M3 3v18h18" />
+                  <path d="M18 17V9" />
+                  <path d="M13 17V5" />
+                  <path d="M8 17v-7" />
+                </svg>
+                Thống kê
+              </button>
+
+              <button
+                className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center "
                 onClick={() => {
                   // reset các filter về mặc định
                   setStatusFilter("all");
@@ -260,7 +295,7 @@ export default function Dashboard() {
                 <img
                   src="/reset.png"
                   alt="reset"
-                  class="me-1"
+                  className="me-1"
                   style={{ width: "25px", height: "25px" }}
                 />
                 {t("reload")}

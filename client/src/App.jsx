@@ -7,6 +7,7 @@ import TaskDetail from "./pages/TaskDetail"; // THÊM
 import ImproveTask from "./pages/ImproveTask"; // THÊM
 import ReviewTask from "./pages/ReviewTask";
 import Toast from "./components/Toast";
+import Statistics from "./pages/Statistics";
 export default function App() {
   return (
     <BrowserRouter>
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/task/:id" element={<TaskDetail />} /> {/* MỚI */}
         <Route path="/improve/:id" element={<ImproveTask />} />
         <Route path="/review/:id" element={<ReviewTask />} />
+        <Route path="/statistics" element={<Statistics />} />
       </Routes>
       <Toast />
     </BrowserRouter>

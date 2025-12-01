@@ -59,7 +59,7 @@ export default function Header() {
           <LanguageToggle />
 
           <button
-            className="btn btn-outline-danger btn-sm px-3"
+            className="btn btn-outline-danger btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center "
             onClick={handleLogout}
           >
             <img

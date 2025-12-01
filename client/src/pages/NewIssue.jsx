@@ -161,9 +161,9 @@ export default function NewIssue() {
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100">
+    <div className="d-flex flex-column min-vh-100 ">
       <Header />
-      <main className="flex-grow-1 bg-light py-4">
+      <main className="flex-grow-1 bg-light py-4 ">
         <div className="container">
           <div className="row justify-content-center">
             <div className="col-lg-6 col-xl-5">
@@ -175,13 +175,13 @@ export default function NewIssue() {
 
                   <form onSubmit={handleSubmit} encType="multipart/form-data">
                     {/* Các field cũ giữ nguyên */}
-                    <div className="row g-3">
+                    <div className="row g-3 ">
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
                           Department
                         </label>
                         <select
-                          className="form-select form-select-sm"
+                          className="form-select form-select-sm rounded-pill shadow-sm"
                           value="ME"
                           disabled
                         >
@@ -193,7 +193,7 @@ export default function NewIssue() {
                           Assignee
                         </label>
                         <select
-                          className="form-select form-select-sm"
+                          className="form-select form-select-sm rounded-pill shadow-sm"
                           value={form.assignee}
                           onChange={(e) =>
                             setForm({ ...form, assignee: e.target.value })
@@ -217,7 +217,7 @@ export default function NewIssue() {
                         Position
                       </label>
                       <select
-                        className="form-select form-select-sm"
+                        className="form-select form-select-sm rounded-pill shadow-sm"
                         value={form.position}
                         onChange={(e) =>
                           setForm({ ...form, position: e.target.value })
@@ -249,7 +249,7 @@ export default function NewIssue() {
                         Description
                       </label>
                       <textarea
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm "
                         rows="3"
                         placeholder="Enter task description..."
                         value={form.description}
@@ -262,12 +262,12 @@ export default function NewIssue() {
 
                     <div className="row g-3 mt-1">
                       <div className="col-md-6">
-                        <label className="form-label small fw-semibold">
+                        <label className="form-label small fw-semibold ">
                           Created Date
                         </label>
                         <input
                           type="date"
-                          className="form-control form-control-md shadow-sm rounded-3"
+                          className="form-control form-control-md shadow-sm rounded-3 rounded-pill shadow-sm"
                           value={form.startDate}
                           onChange={(e) =>
                             setForm({ ...form, startDate: e.target.value })
@@ -281,7 +281,7 @@ export default function NewIssue() {
                         </label>
                         <input
                           type="date"
-                          className="form-control form-control-md shadow-sm rounded-3"
+                          className="form-control form-control-md shadow-sm rounded-3 rounded-pill shadow-sm"
                           value={form.dueDate}
                           onChange={(e) =>
                             setForm({ ...form, dueDate: e.target.value })
@@ -292,13 +292,13 @@ export default function NewIssue() {
                     </div>
 
                     {/* ẢNH TRƯỚC – CĂN GIỮA ĐẸP LUNG LINH */}
-                    <div className="mt-2">
+                    <div className="mt-2 ">
                       <label className="form-label small fw-semibold text-dark">
                         Before images
                       </label>
                       <input
                         type="file"
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm rounded-pill shadow-sm"
                         accept="image/*"
                         onChange={handleBeforeImageChange}
                       />
@@ -308,7 +308,7 @@ export default function NewIssue() {
                             <img
                               src={beforePreview}
                               alt="Before preview"
-                              className="img-fluid rounded-4 shadow-lg border"
+                              className="img-fluid rounded-4 shadow-lg border "
                               style={{
                                 maxHeight: "200px",
                                 maxWidth: "100%",
@@ -335,7 +335,7 @@ export default function NewIssue() {
                       </label>
                       <input
                         type="file"
-                        className="form-control form-control-sm"
+                        className="form-control form-control-sm rounded-pill shadow-sm"
                         multiple
                         accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png,.jpeg"
                         onChange={handleAttachedFilesChange}
@@ -423,16 +423,30 @@ export default function NewIssue() {
                     <div className="d-flex justify-content-center gap-4 mt-5">
                       <button
                         type="button"
-                        className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                        className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center gap-2"
                         onClick={() => navigate("/dashboard")}
                       >
-                        Quay lại
+                        <svg
+                          width="18"
+                          height="18"
+                          fill="currentColor"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354l-6-6z" />
+                        </svg>
+                        Home
                       </button>
                       <button
                         type="submit"
-                        className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                        className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center gap-2"
                       >
-                        Giao việc
+                        <img
+                          src="/AssignTask.png"
+                          alt="add"
+                          className="me-1"
+                          style={{ width: "25px", height: "25px" }}
+                        />
+                        Assign task
                       </button>
                     </div>
                   </form>
