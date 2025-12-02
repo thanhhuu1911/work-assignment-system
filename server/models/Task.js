@@ -20,7 +20,14 @@ const taskSchema = new mongoose.Schema(
     dueDate: { type: Date, required: true },
     status: {
       type: String,
-      enum: ["ongoing", "processing", "review", "approved", "overdue"],
+      enum: [
+        "ongoing",
+        "processing",
+        "review",
+        "approved",
+        "rejected",
+        "overdue",
+      ],
       default: "ongoing",
     },
     beforeImage: { type: String },

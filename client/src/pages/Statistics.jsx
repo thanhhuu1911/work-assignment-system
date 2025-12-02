@@ -275,7 +275,16 @@ export default function Statistics() {
             <div className="col-lg-6">
               <div className="card shadow h-100">
                 <div className="card-header bg-white">
-                  <h5 className="text-dark fw-bold">Hoạt động 7 ngày</h5>
+                  <h5 className="text-dark fw-bold">
+                    Hoạt động{" "}
+                    {dateRange === "week"
+                      ? "7 ngày"
+                      : dateRange === "month"
+                      ? "tháng này"
+                      : dateRange === "quarter"
+                      ? "quý này"
+                      : "30 ngày gần nhất"}
+                  </h5>
                 </div>
                 <div className="card-body">
                   <ResponsiveContainer width="100%" height={320}>
@@ -285,7 +294,12 @@ export default function Statistics() {
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="date" />
-                      <YAxis />
+                      <YAxis
+                        allowDecimals={false}
+                        domain={[0, "dataMax + 1"]}
+                        tick={{ fontSize: 14 }}
+                        stroke="#666"
+                      />
                       <Tooltip />
                       <Legend />
 
@@ -342,9 +356,7 @@ export default function Statistics() {
               <div className="col-12 mt-4">
                 <div className="card shadow">
                   <div className="card-header bg-white">
-                    <h5 className="text-dark fw-bold">
-                      Top nhân viên xuất sắc
-                    </h5>
+                    <h5 className="text-dark fw-bold">Xếp hạng</h5>
                   </div>
                   <div className="card-body">
                     {topPerformers.slice(0, 8).map((p, i) => (
