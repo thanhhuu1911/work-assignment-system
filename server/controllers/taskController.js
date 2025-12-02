@@ -148,10 +148,6 @@ export const reviewTask = async (req, res) => {
       reviewedAt: new Date(),
     };
 
-    // QUY TẮC HOÀN HẢO NHẤT:
-    // - Nếu sếp có ghi gì → lưu lại (dù duyệt hay từ chối)
-    // - Nếu duyệt + không ghi gì → để reviewNote = null (không bắt buộc)
-    // - Nếu từ chối + không ghi gì → tự động điền "Không đạt"
     if (reviewNote?.trim()) {
       updateData.reviewNote = reviewNote.trim();
     } else if (status === "rejected") {
