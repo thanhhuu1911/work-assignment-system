@@ -169,6 +169,7 @@ export const reviewTask = async (req, res) => {
     res.status(500).json({ message: "Lỗi server" });
   }
 };
+
 export const getTaskStats = async (req, res) => {
   try {
     const currentUser = req.user;
@@ -179,94 +180,144 @@ export const getTaskStats = async (req, res) => {
     const isLeader = currentUser.role === "leader";
     const isMember = currentUser.role === "member";
 
-    let tasks = [];
-
-    // --- LẤY TASK THEO QUYỀN ---
-    if (isMember) {
-      tasks = await Task.find({ assignee: currentUser._id })
-        .populate("assignee", "name group _id")
-        .populate("assignedBy", "name")
-        .lean({ virtuals: true });
-    } else if (isLeader) {
-      const result = await Task.find()
-        .populate({
-          path: "assignee",
-          match: { group: currentUser.group },
-          select: "name group _id",
-        })
-        .populate("assignedBy", "name")
-        .lean({ virtuals: true });
-
-      tasks = result.filter((t) => t.assignee !== null);
-    } else {
-      tasks = await Task.find()
-        .populate("assignee", "name group _id")
-        .populate("assignedBy", "name")
-        .lean({ virtuals: true });
-    }
-
-    // --- FILTER QUERY ---
     const { group, userId, period } = req.query;
-    let filtered = tasks;
-
-    // Lọc theo nhóm
-    if ((isManager || isLeader) && group && group !== "all") {
-      filtered = filtered.filter((t) => t.assignee?.group === group);
-    }
-
-    // Lọc theo nhân viên
-    if ((isManager || isLeader || isMember) && userId && userId !== "all") {
-      filtered = filtered.filter((t) => t.assignee?._id.toString() === userId);
-    }
-
-    // Lọc thời gian
     const now = new Date();
-    if (period && period !== "all") {
-      let startDate;
+    const today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59
+    );
 
-      if (period === "week")
-        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      if (period === "month")
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      if (period === "quarter") {
-        const quarter = Math.floor(now.getMonth() / 3);
-        startDate = new Date(now.getFullYear(), quarter * 3, 1);
+    // 1. XÁC ĐỊNH PHẠM VI + LỌC THEO QUYỀN
+    let match = {};
+
+    if (isMember) {
+      match.assignee = currentUser._id;
+    } else if (isLeader) {
+      match["assignee.group"] = currentUser.group;
+    }
+    // Manager: thấy hết
+
+    // 2. LỌC THEO THỜI GIAN (từ createdAt)
+    let createdAtFilter = {};
+    if (period === "week") {
+      createdAtFilter = {
+        $gte: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
+      };
+    } else if (period === "month") {
+      createdAtFilter = {
+        $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+      };
+    } else if (period === "quarter") {
+      const quarter = Math.floor(now.getMonth() / 3);
+      createdAtFilter = { $gte: new Date(now.getFullYear(), quarter * 3, 1) };
+    } else {
+      // "all" hoặc không có → 30 ngày gần nhất
+      createdAtFilter = {
+        $gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+      };
+    }
+
+    // 3. QUERY CHÍNH – DÙNG MONGOOSE ĐỂ TÍNH isOverdue CHUẨN
+    let tasks = await Task.find({
+      ...match,
+      createdAt: createdAtFilter,
+    })
+      .populate("assignee", "name group _id")
+      .populate("assignedBy", "name")
+      .lean(); // vẫn lean để tăng tốc, nhưng sẽ tính overdue bằng logic dưới đây
+
+    // 4. MANAGER MỚI ĐƯỢC LỌC THÊM THEO GROUP & USER
+    if (isManager) {
+      if (group && group !== "all") {
+        tasks = tasks.filter((t) => t.assignee?.group === group);
+      }
+      if (userId && userId !== "all") {
+        tasks = tasks.filter((t) => t.assignee?._id.toString() === userId);
+      }
+    }
+
+    // 5. TÍNH TOÁN CHÍNH XÁC – DỰA VÀO DUE DATE + STATUS
+    const summary = {
+      total: tasks.length,
+      ongoing: 0,
+      completed: 0,
+      overdue: 0,
+      rejected: 0,
+    };
+
+    const userStats = {};
+    const dailyMap = new Map();
+
+    tasks.forEach((task) => {
+      const assigneeId = task.assignee?._id?.toString();
+      const createdDate = format(new Date(task.createdAt), "dd/MM");
+
+      // Tính trạng thái thực tế
+      let statusCategory = "";
+      if (task.status === "approved") {
+        statusCategory = "completed";
+        summary.completed++;
+      } else if (task.status === "rejected") {
+        statusCategory = "rejected";
+        summary.rejected++;
+      } else {
+        // Các trạng thái khác: ongoing, processing, review
+        const dueDate = new Date(task.dueDate);
+        const endOfDueDate = new Date(
+          dueDate.getFullYear(),
+          dueDate.getMonth(),
+          dueDate.getDate(),
+          23,
+          59,
+          59
+        );
+
+        if (endOfDueDate < today) {
+          statusCategory = "overdue";
+          summary.overdue++;
+        } else {
+          statusCategory = "ongoing";
+          summary.ongoing++;
+        }
       }
 
-      if (startDate)
-        filtered = filtered.filter((t) => new Date(t.createdAt) >= startDate);
-    }
+      // Top performers
+      if (assigneeId) {
+        if (!userStats[assigneeId]) {
+          userStats[assigneeId] = {
+            name: task.assignee.name,
+            completed: 0,
+            total: 0,
+          };
+        }
+        userStats[assigneeId].total++;
+        if (task.status === "approved") userStats[assigneeId].completed++;
+      }
 
-    // --- SUMMARY ---
-    const total = filtered.length;
-    const completed = filtered.filter((t) => t.status === "approved").length;
-    const ongoing = filtered.filter(
-      (t) =>
-        ["ongoing", "processing", "review"].includes(t.status) && !t.isOverdue
-    ).length;
-    const overdue = filtered.filter(
-      (t) => t.isOverdue && !["approved", "rejected"].includes(t.status)
-    ).length;
-    const rejected = filtered.filter((t) => t.status === "rejected").length;
-
-    const statusBreakdown = [
-      { name: "Đang thực hiện", value: ongoing, color: "#ffc107" },
-      { name: "Hoàn thành", value: completed, color: "#28a745" },
-      { name: "Quá hạn", value: overdue, color: "#846d70ff" },
-      { name: "Không đạt", value: rejected, color: "#ff0000ff" },
-    ].filter((i) => i.value > 0);
-
-    // --- TOP PERFORMERS ---
-    const userStats = {};
-    filtered.forEach((t) => {
-      if (!t.assignee) return;
-      const id = t.assignee._id.toString();
-      if (!userStats[id])
-        userStats[id] = { name: t.assignee.name, completed: 0, total: 0 };
-      userStats[id].total++;
-      if (t.status === "approved") userStats[id].completed++;
+      // Daily stats
+      if (!dailyMap.has(createdDate)) {
+        dailyMap.set(createdDate, {
+          date: createdDate,
+          created: 0,
+          completed: 0,
+          ongoing: 0,
+          overdue: 0,
+          rejected: 0,
+        });
+      }
+      const day = dailyMap.get(createdDate);
+      day.created++;
+      if (task.status === "approved") day.completed++;
+      else if (task.status === "rejected") day.rejected++;
+      else if (statusCategory === "overdue") day.overdue++;
+      else day.ongoing++;
     });
 
+    // 6. Top performers
     const topPerformers = Object.values(userStats)
       .map((u) => ({
         ...u,
@@ -275,131 +326,81 @@ export const getTaskStats = async (req, res) => {
       .sort((a, b) => b.rate - a.rate)
       .slice(0, 10);
 
-    // --- DAILY STATS ---
-    let dailyStats = [];
+    // 7. Daily stats – bổ sung ngày trống
+    const dailyStats = [];
+    const start =
+      period === "week"
+        ? 6
+        : period === "all"
+        ? 29
+        : period === "month"
+        ? new Date(now.getFullYear(), now.getMonth(), 1).getDate() - 1
+        : 89;
 
-    if (
-      !period ||
-      period === "all" ||
-      period === "week" ||
-      period === "month" ||
-      period === "quarter"
-    ) {
-      let dates = [];
-      let label = "";
-
-      if (period === "week" || !period || period === "all") {
-        // 7 ngày hoặc Tổng quan → 30 ngày gần nhất
-        const daysCount = period === "week" ? 7 : 30;
-        dates = Array.from({ length: daysCount }, (_, i) => {
-          const d = new Date();
-          d.setDate(d.getDate() - (daysCount - 1 - i));
-          return { date: format(d, "dd/MM"), fullDate: d };
-        });
-        label = period === "week" ? "7 ngày" : "30 ngày gần nhất";
-      } else if (period === "month") {
-        // Tháng này → lấy tất cả ngày trong tháng hiện tại
-        const year = new Date().getFullYear();
-        const month = new Date().getMonth();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        dates = Array.from({ length: daysInMonth }, (_, i) => {
-          const d = new Date(year, month, i + 1);
-          return { date: format(d, "dd/MM"), fullDate: d };
-        });
-        label = "Tháng này";
-      } else if (period === "quarter") {
-        // Quý này → lấy tất cả ngày trong quý
-        const now = new Date();
-        const quarter = Math.floor(now.getMonth() / 3);
-        const startMonth = quarter * 3;
-        const startDate = new Date(now.getFullYear(), startMonth, 1);
-        const endDate = new Date(now.getFullYear(), startMonth + 3, 0);
-        const daysInQuarter = endDate.getDate();
-
-        dates = [];
-        for (
-          let d = new Date(startDate);
-          d <= endDate;
-          d.setDate(d.getDate() + 1)
-        ) {
-          dates.push({
-            date: format(new Date(d), "dd/MM"),
-            fullDate: new Date(d),
-          });
-        }
-        label = "Quý này";
-      }
-
-      dailyStats = dates.map(({ date }) => {
-        const dayTasks = filtered.filter(
-          (t) => format(new Date(t.createdAt), "dd/MM") === date
-        );
-
-        return {
-          date,
-          created: dayTasks.length,
-          completed: dayTasks.filter((t) => t.status === "approved").length,
-          ongoing: dayTasks.filter(
-            (t) =>
-              ["ongoing", "processing", "review"].includes(t.status) &&
-              !t.isOverdue
-          ).length,
-          overdue: dayTasks.filter(
-            (t) => t.isOverdue && !["approved", "rejected"].includes(t.status)
-          ).length,
-          rejected: dayTasks.filter((t) => t.status === "rejected").length,
-        };
-      });
-
-      // Gắn thêm label để frontend biết hiển thị gì
-      dailyStats.label = label;
+    for (let i = start; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = format(d, "dd/MM");
+      const dayData = dailyMap.get(dateStr) || {
+        date: dateStr,
+        created: 0,
+        completed: 0,
+        ongoing: 0,
+        overdue: 0,
+        rejected: 0,
+      };
+      dailyStats.push(dayData);
     }
 
-    // --- AVAILABLE GROUPS ---
+    // 8. Available groups & users
     let availableGroups = [];
+    let availableUsers = [];
+
     if (isManager) {
       availableGroups = [
         ...new Set(tasks.map((t) => t.assignee?.group).filter(Boolean)),
       ];
+      const userMap = new Map();
+      tasks.forEach(
+        (t) =>
+          t.assignee &&
+          userMap.set(t.assignee._id.toString(), {
+            _id: t.assignee._id,
+            name: t.assignee.name,
+            group: t.assignee.group,
+          })
+      );
+      availableUsers = [...userMap.values()];
     } else if (isLeader) {
       availableGroups = [currentUser.group];
-    }
-
-    // --- AVAILABLE USERS (CHUẨN GROK – Map, không trùng, không thiếu) ---
-    let availableUsers = [];
-
-    if (isMember) {
-      availableUsers = [{ _id: currentUser._id, name: currentUser.name }];
-    } else {
       const userMap = new Map();
-
       tasks.forEach((t) => {
-        if (!t.assignee) return;
-
-        // Manager chọn group
-        if (group && group !== "all" && t.assignee.group !== group) return;
-
-        // Leader chỉ được xem người trong nhóm mình
-        if (isLeader && t.assignee.group !== currentUser.group) return;
-
-        userMap.set(t.assignee._id.toString(), {
-          _id: t.assignee._id,
-          name: t.assignee.name,
-        });
+        if (t.assignee && t.assignee.group === currentUser.group) {
+          userMap.set(t.assignee._id.toString(), {
+            _id: t.assignee._id,
+            name: t.assignee.name,
+          });
+        }
       });
-
       availableUsers = [...userMap.values()];
+    } else if (isMember) {
+      availableUsers = [{ _id: currentUser._id, name: currentUser.name }];
     }
 
-    // --- RESPONSE OK ---
+    const statusBreakdown = [
+      { name: "Đang thực hiện", value: summary.ongoing },
+      { name: "Hoàn thành", value: summary.completed },
+      { name: "Quá hạn", value: summary.overdue },
+      { name: "Không đạt", value: summary.rejected },
+    ].filter((i) => i.value > 0);
+
     res.json({
       success: true,
       data: {
-        summary: { total, completed, ongoing, overdue, rejected },
+        summary,
         statusBreakdown,
         dailyStats,
-        topPerformers,
+        topPerformers: isMember ? [] : topPerformers,
         availableGroups,
         availableUsers,
       },
