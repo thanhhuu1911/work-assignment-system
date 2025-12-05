@@ -173,14 +173,18 @@ export const reviewTask = async (req, res) => {
 export const getTaskStats = async (req, res) => {
   try {
     const currentUser = req.user;
-    if (!currentUser)
+    if (!currentUser) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
 
-    const isManager = ["manager", "a_manager"].includes(currentUser.role);
+    const isManager = ["manager", "assistant_manager"].includes(
+      currentUser.role
+    );
     const isLeader = currentUser.role === "leader";
     const isMember = currentUser.role === "member";
 
     const { group, userId, period } = req.query;
+
     const now = new Date();
     const today = new Date(
       now.getFullYear(),
@@ -191,7 +195,7 @@ export const getTaskStats = async (req, res) => {
       59
     );
 
-    // 1. XÁC ĐỊNH PHẠM VI + LỌC THEO QUYỀN
+    // ===== 1. XÁC ĐỊNH PHẠM VI THEO QUYỀN =====
     let match = {};
 
     if (isMember) {
@@ -199,9 +203,9 @@ export const getTaskStats = async (req, res) => {
     } else if (isLeader) {
       match["assignee.group"] = currentUser.group;
     }
-    // Manager: thấy hết
+    // Manager: thấy hết → không cần match
 
-    // 2. LỌC THEO THỜI GIAN (từ createdAt)
+    // ===== 2. LỌC THỜI GIAN (createdAt) =====
     let createdAtFilter = {};
     if (period === "week") {
       createdAtFilter = {
@@ -215,22 +219,22 @@ export const getTaskStats = async (req, res) => {
       const quarter = Math.floor(now.getMonth() / 3);
       createdAtFilter = { $gte: new Date(now.getFullYear(), quarter * 3, 1) };
     } else {
-      // "all" hoặc không có → 30 ngày gần nhất
+      // "all" hoặc mặc định → 30 ngày gần nhất
       createdAtFilter = {
         $gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
       };
     }
 
-    // 3. QUERY CHÍNH – DÙNG MONGOOSE ĐỂ TÍNH isOverdue CHUẨN
+    // ===== 3. LẤY TASKS + KIỂM TRA QUYỀN NGHIÊM NGẶT =====
     let tasks = await Task.find({
       ...match,
       createdAt: createdAtFilter,
     })
       .populate("assignee", "name group _id")
       .populate("assignedBy", "name")
-      .lean(); // vẫn lean để tăng tốc, nhưng sẽ tính overdue bằng logic dưới đây
+      .lean();
 
-    // 4. MANAGER MỚI ĐƯỢC LỌC THÊM THEO GROUP & USER
+    // Manager: được lọc thêm theo group/user
     if (isManager) {
       if (group && group !== "all") {
         tasks = tasks.filter((t) => t.assignee?.group === group);
@@ -240,7 +244,29 @@ export const getTaskStats = async (req, res) => {
       }
     }
 
-    // 5. TÍNH TOÁN CHÍNH XÁC – DỰA VÀO DUE DATE + STATUS
+    // Leader: CHẶN NGAY nếu cố tình xem group khác
+    if (isLeader && group && group !== "all" && group !== currentUser.group) {
+      return res.status(403).json({
+        success: false,
+        message: "Bạn chỉ được xem thống kê của nhóm mình",
+      });
+    }
+
+    // Leader: nếu chọn userId → phải thuộc group của leader
+    if (isLeader && userId && userId !== "all") {
+      const targetUser = tasks.find(
+        (t) => t.assignee?._id.toString() === userId
+      );
+      if (!targetUser) {
+        return res.status(403).json({
+          success: false,
+          message: "Nhân viên không tồn tại hoặc không thuộc nhóm của bạn",
+        });
+      }
+      tasks = tasks.filter((t) => t.assignee?._id.toString() === userId);
+    }
+
+    // ===== 4. TÍNH TOÁN THỐNG KÊ =====
     const summary = {
       total: tasks.length,
       ongoing: 0,
@@ -248,15 +274,13 @@ export const getTaskStats = async (req, res) => {
       overdue: 0,
       rejected: 0,
     };
-
     const userStats = {};
     const dailyMap = new Map();
 
     tasks.forEach((task) => {
       const assigneeId = task.assignee?._id?.toString();
-      const createdDate = format(new Date(task.createdAt), "dd/MM");
+      const dateStr = format(new Date(task.createdAt), "dd/MM");
 
-      // Tính trạng thái thực tế
       let statusCategory = "";
       if (task.status === "approved") {
         statusCategory = "completed";
@@ -265,18 +289,9 @@ export const getTaskStats = async (req, res) => {
         statusCategory = "rejected";
         summary.rejected++;
       } else {
-        // Các trạng thái khác: ongoing, processing, review
-        const dueDate = new Date(task.dueDate);
-        const endOfDueDate = new Date(
-          dueDate.getFullYear(),
-          dueDate.getMonth(),
-          dueDate.getDate(),
-          23,
-          59,
-          59
-        );
-
-        if (endOfDueDate < today) {
+        const dueDateEnd = new Date(task.dueDate);
+        dueDateEnd.setHours(23, 59, 59, 999);
+        if (dueDateEnd < today) {
           statusCategory = "overdue";
           summary.overdue++;
         } else {
@@ -299,9 +314,9 @@ export const getTaskStats = async (req, res) => {
       }
 
       // Daily stats
-      if (!dailyMap.has(createdDate)) {
-        dailyMap.set(createdDate, {
-          date: createdDate,
+      if (!dailyMap.has(dateStr)) {
+        dailyMap.set(dateStr, {
+          date: dateStr,
           created: 0,
           completed: 0,
           ongoing: 0,
@@ -309,7 +324,7 @@ export const getTaskStats = async (req, res) => {
           rejected: 0,
         });
       }
-      const day = dailyMap.get(createdDate);
+      const day = dailyMap.get(dateStr);
       day.created++;
       if (task.status === "approved") day.completed++;
       else if (task.status === "rejected") day.rejected++;
@@ -317,72 +332,85 @@ export const getTaskStats = async (req, res) => {
       else day.ongoing++;
     });
 
-    // 6. Top performers
-    const topPerformers = Object.values(userStats)
-      .map((u) => ({
-        ...u,
-        rate: u.total > 0 ? Math.round((u.completed / u.total) * 100) : 0,
-      }))
-      .sort((a, b) => b.rate - a.rate)
-      .slice(0, 10);
+    // Top performers (chỉ Manager & Leader)
+    const topPerformers = isMember
+      ? []
+      : Object.values(userStats)
+          .map((u) => ({
+            ...u,
+            rate: u.total > 0 ? Math.round((u.completed / u.total) * 100) : 0,
+          }))
+          .sort((a, b) => b.rate - a.rate)
+          .slice(0, 10);
 
-    // 7. Daily stats – bổ sung ngày trống
+    // Daily stats – bổ sung ngày trống
     const dailyStats = [];
-    const start =
+    let daysToShow =
       period === "week"
         ? 6
         : period === "all"
         ? 29
         : period === "month"
-        ? new Date(now.getFullYear(), now.getMonth(), 1).getDate() - 1
-        : 89;
+        ? now.getDate() - 1
+        : Math.floor(
+            (now -
+              new Date(
+                now.getFullYear(),
+                Math.floor(now.getMonth() / 3) * 3,
+                1
+              )) /
+              86400000
+          );
 
-    for (let i = start; i >= 0; i--) {
+    for (let i = daysToShow; i >= 0; i--) {
       const d = new Date();
       d.setDate(d.getDate() - i);
       const dateStr = format(d, "dd/MM");
-      const dayData = dailyMap.get(dateStr) || {
-        date: dateStr,
-        created: 0,
-        completed: 0,
-        ongoing: 0,
-        overdue: 0,
-        rejected: 0,
-      };
-      dailyStats.push(dayData);
+      dailyStats.push(
+        dailyMap.get(dateStr) || {
+          date: dateStr,
+          created: 0,
+          completed: 0,
+          ongoing: 0,
+          overdue: 0,
+          rejected: 0,
+        }
+      );
     }
 
-    // 8. Available groups & users
+    // Available groups & users
     let availableGroups = [];
     let availableUsers = [];
 
     if (isManager) {
-      availableGroups = [
-        ...new Set(tasks.map((t) => t.assignee?.group).filter(Boolean)),
-      ];
+      const groupsSet = new Set(
+        tasks.map((t) => t.assignee?.group).filter(Boolean)
+      );
+      availableGroups = ["Lean", "IE", "Data"].filter((g) => groupsSet.has(g));
+
       const userMap = new Map();
-      tasks.forEach(
-        (t) =>
-          t.assignee &&
+      tasks.forEach((t) => {
+        if (t.assignee) {
           userMap.set(t.assignee._id.toString(), {
             _id: t.assignee._id,
             name: t.assignee.name,
             group: t.assignee.group,
-          })
-      );
-      availableUsers = [...userMap.values()];
+          });
+        }
+      });
+      availableUsers = Array.from(userMap.values());
     } else if (isLeader) {
       availableGroups = [currentUser.group];
       const userMap = new Map();
       tasks.forEach((t) => {
-        if (t.assignee && t.assignee.group === currentUser.group) {
+        if (t.assignee) {
           userMap.set(t.assignee._id.toString(), {
             _id: t.assignee._id,
             name: t.assignee.name,
           });
         }
       });
-      availableUsers = [...userMap.values()];
+      availableUsers = Array.from(userMap.values());
     } else if (isMember) {
       availableUsers = [{ _id: currentUser._id, name: currentUser.name }];
     }
@@ -394,19 +422,21 @@ export const getTaskStats = async (req, res) => {
       { name: "Không đạt", value: summary.rejected },
     ].filter((i) => i.value > 0);
 
-    res.json({
+    return res.json({
       success: true,
       data: {
         summary,
         statusBreakdown,
         dailyStats,
-        topPerformers: isMember ? [] : topPerformers,
+        topPerformers,
         availableGroups,
         availableUsers,
       },
     });
   } catch (err) {
     console.error("Stats error:", err);
-    res.status(500).json({ success: false, message: "Lỗi server thống kê" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Lỗi server thống kê" });
   }
 };

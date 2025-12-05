@@ -198,7 +198,7 @@ export default function Statistics() {
                       onChange={(e) => setDateRange(e.target.value)}
                     >
                       <option value="week">7 ngày qua</option>
-                      <option value="all">30 ngày qua</option>
+                      <option value="all">30 ngày gần nhất</option>
                       <option value="month">Tháng này</option>
                       <option value="quarter">Quý này</option>
                     </select>
@@ -213,7 +213,7 @@ export default function Statistics() {
             <div className="card shadow-sm mb-4 border-0">
               <div className="card-body p-4">
                 <div className="row g-4">
-                  <div className="col-lg-6">
+                  <div className="col-md-6">
                     <label className="form-label fw-bold text-dark">
                       Nhân viên trong nhóm
                     </label>
@@ -225,15 +225,21 @@ export default function Statistics() {
                       <option value="all">
                         Tất cả thành viên nhóm {user.group}
                       </option>
-                      {availableUsers.map((u) => (
+                      {/* {availableUsers.map((u) => (
                         <option key={u._id} value={u._id}>
                           {u.name}
-                        </option>
-                      ))}
+                        </option> */}
+                      {stats.availableUsers
+                        .filter((u) => u.group === user.group)
+                        .map((u) => (
+                          <option key={u._id} value={u._id}>
+                            {u.name}
+                          </option>
+                        ))}
                     </select>
                   </div>
 
-                  <div className="col-lg-6">
+                  <div className="col-md-6">
                     <label className="form-label fw-bold text-dark">
                       Thời gian
                     </label>
@@ -303,7 +309,10 @@ export default function Statistics() {
                 </div>
                 <div className="card-body">
                   <ResponsiveContainer width="100%" height={380}>
-                    <LineChart data={dailyStats}>
+                    <LineChart
+                      data={dailyStats}
+                      key={`${groupFilter}-${userFilter}-${dateRange}`}
+                    >
                       <CartesianGrid strokeDasharray="4 4" />
                       <XAxis dataKey="date" />
                       <YAxis allowDecimals={false} />
@@ -358,7 +367,7 @@ export default function Statistics() {
                 </div>
                 <div className="card-body">
                   <ResponsiveContainer width="100%" height={380}>
-                    <PieChart>
+                    <PieChart key={`${groupFilter}-${userFilter}-${dateRange}`}>
                       <Pie
                         data={statusBreakdown}
                         dataKey="value"
