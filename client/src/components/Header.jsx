@@ -11,10 +11,10 @@ export default function Header() {
   // CHUYỂN ĐỔI CHỨC VỤ ĐẸP
   const getRoleDisplay = (role) => {
     const roleMap = {
-      member: "Staff",
-      leader: "Leader",
+      member: "STAFF",
+      leader: "LEADER",
       a_manager: "A.Manager",
-      manager: "Manager",
+      manager: "MANAGER",
     };
     return roleMap[role] || "member";
   };

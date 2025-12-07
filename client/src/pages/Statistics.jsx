@@ -30,15 +30,17 @@ export default function Statistics() {
   const { t } = useTranslation();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+  const isManager = ["manager", "a_manager"].includes(user.role);
+  const isLeader = user.role === "leader";
+  const isMember = user.role === "member";
+
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [groupFilter, setGroupFilter] = useState("all");
   const [userFilter, setUserFilter] = useState("all");
-  const [dateRange, setDateRange] = useState("week");
-
-  const isManager = ["manager", "a_manager"].includes(user.role);
-  const isLeader = user.role === "leader";
-  const isMember = user.role === "member";
+  const [dateRange, setDateRange] = useState(
+    isLeader || isMember ? "week" : "all"
+  );
 
   const fetchStats = async () => {
     setLoading(true);
@@ -133,7 +135,7 @@ export default function Statistics() {
                 onClick={() => {
                   setGroupFilter("all");
                   setUserFilter("all");
-                  setDateRange("week");
+                  setDateRange(isLeader || isMember ? "week" : "all");
                   fetchStats();
                 }}
                 className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill shadow-sm fw-semibold border-2"
@@ -225,17 +227,11 @@ export default function Statistics() {
                       <option value="all">
                         Tất cả thành viên nhóm {user.group}
                       </option>
-                      {/* {availableUsers.map((u) => (
+                      {stats.availableUsers.map((u) => (
                         <option key={u._id} value={u._id}>
                           {u.name}
-                        </option> */}
-                      {stats.availableUsers
-                        .filter((u) => u.group === user.group)
-                        .map((u) => (
-                          <option key={u._id} value={u._id}>
-                            {u.name}
-                          </option>
-                        ))}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -249,7 +245,7 @@ export default function Statistics() {
                       onChange={(e) => setDateRange(e.target.value)}
                     >
                       <option value="week">7 ngày qua</option>
-                      <option value="all">30 ngày qua</option>
+                      <option value="all">30 ngày gần nhất</option>
                       <option value="month">Tháng này</option>
                       <option value="quarter">Quý này</option>
                     </select>

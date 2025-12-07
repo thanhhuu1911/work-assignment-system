@@ -10,9 +10,9 @@ import { showToast } from "../components/Toast";
 
 const STATUS_FILTERS = [
   { key: "all", label: "all_status", color: "dark" },
-  { key: "ongoing", label: "ongoing", color: "warning" },
-  { key: "review", label: "review", color: "primary" },
-  { key: "approved", label: "approved", color: "success" },
+  { key: "ongoing", label: "ongoing", color: "dark" },
+  { key: "pending_approval", label: "pending_approval", color: "dark" },
+  { key: "approved", label: "approved", color: "dark" },
   { key: "rejected_overdue", label: "rejected_overdue", color: "danger" },
 ];
 
@@ -276,7 +276,7 @@ export default function Dashboard() {
                   <path d="M13 17V5" />
                   <path d="M8 17v-7" />
                 </svg>
-                Thống kê
+                {t("statistics")}
               </button>
 
               <button

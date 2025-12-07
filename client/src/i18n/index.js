@@ -17,14 +17,17 @@ i18n
 
           // === DASHBOARD & STATUS ===
           task_list: "Task List",
+          statistics: "Statistics",
           reload: "Reload",
           all_status: "All Status",
           ongoing: "Ongoing",
-          review: "Review", // ← Dùng cho nút, filter, tiêu đề
+          // review: "Review", // ← Dùng cho nút, filter, tiêu đề
           approved: "Approved",
           rejected: "Rejected",
           overdue: "Overdue",
           rejected_overdue: "Rejected / Overdue",
+
+          pending_approval: " Pending Approval ",
           // === BADGE TEXT (giữ nguyên để phân biệt trạng thái) ===
           "Chờ duyệt": "Pending Review",
           "Đang cải thiện": "Improving",
@@ -109,6 +112,7 @@ i18n
           // === DASHBOARD & STATUS ===
           task_list: "Danh sách công việc",
           reload: "Tải lại",
+          statistics: "Thống kê",
           all_status: "Tất cả trạng thái",
           ongoing: "Đang thực hiện",
           review: "Duyệt", // ← CHỈ DÙNG CHO NÚT, FILTER, TIÊU ĐỀ
@@ -116,6 +120,8 @@ i18n
           rejected: "Không đạt",
           overdue: "Quá hạn",
           in_review: "Chờ duyệt",
+          pending_approval: " Chờ duyệt ",
+
           // === BADGE TEXT TRONG CARD (GIỮ NGUYÊN ĐỂ NHÂN VIÊN BIẾT ĐANG CHỜ) ===
           "Chờ duyệt": "Chờ duyệt",
           "Đang cải thiện": "Đang cải thiện",

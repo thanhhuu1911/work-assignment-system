@@ -1,4 +1,4 @@
-// routes/taskRoutes.js
+// routes/tasks.js
 import express from "express";
 import {
   createTask,
@@ -35,7 +35,7 @@ router.post(
 );
 
 router.get("/", getTasks);
-router.get("/stats", protect, getTaskStats); // Thêm dòng này
+router.get("/stats", getTaskStats); // Thêm dòng này
 router.get("/:id", getTaskById);
 
 router.put(
