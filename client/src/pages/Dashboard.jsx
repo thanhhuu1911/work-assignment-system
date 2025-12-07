@@ -164,7 +164,7 @@ export default function Dashboard() {
         <div className="container-fluid py-1 d-flex flex-column h-100 ">
           {/* 3 BỘ LỌC */}
           <div className="card shadow-sm mb-3 p-3 rounded-pill shadow-sm">
-            <div className="row g-4 justify-content-center">
+            <div className="row g-5 justify-content-center">
               {/* ============ NHÀ MÁY ============ */}
               <div className="col-md-3">
                 <label className="form-label small fw-bold text-dark mb-2">
