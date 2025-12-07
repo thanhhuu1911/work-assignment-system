@@ -106,10 +106,10 @@ export default function Statistics() {
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h2 className="text-primary fw-bold">
               {isMember
-                ? "Thống kê cá nhân"
+                ? t("personal_stats")
                 : isLeader
-                ? `Thống kê nhóm ${user.group}`
-                : "Thống kê phòng ME"}
+                ? t("group_stats", { group: user.group })
+                : t("department_stats")}
             </h2>
 
             <div className="d-flex justify-content-end gap-3 mb-4">
@@ -126,7 +126,7 @@ export default function Statistics() {
                 >
                   <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354l-6-6z" />
                 </svg>
-                Home
+                {t("home")}
               </button>
 
               {/* Nút Reset */}
@@ -136,6 +136,7 @@ export default function Statistics() {
                   setGroupFilter("all");
                   setUserFilter("all");
                   setDateRange(isLeader || isMember ? "week" : "all");
+
                   fetchStats();
                 }}
                 className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill shadow-sm fw-semibold border-2"
@@ -146,7 +147,7 @@ export default function Statistics() {
                   alt="reset"
                   style={{ width: "25px", height: "25px" }}
                 />
-                Reset
+                {t("reset")}
               </button>
             </div>
           </div>
@@ -157,13 +158,15 @@ export default function Statistics() {
               <div className="card-body p-4">
                 <div className="row g-4">
                   <div className="col-lg-4">
-                    <label className="form-label fw-bold text-dark">Nhóm</label>
+                    <label className="form-label fw-bold text-dark">
+                      {t("group")}
+                    </label>
                     <select
                       className="form-select form-select-lg rounded-pill shadow-sm"
                       value={groupFilter}
                       onChange={(e) => setGroupFilter(e.target.value)}
                     >
-                      <option value="all">Tất cả nhóm</option>
+                      <option value="all">{t("all_group")}</option>
                       {availableGroups.map((g) => (
                         <option key={g} value={g}>
                           {g}
@@ -174,14 +177,14 @@ export default function Statistics() {
 
                   <div className="col-lg-4">
                     <label className="form-label fw-bold text-dark">
-                      Nhân viên
+                      {t("employee")}
                     </label>
                     <select
                       className="form-select form-select-lg rounded-pill shadow-sm"
                       value={userFilter}
                       onChange={(e) => setUserFilter(e.target.value)}
                     >
-                      <option value="all">Tất cả nhân viên</option>
+                      <option value="all">{t("all_employee")}</option>
                       {filteredUsers.map((u) => (
                         <option key={u._id} value={u._id}>
                           {u.name}
@@ -192,17 +195,17 @@ export default function Statistics() {
 
                   <div className="col-lg-4">
                     <label className="form-label fw-bold text-dark">
-                      Thời gian
+                      {t("time_period")}
                     </label>
                     <select
                       className="form-select form-select-lg rounded-pill shadow-sm"
                       value={dateRange}
                       onChange={(e) => setDateRange(e.target.value)}
                     >
-                      <option value="week">7 ngày qua</option>
-                      <option value="all">30 ngày gần nhất</option>
-                      <option value="month">Tháng này</option>
-                      <option value="quarter">Quý này</option>
+                      <option value="week">{t("last_7_days")}</option>
+                      <option value="all">{t("last_30_days")}</option>
+                      <option value="month">{t("this_month")}</option>
+                      <option value="quarter">{t("this_quarter")}</option>
                     </select>
                   </div>
                 </div>
@@ -217,7 +220,7 @@ export default function Statistics() {
                 <div className="row g-4">
                   <div className="col-md-6">
                     <label className="form-label fw-bold text-dark">
-                      Nhân viên trong nhóm
+                      {t("team_employee")}
                     </label>
                     <select
                       className="form-select form-select-lg rounded-pill shadow-sm"
@@ -225,7 +228,7 @@ export default function Statistics() {
                       onChange={(e) => setUserFilter(e.target.value)}
                     >
                       <option value="all">
-                        Tất cả thành viên nhóm {user.group}
+                        {t("all_team_employee")} {user.group}
                       </option>
                       {stats.availableUsers.map((u) => (
                         <option key={u._id} value={u._id}>
@@ -237,17 +240,17 @@ export default function Statistics() {
 
                   <div className="col-md-6">
                     <label className="form-label fw-bold text-dark">
-                      Thời gian
+                      {t("time_period")}
                     </label>
                     <select
                       className="form-select form-select-lg rounded-pill shadow-sm"
                       value={dateRange}
                       onChange={(e) => setDateRange(e.target.value)}
                     >
-                      <option value="week">7 ngày qua</option>
-                      <option value="all">30 ngày gần nhất</option>
-                      <option value="month">Tháng này</option>
-                      <option value="quarter">Quý này</option>
+                      <option value="week">{t("last_7_days")}</option>
+                      <option value="all">{t("last_30_days")}</option>
+                      <option value="month">{t("this_month")}</option>
+                      <option value="quarter">{t("this_quarter")}</option>
                     </select>
                   </div>
                 </div>
@@ -261,23 +264,27 @@ export default function Statistics() {
           <div className="row g-4 mb-5">
             {[
               {
-                label: "Tổng công việc",
+                label: t("total_tasks"),
                 value: summary.total,
                 color: "primary",
               },
               {
-                label: "Đang thực hiện",
+                label: t("assignee"),
                 value: summary.ongoing,
                 color: "warning",
               },
               {
-                label: "Hoàn thành",
+                label: t("completed"),
                 value: summary.completed,
                 color: "success",
               },
-              { label: "Quá hạn", value: summary.overdue, color: "danger" },
               {
-                label: "Không đạt",
+                label: t("overdue"),
+                value: summary.overdue,
+                color: "danger",
+              },
+              {
+                label: t("rejected"),
                 value: summary.rejected,
                 color: "secondary",
               },
@@ -301,7 +308,7 @@ export default function Statistics() {
             <div className="col-lg-7">
               <div className="card shadow h-100">
                 <div className="card-header bg-white border-0">
-                  <h5 className="mb-0 fw-bold">Hoạt động theo ngày</h5>
+                  <h5 className="mb-0 fw-bold">{t("daily_activity")}</h5>
                 </div>
                 <div className="card-body">
                   <ResponsiveContainer width="100%" height={380}>
@@ -346,7 +353,7 @@ export default function Statistics() {
                         type="monotone"
                         dataKey="rejected"
                         stroke="#6c757d"
-                        name="Không đạt"
+                        name="Không đat"
                         strokeWidth={3}
                       />
                     </LineChart>
@@ -359,7 +366,7 @@ export default function Statistics() {
             <div className="col-lg-5">
               <div className="card shadow h-100">
                 <div className="card-header bg-white border-0">
-                  <h5 className="mb-0 fw-bold">Tỷ lệ trạng thái công việc</h5>
+                  <h5 className="mb-0 fw-bold">{t("status_distribution")}</h5>
                 </div>
                 <div className="card-body">
                   <ResponsiveContainer width="100%" height={380}>
@@ -395,7 +402,10 @@ export default function Statistics() {
                 <div className="card shadow">
                   <div className="card-header bg-white border-0">
                     <h4 className="mb-0 fw-bold text-primary">
-                      Xếp hạng {isLeader ? `nhóm ${user.group}` : "phòng ME"}
+                      {t("statistics_ranking_title", {
+                        context: isLeader ? "group" : "department",
+                        group: isLeader ? user.group : null,
+                      })}
                     </h4>
                   </div>
                   <div className="card-body">

@@ -122,7 +122,7 @@ export default function ReviewTask() {
                       {task.position}
                     </h5>
                     <span className="badge rounded-pill bg-info text-white px-3 py-2">
-                      Chờ duyệt
+                      {t("pending_review")}
                     </span>
                   </div>
                 </div>
@@ -138,7 +138,7 @@ export default function ReviewTask() {
                       />
                     </div>
                     <small className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold small">
-                      Trước
+                      {t("before")}
                     </small>
                   </div>
                   <div className="col-6 position-relative">
@@ -146,7 +146,7 @@ export default function ReviewTask() {
                       <ImageDisplay imageField={task.afterImage} type="after" />
                     </div>
                     <small className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold small">
-                      Sau
+                      {t("after")}
                     </small>
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export default function ReviewTask() {
                 <div className="px-4 py-2">
                   <div>
                     <span className="text-primary fw-bold small">
-                      Mô tả công việc:
+                      {t("task_description")}
                     </span>
                   </div>
                   <p
@@ -172,7 +172,7 @@ export default function ReviewTask() {
                     }}
                     title={task.description}
                   >
-                    {task.description || "No description"}
+                    {task.description || t("no_description")}
                   </p>
                 </div>
 
@@ -183,7 +183,7 @@ export default function ReviewTask() {
                     task.attachedFiles.length > 0 && (
                       <div className="mb-2">
                         <small className="text-dark fw-bold d-block">
-                          File yêu cầu:
+                          {t("required_files")}
                         </small>
                         {task.attachedFiles.map((file, idx) => (
                           <div
@@ -214,7 +214,7 @@ export default function ReviewTask() {
                     task.completedFiles.length > 0 && (
                       <div>
                         <small className="text-dark fw-bold d-block mb-1">
-                          File hoàn thành:
+                          {t("completed_files")}
                         </small>
                         {task.completedFiles.map((file, idx) => (
                           <div
@@ -246,7 +246,7 @@ export default function ReviewTask() {
                       <i className="bi bi-chat-dots-fill text-dark"></i>
                       <div className="flex-grow-1">
                         <small className="text-dark fw-bold d-block">
-                          {task.assignee?.name || "Nhân viên"} đã nhắn:
+                          {task.assignee?.name || "Nhân viên"}{" "}
                         </small>
                         <p
                           className="mb-0 text-dark small lh-sm"
@@ -268,8 +268,8 @@ export default function ReviewTask() {
                       }`}
                     >
                       {task.status === "approved"
-                        ? "Feedback từ Leader:"
-                        : "Lý do không đạt:"}
+                        ? t("leader_feedback")
+                        : t("reject_reason")}
                     </small>
                     <p
                       className={`mb-0 small lh-sm ${
@@ -284,15 +284,15 @@ export default function ReviewTask() {
                 {/* GHI CHÚ (TỰ DO NHẬP) */}
                 <div className="px-4 py-3 border-top">
                   <label className="form-label fw-bold text-dark small">
-                    Ghi chú cho nhân viên{" "}
-                    <span className="text-danger">(bắt buộc nếu từ chối)</span>
+                    {t("note_for_employee")}{" "}
+                    <span className="text-danger">{t("note_required")}</span>
                   </label>
                   <textarea
                     className={`form-control ${
                       showWarning ? "border-danger shadow-sm" : ""
                     }`}
                     rows="4"
-                    placeholder="Nhập lời nhắn hoặc lý do từ chối..."
+                    placeholder={t("note_placeholder")}
                     value={note}
                     onChange={(e) => {
                       setNote(e.target.value);
@@ -301,7 +301,7 @@ export default function ReviewTask() {
                   />
                   {showWarning && (
                     <div className="text-danger small mt-2 fw-medium">
-                      Vui lòng nhập lý do trước khi từ chối!
+                      {t("note_warning")}
                     </div>
                   )}
                 </div>
@@ -313,15 +313,7 @@ export default function ReviewTask() {
                     onClick={() => navigate(-1)}
                     disabled={!!submitting}
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      fill="currentColor"
-                      viewBox="0 0 16 16"
-                    >
-                      <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354l-6-6z" />
-                    </svg>
-                    Home
+                    {t("home")}
                   </button>
 
                   <button
@@ -329,7 +321,7 @@ export default function ReviewTask() {
                     onClick={() => handleAction("approve")}
                     disabled={!!submitting}
                   >
-                    {submitting === "approve" ? "Đang duyệt..." : "Duyệt"}
+                    {submitting === "approve" ? t("approving") : t("approve")}
                   </button>
 
                   <button
@@ -337,7 +329,7 @@ export default function ReviewTask() {
                     onClick={() => handleAction("reject")}
                     disabled={!!submitting}
                   >
-                    {submitting === "reject" ? "Đang xử lý..." : "Từ chối"}
+                    {submitting === "reject" ? t("rejecting") : t("reject")}
                   </button>
                 </div>
               </div>

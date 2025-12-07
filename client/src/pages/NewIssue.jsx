@@ -178,7 +178,7 @@ export default function NewIssue() {
                     <div className="row g-3 ">
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
-                          Department
+                          {t("department")}
                         </label>
                         <select
                           className="form-select form-select-sm rounded-pill shadow-sm"
@@ -190,7 +190,7 @@ export default function NewIssue() {
                       </div>
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
-                          Assignee
+                          {t("assignee")}
                         </label>
                         <select
                           className="form-select form-select-sm rounded-pill shadow-sm"
@@ -214,7 +214,7 @@ export default function NewIssue() {
 
                     <div className="mt-3">
                       <label className="form-label small fw-semibold">
-                        Position
+                        {t("position")}
                       </label>
                       <select
                         className="form-select form-select-sm rounded-pill shadow-sm"
@@ -246,7 +246,7 @@ export default function NewIssue() {
 
                     <div className="mt-3">
                       <label className="form-label small fw-semibold">
-                        Description
+                        {t("description")}
                       </label>
                       <textarea
                         className="form-control form-control-sm "
@@ -263,7 +263,7 @@ export default function NewIssue() {
                     <div className="row g-3 mt-1">
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold ">
-                          Created Date
+                          {t("created_date")}
                         </label>
                         <input
                           type="date"
@@ -277,7 +277,7 @@ export default function NewIssue() {
                       </div>
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
-                          Deadline
+                          {t("deadline")}
                         </label>
                         <input
                           type="date"
@@ -294,7 +294,7 @@ export default function NewIssue() {
                     {/* ẢNH TRƯỚC – CĂN GIỮA ĐẸP LUNG LINH */}
                     <div className="mt-2 ">
                       <label className="form-label small fw-semibold text-dark">
-                        Before images
+                        {t("before_images")}
                       </label>
                       <input
                         type="file"
@@ -331,7 +331,7 @@ export default function NewIssue() {
                     {/* FILE ĐÍNH KÈM – NHẤN LÀ MỞ TAB MỚI */}
                     <div className="mt-2">
                       <label className="form-label small fw-semibold text-dark">
-                        File (Ctrl để chọn nhiều file)
+                        {t("attached_files_hint")}
                       </label>
                       <input
                         type="file"

@@ -60,10 +60,10 @@ export default function TaskDetail() {
   }
 
   const status = {
-    ongoing: { color: "bg-warning", text: "Đang thực hiện" },
-    review: { color: "bg-info", text: "Chờ duyệt" },
-    approved: { color: "bg-success", text: "Hoàn thành" },
-    rejected: { color: "bg-danger", text: "Không đạt" },
+    ongoing: { color: "bg-warning", text: t("ongoing") },
+    review: { color: "bg-info", text: t("review") },
+    approved: { color: "bg-success", text: t("approved") },
+    rejected: { color: "bg-danger", text: t("rejected") },
   }[task.status] || { color: "bg-secondary", text: task.status };
 
   const getFileName = (file) => {
@@ -113,7 +113,7 @@ export default function TaskDetail() {
                       />
                     </div>
                     <div className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold small">
-                      Trước
+                      {t("before")}
                     </div>
                   </div>
                   {/* // Ảnh SAU */}
@@ -122,7 +122,7 @@ export default function TaskDetail() {
                       <ImageDisplay imageField={task.afterImage} type="after" />
                     </div>
                     <div className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold small">
-                      Sau
+                      {t("after")}
                     </div>
                   </div>
                 </div>
@@ -130,7 +130,7 @@ export default function TaskDetail() {
                 <div className="px-4  flex-shrink-0">
                   <div>
                     <span className="text-primary fw-bold small">
-                      Mô tả công việc:
+                      {t("description")}:
                     </span>
                   </div>
                   <p
@@ -158,7 +158,7 @@ export default function TaskDetail() {
                     task.attachedFiles.length > 0 && (
                       <div className="mb-2">
                         <small className="text-dark fw-bold d-block">
-                          File yêu cầu:
+                          {t("required_files")}
                         </small>
                         {task.attachedFiles.map((file, idx) => (
                           <div
@@ -189,7 +189,7 @@ export default function TaskDetail() {
                     task.completedFiles.length > 0 && (
                       <div>
                         <small className="text-dark fw-bold d-block mb-1">
-                          File hoàn thành:
+                          {t("completed_files")}:
                         </small>
                         {task.completedFiles.map((file, idx) => (
                           <div
@@ -260,21 +260,21 @@ export default function TaskDetail() {
                   <div className="row text-muted small">
                     <div className="col-6">
                       <div className="mb-2">
-                        <strong>Người giao:</strong>{" "}
+                        <strong>{t("assigned_by")}:</strong>{" "}
                         {task.assignedBy?.name || "Sir"}
                       </div>
                       <div>
-                        <strong>Ngày tạo:</strong>{" "}
+                        <strong>{t("created_date")}:</strong>{" "}
                         {new Date(task.createdAt).toLocaleDateString("vi-VN")}
                       </div>
                     </div>
                     <div className="col-6">
                       <div className="mb-2">
-                        <strong>Người thực hiện:</strong>{" "}
+                        <strong>{t("executor")}:</strong>{" "}
                         {task.assignee?.name || "N/A"}
                       </div>
                       <div>
-                        <strong>Hạn chót:</strong>{" "}
+                        <strong>{t("deadline")}:</strong>{" "}
                         <span
                           className={
                             task.isOverdue ? "text-danger fw-bold" : ""
@@ -294,7 +294,7 @@ export default function TaskDetail() {
                       onClick={() => navigate(-1)}
                       style={{ minWidth: "110px" }}
                     >
-                      Quay lại
+                      {t("home")}
                     </button>
 
                     {["ongoing", "rejected"].includes(task.status) && (
@@ -303,7 +303,7 @@ export default function TaskDetail() {
                         onClick={() => navigate(`/improve/${task._id}`)}
                         style={{ minWidth: "110px" }}
                       >
-                        Cải thiện
+                        {t("improve")}
                       </button>
                     )}
 
@@ -313,7 +313,7 @@ export default function TaskDetail() {
                         onClick={() => navigate(`/review/${task._id}`)}
                         style={{ minWidth: "110px" }}
                       >
-                        Duyệt ngay
+                        {t("review")}
                       </button>
                     )}
                   </div>

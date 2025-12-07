@@ -146,7 +146,7 @@ export default function ImproveTask() {
                       {task.position}
                     </h5>
                     <span className="badge bg-info text-white px-3 py-2">
-                      Đang cải thiện
+                      {t("improving")}
                     </span>
                   </div>
                 </div>
@@ -162,7 +162,7 @@ export default function ImproveTask() {
                       />
                     </div>
                     <div className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end small fw-bold">
-                      Trước
+                      {t("before")}
                     </div>
                   </div>
                   <div className="col-6 position-relative">
@@ -180,7 +180,7 @@ export default function ImproveTask() {
                       )}
                     </div>
                     <div className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start small fw-bold">
-                      Sau
+                      {t("after")}
                     </div>
                   </div>
                 </div>
@@ -189,7 +189,7 @@ export default function ImproveTask() {
                 <div className="px-4 py-3">
                   <div>
                     <span className="text-primary fw-bold small">
-                      Mô tả công việc:
+                      {t("description")}:
                     </span>
                   </div>
                   <p
@@ -206,11 +206,11 @@ export default function ImproveTask() {
                     }}
                     title={task.description}
                   >
-                    {task.description || "No description"}
+                    {task.description || t("no_description")}
                   </p>
                   {task.reviewNote && (
                     <div className="alert alert-danger py-2 px-3 small rounded-3 border-0">
-                      <strong>Lý do không đạt:</strong> “{task.reviewNote}”
+                      <strong>{t("reason_reject")}</strong> “{task.reviewNote}”
                     </div>
                   )}
                 </div>
@@ -218,7 +218,7 @@ export default function ImproveTask() {
                 {/* UPLOAD ẢNH SAU (KHÔNG BẮT BUỘC) */}
                 <div className="px-4 pb-3">
                   <label className="form-label text-dark fw-bold small">
-                    After images
+                    {t("after_images")}
                   </label>
                   <input
                     type="file"
@@ -249,7 +249,7 @@ export default function ImproveTask() {
                 {/* UPLOAD FILE HOÀN THÀNH */}
                 <div className="px-4 pb-3">
                   <label className="form-label text-dark fw-bold small">
-                    File hoàn thành (ctrl để chọn nhiều file)
+                    {t("completed_files")} ({t("completed_files_hint")})
                   </label>
                   <input
                     type="file"
@@ -316,7 +316,7 @@ export default function ImproveTask() {
                 {/* GHI CHÚ */}
                 <div className="px-4 pb-3">
                   <label className="form-label text-dark fw-bold small">
-                    Feedback
+                    {t("feedback")}
                   </label>
                   <textarea
                     className="form-control form-control-sm"
@@ -342,7 +342,7 @@ export default function ImproveTask() {
                     >
                       <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354l-6-6z" />
                     </svg>
-                    Home
+                    {t("home")}
                   </button>
 
                   <button
@@ -352,7 +352,7 @@ export default function ImproveTask() {
                       submitting || (!afterImage && completedFiles.length === 0)
                     }
                   >
-                    {submitting ? "Đang gửi..." : "Gửi duyệt"}
+                    {submitting ? t("sending") : t("send_for_review")}
                   </button>
                 </div>
               </div>

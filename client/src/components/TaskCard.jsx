@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ImageDisplay from "./ImageDisplay";
 import { useTranslation } from "react-i18next";
+
 const STATUS_COLORS = {
   ongoing: "warning",
   processing: "primary",
@@ -14,8 +15,9 @@ const STATUS_COLORS = {
 export default function TaskCard({ task }) {
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-  const [isExpanded, setIsExpanded] = useState(false); // ← Trạng thái collapse
+  const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
+
   const canReview = () => {
     if (!currentUser?.role) return false;
     if (["manager", "a_manager"].includes(currentUser.role)) return true;
@@ -28,38 +30,26 @@ export default function TaskCard({ task }) {
     return false;
   };
 
-  const getFileName = (file) => {
-    if (!file) return "File";
-    if (typeof file === "string") return file;
-    return file.original || "File không tên";
-  };
-
-  const getFilePath = (file) => {
-    if (!file) return "#";
-    if (typeof file === "string") return file;
-    return file.stored || file;
-  };
-
   const getStatusText = () => {
-    if (task.status === "approved") return "Hoàn thành";
-    if (task.isOverdue) return "Quá hạn";
-    if (task.status === "rejected" && task.reviewNote) return "Không đạt";
+    if (task.status === "approved") return t("approved");
+    if (task.status === "rejected") return t("rejected");
+    if (task.isOverdue) return t("overdue");
+
     const statusMap = {
-      ongoing: "Đang thực hiện",
-      processing: "Đang thực hiện",
-      review: "Chờ duyệt",
+      ongoing: t("processing"),
+      processing: t("processing"),
+      review: t("pending_approval"),
     };
     return statusMap[task.status] || task.status;
   };
 
   const getStatusColor = () => {
     if (task.status === "approved") return "success";
-    if (task.isOverdue) return "danger";
     if (task.status === "rejected") return "danger";
+    if (task.isOverdue) return "danger";
     return STATUS_COLORS[task.status] || "secondary";
   };
 
-  // Tóm tắt cho collapse
   const reqFilesCount = task.attachedFiles?.length || 0;
   const compFilesCount = task.completedFiles?.length || 0;
   const hasFeedback = !!(task.improveNote || task.reviewNote);
@@ -85,8 +75,9 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
-      {/* Ảnh trước - sau */}
+      {/* Before - After Images */}
       <div className="row g-2 px-3 pt-2">
+        {/* Before */}
         <div className="col-6 position-relative">
           <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
             <ImageDisplay
@@ -99,9 +90,11 @@ export default function TaskCard({ task }) {
             className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold"
             style={{ fontSize: "0.7rem" }}
           >
-            {t("Trước")}
+            {t("before")}
           </small>
         </div>
+
+        {/* After */}
         <div className="col-6 position-relative">
           <div className="ratio ratio-1x1 rounded-3 overflow-hidden bg-light border">
             <ImageDisplay imageField={task.afterImage} type="after" />
@@ -110,18 +103,19 @@ export default function TaskCard({ task }) {
             className="position-absolute bottom-0 end-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-start fw-bold"
             style={{ fontSize: "0.7rem" }}
           >
-            Sau
+            {t("after")}
           </small>
         </div>
       </div>
 
-      {/* Mô tả */}
+      {/* Description */}
       <div className="px-3 flex-shrink-0">
         <div>
           <span className="text-primary fw-bold small">
-            {t("Mô tả công việc:")}
+            {t("description")}:
           </span>
         </div>
+
         <p
           className="text-primary mb-0"
           style={{
@@ -136,28 +130,25 @@ export default function TaskCard({ task }) {
           }}
           title={task.description}
         >
-          {task.description || "Không có mô tả"}
+          {task.description || t("no_description")}
         </p>
       </div>
 
-      {/* KHỐI COLLAPSE SIÊU ĐẸP */}
+      {/* Collapse */}
       <div className="mx-3 mt-1">
         <div
           className="bg-light border rounded-3 p-2 cursor-pointer user-select-none"
           onClick={() => setIsExpanded(!isExpanded)}
-          style={{ transition: "all 0.3s" }}
         >
           <div className="d-flex justify-content-between align-items-center">
             <div className="small fw-bold text-primary">
-              {t("File yêu cầu:")} {reqFilesCount} file
-              {reqFilesCount > 0 && "s"}
+              {t("required_files")} {reqFilesCount} {t("file")}
               <br />
-              {t("File hoàn thành:")} {compFilesCount} file
-              {compFilesCount > 0 && "s"}
+              {t("completed_files")}: {compFilesCount} {t("file")}
               <br />
               <span className={hasFeedback ? "text-success" : "text-muted"}>
-                {t("Feedback")}{" "}
-                {hasFeedback ? "Có ghi chú" : "hiện tại chưa có"}
+                {t("feedback")}:{" "}
+                {hasFeedback ? t("has_note") : t("no_note_yet")}
               </span>
             </div>
             <i
@@ -169,12 +160,12 @@ export default function TaskCard({ task }) {
         </div>
       </div>
 
-      {/* Phần dưới cùng - thông tin + nút */}
+      {/* Info + Buttons */}
       <div className="mt-auto p-3 pt-2 bg-white border-top">
         <div className="row text-dark mb-3" style={{ fontSize: "0.8rem" }}>
           <div className="col-6">
             <div className="d-flex align-items-center mb-1">
-              <strong className="me-1 text-nowrap">{t("Người giao:")}</strong>
+              <strong className="me-1 text-nowrap">{t("assigned_by")}:</strong>
               <span
                 className="text-truncate d-inline-block"
                 style={{ maxWidth: "70px" }}
@@ -183,18 +174,18 @@ export default function TaskCard({ task }) {
                 {task.assignedBy?.name || "N/A"}
               </span>
             </div>
+
             <div className="d-flex align-items-center">
-              <strong className="me-1 text-nowrap">{t("Ngày tạo:")}</strong>
+              <strong className="me-1 text-nowrap">{t("created_date")}:</strong>
               <span className="text-nowrap">
                 {new Date(task.createdAt).toLocaleDateString("vi-VN")}
               </span>
             </div>
           </div>
+
           <div className="col-6">
             <div className="d-flex align-items-center mb-1">
-              <strong className="me-1 text-nowrap">
-                {t("Người thực hiện:")}
-              </strong>
+              <strong className="me-1 text-nowrap">{t("assignee")}:</strong>
               <span
                 className="text-truncate d-inline-block"
                 style={{ maxWidth: "70px" }}
@@ -203,8 +194,9 @@ export default function TaskCard({ task }) {
                 {task.assignee?.name || "N/A"}
               </span>
             </div>
+
             <div className="d-flex align-items-center">
-              <strong className="me-1 text-nowrap">{t("Hạn chót:")}</strong>
+              <strong className="me-1 text-nowrap">{t("deadline")}:</strong>
               <span className="text-nowrap">
                 {new Date(task.dueDate).toLocaleDateString("vi-VN")}
               </span>
@@ -212,28 +204,32 @@ export default function TaskCard({ task }) {
           </div>
         </div>
 
-        <div className="d-flex justify-content-center gap-2">
+        <div className="d-flex justify-content-center gap-1">
           <button
             className="btn btn-primary btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
             onClick={() => navigate(`/task/${task._id}`)}
           >
-            {t("Xem chi tiết")}
+            {t("view_detail")}
           </button>
+
           {!task.isOverdue &&
-            ["ongoing", "processing", "review"].includes(task.status) && (
+            ["ongoing", "processing", "review", "rejected"].includes(
+              task.status
+            ) && (
               <button
                 className="btn btn-success btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
                 onClick={() => navigate(`/improve/${task._id}`)}
               >
-                {t("Cải thiện")}
+                {t("improve")}
               </button>
             )}
-          {canReview && task.status === "review" && (
+
+          {canReview() && task.status === "review" && (
             <button
               className="btn btn-info btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm text-white"
               onClick={() => navigate(`/review/${task._id}`)}
             >
-              {t("Duyệt")}
+              {t("review")}
             </button>
           )}
         </div>

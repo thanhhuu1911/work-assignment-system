@@ -11,7 +11,7 @@ import { showToast } from "../components/Toast";
 const STATUS_FILTERS = [
   { key: "all", label: "all_status", color: "dark" },
   { key: "ongoing", label: "ongoing", color: "dark" },
-  { key: "pending_approval", label: "pending_approval", color: "dark" },
+  { key: "review", label: "pending_approval", color: "dark" },
   { key: "approved", label: "approved", color: "dark" },
   { key: "rejected_overdue", label: "rejected_overdue", color: "danger" },
 ];
@@ -168,7 +168,7 @@ export default function Dashboard() {
               {/* ============ NHÀ MÁY ============ */}
               <div className="col-md-3">
                 <label className="form-label small fw-bold text-dark mb-2">
-                  Nhà máy
+                  {t("factory")}
                 </label>
                 <select
                   className="form-select form-select-lg rounded-pill shadow-sm"
@@ -180,7 +180,7 @@ export default function Dashboard() {
                 >
                   {["manager", "a_manager", "leader", "member"].includes(
                     user.role
-                  ) && <option value="all">Tất cả nhà máy</option>}
+                  ) && <option value="all">{t("all_factory")}</option>}
                   {POSITIONS.map((pos) => (
                     <option key={pos} value={pos}>
                       {pos}
@@ -192,7 +192,7 @@ export default function Dashboard() {
               {/* ============ NHÓM ============ */}
               <div className="col-md-3">
                 <label className="form-label small fw-bold text-dark mb-2">
-                  Nhóm
+                  {t("group")}
                 </label>
                 <select
                   className="form-select form-select-lg rounded-pill shadow-sm"
@@ -206,7 +206,7 @@ export default function Dashboard() {
                 >
                   {["manager", "a_manager"].includes(user.role) && (
                     <>
-                      <option value="all">Tất cả nhóm</option>
+                      <option value="all">{t("all_groups")}</option>
                       {uniqueGroups.map((gr) => (
                         <option key={gr} value={gr}>
                           {gr}
@@ -226,7 +226,7 @@ export default function Dashboard() {
               {/* ============ NHÂN VIÊN ============ */}
               <div className="col-md-3">
                 <label className="form-label small fw-bold text-dark mb-2">
-                  Nhân viên
+                  {t("employee")}
                 </label>
                 <select
                   className="form-select form-select-lg rounded-pill shadow-sm"
@@ -240,9 +240,11 @@ export default function Dashboard() {
                   {["manager", "a_manager"].includes(user.role) && (
                     <>
                       <option value="all">
-                        {groupFilter === "all"
-                          ? "Tất cả nhân viên"
-                          : "Tất cả trong nhóm"}
+                        {
+                          groupFilter === "all"
+                            ? t("all_members") // Tất cả nhân viên
+                            : t("all_in_group") // Tất cả trong nhóm
+                        }
                       </option>
                       {uniqueAssignees
                         .filter(
@@ -261,7 +263,7 @@ export default function Dashboard() {
                   {["leader", "member"].includes(user.role) && (
                     <>
                       {user.role === "leader" && (
-                        <option value="all">Tất cả trong nhóm</option>
+                        <option value="all">{t("all_in_group")}</option>
                       )}
                       {uniqueAssignees
                         .filter((u) => u?.group === user.group)

@@ -3,82 +3,91 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-// Các bản dịch
 const resources = {
   vi: {
     translation: {
-      // Common / General
+      // ===== COMMON =====
       all: "Tất cả",
       all_status: "Tất cả trạng thái",
       all_positions: "Tất cả nhà máy",
       all_groups: "Tất cả nhóm",
       all_members: "Tất cả nhân viên",
+      all_in_group: "Tất cả trong nhóm",
+      files: "File",
       reload: "Tải lại",
-      reset: "Reset",
+      reset: "Làm mới",
       home: "Trang chủ",
       back: "Quay lại",
       create_task: "Tạo công việc",
-      assign_task: "Giao việc mới",
+      assign_task: "Giao việc ",
       statistics: "Thống kê",
       no_tasks: "Không có công việc nào",
       loading: "Đang tải...",
+      employee: "Nhân viên",
+      before: "Trước",
+      // TOAST TYPES
+      warning: "Cảnh báo!",
+      success: "Thành công!",
+      error: "Lỗi!",
 
-      // Status
+      // ===== DASHBOARD LABELS =====
+      factory: "Nhà máy",
+      group: "Nhóm",
+      member: "Nhân viên",
+
+      // ===== STATUS =====
       ongoing: "Đang thực hiện",
-      processing: "Đang thực hiện",
-      review: "Chờ duyệt",
+      review: " duyệt",
       pending_approval: "Chờ duyệt",
       approved: "Hoàn thành",
       rejected: "Không đạt",
       rejected_overdue: "Quá hạn / Không đạt",
       overdue: "Quá hạn",
 
-      // Filters & Labels
-      factory: "Nhà máy",
-      group: "Nhóm",
-      member: "Nhân viên",
-      position: "Vị trí",
-      department: "Phòng ban",
+      // ===== TASK INFO =====
+      assigned_by: "Người giao",
       assignee: "Người thực hiện",
+      executor: "Người thực hiện",
       created_date: "Ngày tạo",
       deadline: "Hạn chót",
       description: "Mô tả công việc",
+      no_description: "Không có mô tả",
       before_image: "Ảnh trước",
       after_image: "Ảnh sau",
       attached_files: "File đính kèm",
       completed_files: "File hoàn thành",
       feedback: "Ghi chú",
-      note_to_leader: "Lời nhắn cho Leader",
       review_note: "Ghi chú duyệt",
 
-      // TaskCard
-      assigned_by: "Người giao",
-      executor: "Người thực hiện",
+      // ===== TASKCARD =====
       view_detail: "Xem chi tiết",
       improve: "Cải thiện",
-      review_now: "Duyệt ngay",
+
       improving: "Đang cải thiện",
       waiting_review: "Chờ duyệt",
+      has_note: "Có ghi chú",
+      no_note_yet: "Chưa có",
 
-      // NewIssue
+      // ===== NEW ISSUE =====
       assign_task_me: "Giao việc - ME",
       select_assignee: "-- Chọn nhân viên --",
       select_position: "-- Chọn vị trí --",
       enter_description: "Nhập mô tả công việc...",
       before_images: "Ảnh trước (không bắt buộc)",
-      attached_files_hint: "Ctrl để chọn nhiều file",
+      attached_files_hint: "Nhấn Ctrl để chọn nhiều file",
       assign_task_button: "Giao việc",
+      all_factory: "Tất cả nhà máy",
 
-      // ImproveTask
+      // ===== IMPROVE TASK =====
       improve_task: "Cải thiện công việc",
       after_images: "Ảnh sau (không bắt buộc)",
-      completed_files_hint: "Ctrl để chọn nhiều file",
+      completed_files_hint: "Nhấn Ctrl để chọn nhiều file",
       send_for_review: "Gửi duyệt",
       sending: "Đang gửi...",
       must_attach_one:
         "Vui lòng chọn ít nhất 1 ảnh 'Sau' hoặc 1 file hoàn thành!",
 
-      // ReviewTask
+      // ===== REVIEW TASK =====
       task_review: "Duyệt công việc",
       reason_reject: "Lý do không đạt:",
       feedback_from_leader: "Feedback từ Leader:",
@@ -90,14 +99,14 @@ const resources = {
       rejecting: "Đang xử lý...",
       must_enter_reason: "Vui lòng nhập lý do trước khi từ chối!",
 
-      // TaskDetail
+      // ===== TASK DETAIL =====
       task_detail: "Chi tiết công việc",
-      file_required: "File yêu cầu:",
+      required_files: "File yêu cầu:",
       file_completed: "File hoàn thành:",
-      message_from_member: "Nhân viên đã nhắn:",
+      message_from_member: "Tin nhắn từ nhân viên:",
       overdue_text: "Quá hạn",
 
-      // Statistics
+      // ===== STATISTICS =====
       personal_stats: "Thống kê cá nhân",
       group_stats: "Thống kê nhóm {{group}}",
       department_stats: "Thống kê phòng ME",
@@ -110,103 +119,189 @@ const resources = {
       status_distribution: "Tỷ lệ trạng thái công việc",
       ranking: "Xếp hạng",
       completion_rate: "Tỷ lệ hoàn thành",
-
-      // Time filters
       last_7_days: "7 ngày qua",
       last_30_days: "30 ngày gần nhất",
       this_month: "Tháng này",
       this_quarter: "Quý này",
 
-      // Toast messages
+      // TOASTS
       task_assigned_success: "Giao việc thành công!",
       improve_sent_success: "Gửi duyệt thành công!",
-      approved_success: "ĐÃ DUYỆT THÀNH CÔNG!",
-      rejected_success: "ĐÃ TỪ CHỐI!",
+      approved_success: "Đã duyệt thành công!",
+      rejected_success: "Đã từ chối!",
       error_occurred: "Có lỗi xảy ra!",
       load_error: "Lỗi tải dữ liệu",
       unauthorized_improve: "Không thể cải thiện công việc này!",
       not_in_review: "Công việc không ở trạng thái chờ duyệt",
 
-      before: "Trước",
-      after: "Sau",
-      description: "Mô tả công việc",
-      no_description: "Không có mô tả",
-      required_files: "File yêu cầu",
-      completed_files: "File hoàn thành",
-      file: "file",
-      files: "files",
-      feedback: "Feedback",
-      has_note: "Có ghi chú",
-      no_note_yet: "hiện tại chưa có",
-      assigned_by: "Người giao",
-      created_date: "Ngày tạo",
-      executor: "Người thực hiện",
-      deadline: "Hạn chót",
-      view_detail: "Xem chi tiết",
-      improve: "Cải thiện",
-      review_now: "Duyệt",
+      logout: "Đăng xuất",
+      note_for_employee: "Ghi chú cho nhân viên",
+      note_required: "(bắt buộc nếu từ chối)",
 
-      // Roles (hiển thị)
+      // ===== REVIEW TASK PAGE EXTRA =====
+      review_title: "Duyệt công việc",
+      review_information: "Thông tin duyệt",
+      review_actions: "Thao tác duyệt",
+      confirm_approve: "Bạn có chắc muốn duyệt công việc này?",
+      confirm_reject: "Bạn có chắc muốn từ chối công việc này?",
+      reviewer_note: "Ghi chú của người duyệt",
+      enter_reviewer_note: "Nhập ghi chú...",
+      review_submitting: "Đang xử lý duyệt...",
+      reject_submitting: "Đang xử lý từ chối...",
+      no_after_images: "Không có ảnh sau",
+      no_completed_files: "Không có file hoàn thành",
+      member_message: "Tin nhắn từ nhân viên",
+      leader_feedback: "Feedback từ Leader",
+      reject_reason_placeholder: "Nhập lý do từ chối...",
+      note_placeholder: "Nhập ghi chú tại đây...",
+
+      home: "Trang chủ",
+      reset: "Làm mới",
+      position: "Khu vực sản xuất",
+      // ===== STATISTICS - KEY DÙNG GẠCH DƯỚI (đúng như bạn đang dùng) =====
+      group: "Nhóm",
+      all_group: "Tất cả nhóm",
+      employee: "Nhân viên",
+      all_employee: "Tất cả nhân viên",
+      team_employee: "Nhân viên trong nhóm",
+      all_team_employee: "Tất cả thành viên nhóm",
+      time_period: "Thời gian",
+
+      personal_stats: "Thống kê cá nhân",
+      group_stats: "Thống kê nhóm {{group}}",
+      department_stats: "Thống kê phòng ME",
+
+      last_7_days: "7 ngày qua",
+      last_30_days: "30 ngày gần nhất",
+      this_month: "Tháng này",
+      this_quarter: "Quý này",
+
+      total_tasks: "Tổng công việc",
+      // assignee: "Đang thực hiện", // bạn đang dùng "assignee" cho ongoing
+      completed: "Hoàn thành",
+      overdue: "Quá hạn",
+      rejected: "Không đạt",
+
+      daily_activity: "Hoạt động theo ngày",
+      status_distribution: "Tỷ lệ trạng thái công việc",
+
+      // Key xếp hạng dùng gạch dưới + context
+      statistics_ranking_title: "Xếp hạng phòng ME",
+      statistics_ranking_title_group: "Xếp hạng nhóm {{group}}",
+
+      // Các key khác bạn có thể dùng sau này
+      personal_stats: "Thống kê cá nhân",
+      group_stats: "Thống kê nhóm {{group}}",
+      department_stats: "Thống kê phòng ME",
+      department: "Phòng ban",
+      // ROLES
       leader: "Leader",
-      staff: "Staff",
+      staff: "Nhân viên",
     },
   },
+
+  // ===================== ENGLISH =======================
   en: {
     translation: {
-      // Common / General
       all: "All",
       all_status: "All Status",
       all_positions: "All Factories",
       all_groups: "All Groups",
       all_members: "All Members",
+      all_in_group: "All in Group",
+      files: "Files",
       reload: "Reload",
       reset: "Reset",
       home: "Home",
       back: "Back",
       create_task: "Create Task",
-      assign_task: "Assign New Task",
+      assign_task: "Assign Task",
       statistics: "Statistics",
       no_tasks: "No tasks found",
       loading: "Loading...",
+      employee: "Employee",
 
-      // Status
+      warning: "Warning!",
+      success: "Success!",
+      error: "Error!",
+      note_placeholder: "Enter your note here...",
+
+      home: "Home",
+      reset: "Reset",
+      department: "Department",
+      // ===== STATISTICS - KEY GẠCH DƯỚI (đồng bộ với file JSX) =====
+      group: "Group",
+      all_group: "All Groups",
+      employee: "Employee",
+      all_employee: "All Employees",
+      team_employee: "Team Employee",
+      all_team_employee: "All employee of group",
+      time_period: " Time Period",
+
+      last_7_days: "Last 7 days",
+      last_30_days: "Last 30 days",
+      this_month: "This month",
+      this_quarter: "This quarter",
+
+      total_tasks: "Total Tasks",
+      assignee: "In Progress", // đang dùng cho "Đang thực hiện"
+      completed: "Completed",
+      overdue: "Overdue",
+      rejected: "Rejected",
+
+      daily_activity: "Daily Activity",
+      status_distribution: "Task Status Distribution",
+
+      // Xếp hạng với context
+      statistics_ranking_title: "ME Department Ranking",
+      statistics_ranking_title_group: "{{group}} Group Ranking",
+
+      // Các key khác (giữ để sau dùng)
+      personal_stats: "Personal Statistics",
+      group_stats: "Group {{group}} Statistics",
+      department_stats: "ME Department Statistics",
+
+      personal_stats: "Personal Statistics",
+      group_stats: "Group {{group}} Statistics",
+      department_stats: "ME Department Statistics",
+      position: "Production",
+      factory: "Factory",
+      group: "Group",
+      member: "Member",
+      before: "Before",
+      after: "After",
       ongoing: "In Progress",
-      processing: "In Progress",
-      review: "Pending Review",
+      review: "Review",
       pending_approval: "Pending Approval",
       approved: "Completed",
       rejected: "Rejected",
       rejected_overdue: "Overdue / Rejected",
       overdue: "Overdue",
+      note_for_employee: "Note for employee",
+      note_required: "(required if rejecting)",
 
-      // Filters & Labels
-      factory: "Factory",
-      group: "Group",
-      member: "Member",
-      position: "Position",
-      department: "Department",
+      assigned_by: "Assigned By",
       assignee: "Assignee",
+      executor: "Assignee",
       created_date: "Created Date",
-      deadline: "Deadline: Deadline",
-      description: "Task Description",
+      deadline: "Deadline",
+      description: "Description",
+      no_description: "No description",
       before_image: "Before Image",
       after_image: "After Image",
       attached_files: "Attached Files",
       completed_files: "Completed Files",
-      feedback: "Note",
-      note_to_leader: "Message to Leader",
+      feedback: "Feedback",
       review_note: "Review Note",
-
-      // TaskCard
-      assigned_by: "Assigned By",
-      executor: "Executor",
+      after: "Sau",
       view_detail: "View Detail",
       improve: "Improve",
-      review_now: "Review Now",
+
       improving: "Improving",
       waiting_review: "Pending Review",
+      has_note: "Has note",
+      no_note_yet: "None yet",
 
-      // NewIssue
       assign_task_me: "Assign Task - ME",
       select_assignee: "-- Select Staff --",
       select_position: "-- Select Position --",
@@ -214,8 +309,8 @@ const resources = {
       before_images: "Before Images (optional)",
       attached_files_hint: "Hold Ctrl to select multiple files",
       assign_task_button: "Assign Task",
+      all_factory: "All Factories",
 
-      // ImproveTask
       improve_task: "Improve Task",
       after_images: "After Images (optional)",
       completed_files_hint: "Hold Ctrl to select multiple files",
@@ -224,7 +319,6 @@ const resources = {
       must_attach_one:
         "Please upload at least one 'After' image or completed file!",
 
-      // ReviewTask
       task_review: "Review Task",
       reason_reject: "Reason for rejection:",
       feedback_from_leader: "Feedback from Leader:",
@@ -236,14 +330,12 @@ const resources = {
       rejecting: "Processing...",
       must_enter_reason: "Please enter a reason before rejecting!",
 
-      // TaskDetail
       task_detail: "Task Detail",
       file_required: "Required Files:",
       file_completed: "Completed Files:",
       message_from_member: "Message from member:",
       overdue_text: "Overdue",
-
-      // Statistics
+      required_files: " Required Files:",
       personal_stats: "Personal Statistics",
       group_stats: "Group {{group}} Statistics",
       department_stats: "ME Department Statistics",
@@ -256,61 +348,54 @@ const resources = {
       status_distribution: "Task Status Distribution",
       ranking: "Ranking",
       completion_rate: "Completion Rate",
-
-      // Time filters
       last_7_days: "Last 7 days",
       last_30_days: "Last 30 days",
       this_month: "This Month",
       this_quarter: "This Quarter",
 
-      // Toast messages
       task_assigned_success: "Task assigned successfully!",
       improve_sent_success: "Submitted for review successfully!",
-      approved_success: "APPROVED SUCCESSFULLY!",
-      rejected_success: "REJECTED!",
+      approved_success: "Approved successfully!",
+      rejected_success: "Rejected!",
       error_occurred: "An error occurred!",
       load_error: "Error loading data",
       unauthorized_improve: "Cannot improve this task!",
       not_in_review: "Task is not in review status",
 
-      // Roles
+      logout: "Logout",
+
+      // ===== REVIEW TASK PAGE EXTRA =====
+      review_title: "Review Task",
+      review_information: "Review Information",
+      review_actions: "Review Actions",
+      confirm_approve: "Are you sure you want to approve this task?",
+      confirm_reject: "Are you sure you want to reject this task?",
+      reviewer_note: "Reviewer Note",
+      enter_reviewer_note: "Enter note...",
+      review_submitting: "Processing approval...",
+      reject_submitting: "Processing rejection...",
+      no_after_images: "No after images",
+      no_completed_files: "No completed files",
+      member_message: "Message from member",
+      leader_feedback: "Leader Feedback",
+      reject_reason_placeholder: "Enter rejection reason...",
+      request_files: "Request Files",
       leader: "Leader",
       staff: "Staff",
-
-      before: "Before",
-      after: "After",
-      description: "Task description",
-      no_description: "No description",
-      required_files: "Required files",
-      completed_files: "Completed files",
-      file: "file",
-      files: "files",
-      feedback: "Feedback",
-      has_note: "Has note",
-      no_note_yet: "none yet",
-      assigned_by: "Assigned by",
-      created_date: "Created date",
-      executor: "Assignee",
-      deadline: "Deadline",
-      view_detail: "View detail",
-      improve: "Improve",
-      review_now: "Review",
     },
   },
 };
 
+// INIT I18N
 i18n
-  .use(LanguageDetector) // Tự động phát hiện ngôn ngữ trình duyệt
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
-    lng: "vi", // Ngôn ngữ mặc định
     fallbackLng: "vi",
-    interpolation: {
-      escapeValue: false,
-    },
+    interpolation: { escapeValue: false },
     detection: {
-      order: ["localStorage", "navigator"],
+      order: ["localStorage", "querystring", "navigator"],
       caches: ["localStorage"],
     },
   });

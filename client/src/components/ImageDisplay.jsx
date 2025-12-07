@@ -10,7 +10,9 @@ const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
         alt={isBefore ? "Before" : "After"}
         className="w-100 h-100 img-fluid object-fit-contain bg-white p-1"
         onError={(e) => {
-          e.target.src = "https://via.placeholder.com/600?text=No+Image";
+          e.target.src = "/no-image.jpg";
+          e.target.onerror = null; // DÒNG QUAN TRỌNG NHẤT: NGĂN LẶP VÔ HẠN
+          e.target.alt = "No image";
         }}
       />
     );
