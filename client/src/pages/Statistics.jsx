@@ -353,7 +353,7 @@ export default function Statistics() {
                         type="monotone"
                         dataKey="rejected"
                         stroke="#6c757d"
-                        name="Không đat"
+                        name="Không đạt"
                         strokeWidth={3}
                       />
                     </LineChart>
@@ -444,7 +444,6 @@ export default function Statistics() {
           )}
         </div>
       </main>
-
       <Footer />
     </div>
   );
