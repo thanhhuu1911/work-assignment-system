@@ -99,7 +99,7 @@ export default function TaskCard({ task }) {
             className="position-absolute bottom-0 start-0 bg-white bg-opacity-90 text-dark px-2 py-1 rounded-end fw-bold"
             style={{ fontSize: "0.7rem" }}
           >
-            Trước
+            {t("Trước")}
           </small>
         </div>
         <div className="col-6 position-relative">
@@ -118,7 +118,9 @@ export default function TaskCard({ task }) {
       {/* Mô tả */}
       <div className="px-3 flex-shrink-0">
         <div>
-          <span className="text-primary fw-bold small">Mô tả công việc:</span>
+          <span className="text-primary fw-bold small">
+            {t("Mô tả công việc:")}
+          </span>
         </div>
         <p
           className="text-primary mb-0"
@@ -147,12 +149,15 @@ export default function TaskCard({ task }) {
         >
           <div className="d-flex justify-content-between align-items-center">
             <div className="small fw-bold text-primary">
-              File yêu cầu: {reqFilesCount} file{reqFilesCount > 0 && "s"}
+              {t("File yêu cầu:")} {reqFilesCount} file
+              {reqFilesCount > 0 && "s"}
               <br />
-              File hoàn thành: {compFilesCount} file{compFilesCount > 0 && "s"}
+              {t("File hoàn thành:")} {compFilesCount} file
+              {compFilesCount > 0 && "s"}
               <br />
               <span className={hasFeedback ? "text-success" : "text-muted"}>
-                Feedback: {hasFeedback ? "Có ghi chú" : "hiện tại chưa có"}
+                {t("Feedback")}{" "}
+                {hasFeedback ? "Có ghi chú" : "hiện tại chưa có"}
               </span>
             </div>
             <i
@@ -169,7 +174,7 @@ export default function TaskCard({ task }) {
         <div className="row text-dark mb-3" style={{ fontSize: "0.8rem" }}>
           <div className="col-6">
             <div className="d-flex align-items-center mb-1">
-              <strong className="me-1 text-nowrap">Người giao:</strong>
+              <strong className="me-1 text-nowrap">{t("Người giao:")}</strong>
               <span
                 className="text-truncate d-inline-block"
                 style={{ maxWidth: "70px" }}
@@ -179,7 +184,7 @@ export default function TaskCard({ task }) {
               </span>
             </div>
             <div className="d-flex align-items-center">
-              <strong className="me-1 text-nowrap">Ngày tạo:</strong>
+              <strong className="me-1 text-nowrap">{t("Ngày tạo:")}</strong>
               <span className="text-nowrap">
                 {new Date(task.createdAt).toLocaleDateString("vi-VN")}
               </span>
@@ -187,7 +192,9 @@ export default function TaskCard({ task }) {
           </div>
           <div className="col-6">
             <div className="d-flex align-items-center mb-1">
-              <strong className="me-1 text-nowrap">Người thực hiện:</strong>
+              <strong className="me-1 text-nowrap">
+                {t("Người thực hiện:")}
+              </strong>
               <span
                 className="text-truncate d-inline-block"
                 style={{ maxWidth: "70px" }}
@@ -197,7 +204,7 @@ export default function TaskCard({ task }) {
               </span>
             </div>
             <div className="d-flex align-items-center">
-              <strong className="me-1 text-nowrap">Hạn chót:</strong>
+              <strong className="me-1 text-nowrap">{t("Hạn chót:")}</strong>
               <span className="text-nowrap">
                 {new Date(task.dueDate).toLocaleDateString("vi-VN")}
               </span>
@@ -210,7 +217,7 @@ export default function TaskCard({ task }) {
             className="btn btn-primary btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
             onClick={() => navigate(`/task/${task._id}`)}
           >
-            Xem chi tiết
+            {t("Xem chi tiết")}
           </button>
           {!task.isOverdue &&
             ["ongoing", "processing", "review"].includes(task.status) && (
@@ -218,7 +225,7 @@ export default function TaskCard({ task }) {
                 className="btn btn-success btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
                 onClick={() => navigate(`/improve/${task._id}`)}
               >
-                Cải thiện
+                {t("Cải thiện")}
               </button>
             )}
           {canReview && task.status === "review" && (
@@ -226,7 +233,7 @@ export default function TaskCard({ task }) {
               className="btn btn-info btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm text-white"
               onClick={() => navigate(`/review/${task._id}`)}
             >
-              Duyệt
+              {t("Duyệt")}
             </button>
           )}
         </div>

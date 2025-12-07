@@ -62,6 +62,13 @@ export default function Dashboard() {
     loadTasks();
   }, []);
 
+  useEffect(() => {
+    if ((user.role === "leader" || user.role === "member") && user.group) {
+      setGroupFilter(user.group);
+      setAssigneeFilter("all");
+    }
+  }, [user.role, user.group]);
+
   // CẬP NHẬT: LỌC TASK
   let filteredTasks = tasks;
 
@@ -158,6 +165,7 @@ export default function Dashboard() {
           {/* 3 BỘ LỌC */}
           <div className="card shadow-sm mb-3 p-3 rounded-pill shadow-sm">
             <div className="row g-4 justify-content-center">
+              {/* ============ NHÀ MÁY ============ */}
               <div className="col-md-3">
                 <label className="form-label small fw-bold text-dark mb-2">
                   Nhà máy
@@ -170,7 +178,9 @@ export default function Dashboard() {
                     setCurrentPage(1);
                   }}
                 >
-                  <option value="all">Tất cả nhà máy</option>
+                  {["manager", "a_manager", "leader", "member"].includes(
+                    user.role
+                  ) && <option value="all">Tất cả nhà máy</option>}
                   {POSITIONS.map((pos) => (
                     <option key={pos} value={pos}>
                       {pos}
@@ -179,6 +189,7 @@ export default function Dashboard() {
                 </select>
               </div>
 
+              {/* ============ NHÓM ============ */}
               <div className="col-md-3">
                 <label className="form-label small fw-bold text-dark mb-2">
                   Nhóm
@@ -188,18 +199,31 @@ export default function Dashboard() {
                   value={groupFilter}
                   onChange={(e) => {
                     setGroupFilter(e.target.value);
+                    setAssigneeFilter("all");
                     setCurrentPage(1);
                   }}
+                  disabled={user.role === "member"}
                 >
-                  <option value="all">Tất cả nhóm</option>
-                  {uniqueGroups.map((gr) => (
-                    <option key={gr} value={gr}>
-                      {gr}
-                    </option>
-                  ))}
+                  {["manager", "a_manager"].includes(user.role) && (
+                    <>
+                      <option value="all">Tất cả nhóm</option>
+                      {uniqueGroups.map((gr) => (
+                        <option key={gr} value={gr}>
+                          {gr}
+                        </option>
+                      ))}
+                    </>
+                  )}
+                  {user.role === "leader" && (
+                    <option value={user.group}>{user.group}</option>
+                  )}
+                  {user.role === "member" && (
+                    <option value={user.group}>{user.group}</option>
+                  )}
                 </select>
               </div>
 
+              {/* ============ NHÂN VIÊN ============ */}
               <div className="col-md-3">
                 <label className="form-label small fw-bold text-dark mb-2">
                   Nhân viên
@@ -212,17 +236,46 @@ export default function Dashboard() {
                     setCurrentPage(1);
                   }}
                 >
-                  <option value="all">Tất cả nhân viên</option>
-                  {filteredAssignees.map((u) => (
-                    <option key={u._id} value={u._id}>
-                      {u.name}
-                    </option>
-                  ))}
+                  {/* Manager: lọc nhân viên theo nhóm đã chọn */}
+                  {["manager", "a_manager"].includes(user.role) && (
+                    <>
+                      <option value="all">
+                        {groupFilter === "all"
+                          ? "Tất cả nhân viên"
+                          : "Tất cả trong nhóm"}
+                      </option>
+                      {uniqueAssignees
+                        .filter(
+                          (u) =>
+                            groupFilter === "all" || u?.group === groupFilter
+                        )
+                        .map((u) => (
+                          <option key={u._id} value={u._id}>
+                            {u.name}
+                          </option>
+                        ))}
+                    </>
+                  )}
+
+                  {/* Leader & Member: chỉ thấy người trong nhóm mình */}
+                  {["leader", "member"].includes(user.role) && (
+                    <>
+                      {user.role === "leader" && (
+                        <option value="all">Tất cả trong nhóm</option>
+                      )}
+                      {uniqueAssignees
+                        .filter((u) => u?.group === user.group)
+                        .map((u) => (
+                          <option key={u._id} value={u._id}>
+                            {u.name}
+                          </option>
+                        ))}
+                    </>
+                  )}
                 </select>
               </div>
             </div>
           </div>
-
           {/* STATUS + BUTTONS */}
           <div className="d-flex flex-wrap align-items-center gap-3 mb-3">
             <div className="btn-group flex-wrap" role="group">
@@ -302,7 +355,6 @@ export default function Dashboard() {
               </button>
             </div>
           </div>
-
           {/* TASK GRID */}
           <div className="row g-4 flex-grow-1">
             {loading ? (
@@ -321,7 +373,6 @@ export default function Dashboard() {
               ))
             )}
           </div>
-
           {/* PHÂN TRANG */}
           <div className="mt-auto pt-3">
             {totalPages > 1 && (

@@ -14,8 +14,10 @@ export const createTask = async (req, res) => {
   } = req.body;
 
   try {
+    const files = req.processedFiles || {};
+
     const task = new Task({
-      title,
+      title: title || description.slice(0, 50) || "ME Task",
       description,
       department,
       assignee,
@@ -23,21 +25,8 @@ export const createTask = async (req, res) => {
       startDate,
       dueDate,
       position,
-      beforeImage: req.files?.beforeImage?.[0]?.filename || null,
-      // Xử lý nhiều file đính kèm khi tạo task
-      attachedFiles: req.files?.attachedFile
-        ? Array.isArray(req.files.attachedFile)
-          ? req.files.attachedFile.map((f) => ({
-              original: f.originalname, // ← TÊN GỐC ĐẸP
-              stored: f.filename, // ← TÊN TRONG SERVER
-            }))
-          : [
-              {
-                original: req.files.attachedFile[0].originalname,
-                stored: req.files.attachedFile[0].filename,
-              },
-            ]
-        : [],
+      beforeImage: files.beforeImage?.stored || null,
+      attachedFiles: files.attachedFiles || [],
     });
 
     await task.save();
@@ -87,7 +76,6 @@ export const improveTask = async (req, res) => {
     if (!task)
       return res.status(404).json({ message: "Không tìm thấy công việc" });
 
-    // Chặn quá hạn
     const now = new Date();
     const due = new Date(task.dueDate);
     const endOfDay = new Date(
@@ -104,26 +92,16 @@ export const improveTask = async (req, res) => {
         .json({ message: "Công việc đã quá hạn! Không thể cải thiện." });
     }
 
-    // Nếu bị reject → xóa dữ liệu cũ
+    const files = req.processedFiles || {};
+
     if (task.status === "rejected") {
       task.afterImage = null;
       task.completedFiles = [];
       task.improveNote = null;
     }
 
-    if (req.files?.afterImage?.[0])
-      task.afterImage = req.files.afterImage[0].filename;
-
-    if (req.files?.completedFile) {
-      const uploadedFiles = Array.isArray(req.files.completedFile)
-        ? req.files.completedFile
-        : [req.files.completedFile[0]].filter(Boolean);
-
-      task.completedFiles = uploadedFiles.map((f) => ({
-        original: f.originalname, // ← TÊN ĐẸP ĐỂ HIỆN CHO USER
-        stored: f.filename, // ← TÊN THẬT TRONG THƯ MỤC uploads
-      }));
-    }
+    if (files.afterImage) task.afterImage = files.afterImage.stored;
+    if (files.completedFiles) task.completedFiles = files.completedFiles;
     if (req.body.improveNote) task.improveNote = req.body.improveNote.trim();
 
     task.status = "review";

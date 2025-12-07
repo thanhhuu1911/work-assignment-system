@@ -25,16 +25,16 @@ export const showToast = (type = "success", message = "") => {
   };
 
   switch (type) {
-    case "success":
+    case "Thành công":
       toast.success(message || "Thành công!", options);
       break;
-    case "error":
+    case "Có lỗi xảy ra":
       toast.error(message || "Có lỗi xảy ra!", options);
       break;
-    case "warning":
+    case "Cảnh báo":
       toast.warning(message || "Cảnh báo!", options);
       break;
-    case "info":
+    case "Thông tin":
       toast.info(message || "Thông tin", options);
       break;
     default:
