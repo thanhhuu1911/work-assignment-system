@@ -58,7 +58,7 @@ const resources = {
       completed_files: "File hoàn thành",
       feedback: "Ghi chú",
       review_note: "Ghi chú duyệt",
-
+      after: "Sau",
       // ===== TASKCARD =====
       view_detail: "Xem chi tiết",
       improve: "Cải thiện",
@@ -293,7 +293,7 @@ const resources = {
       completed_files: "Completed Files",
       feedback: "Feedback",
       review_note: "Review Note",
-      after: "Sau",
+
       view_detail: "View Detail",
       improve: "Improve",
 
