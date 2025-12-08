@@ -78,12 +78,14 @@ export default function NewIssue() {
   }
 
   const getEligibleAssignees = () => {
-    const role = currentUser.role;
-    const group = currentUser.group;
-    if (role === "manager" || role === "a_manager") {
-      return users.filter(
-        (u) => u.department === "ME" && u._id !== currentUser._id
-      );
+    if (currentUser.role === "manager" || currentUser.role === "a_manager") {
+      return users.filter((u) => {
+        return (
+          u.department === "ME" &&
+          u._id !== currentUser._id && // không giao cho chính mình
+          !["manager", "a_manager"].includes(u.role) // không giao cho manager khác
+        );
+      });
     }
     if (role === "leader") {
       return users.filter(
@@ -434,7 +436,7 @@ export default function NewIssue() {
                         >
                           <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354l-6-6z" />
                         </svg>
-                        Home
+                        {t("home")}
                       </button>
                       <button
                         type="submit"
@@ -446,7 +448,7 @@ export default function NewIssue() {
                           className="me-1"
                           style={{ width: "25px", height: "25px" }}
                         />
-                        Assign task
+                        {t("assign_task")}
                       </button>
                     </div>
                   </form>

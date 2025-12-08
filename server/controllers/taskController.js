@@ -163,8 +163,7 @@ export const getTaskStats = async (req, res) => {
 
     const now = new Date();
     const today = new Date();
-    today.setHours(23, 59, 59, 999);
-
+    today.setHours(0, 0, 0, 0);
     // ===== 1. XÁC ĐỊNH PHẠM VI THEO QUYỀN =====
     let match = {};
     if (isMember) {
@@ -317,8 +316,15 @@ export const getTaskStats = async (req, res) => {
         statusCategory = "rejected";
         summary.rejected++;
       } else {
-        const isOverdue = task.dueDate && new Date(task.dueDate) < today;
-        if (isOverdue) {
+        // CHỈ tính là quá hạn khi:
+        // - Đã quá dueDate
+        // - Và chưa được duyệt (status KHÔNG PHẢI approved hoặc rejected)
+        const isActuallyOverdue =
+          task.dueDate &&
+          new Date(task.dueDate) < today &&
+          !["approved", "rejected"].includes(task.status);
+
+        if (isActuallyOverdue) {
           statusCategory = "overdue";
           summary.overdue++;
         } else {

@@ -176,7 +176,7 @@ export default function ReviewTask() {
                   </p>
                 </div>
 
-                <div className="mx-2 mt-0">
+                <div className="mx-4 mt-0">
                   {/* File khi giao việc */}
                   {task.attachedFiles &&
                     Array.isArray(task.attachedFiles) &&

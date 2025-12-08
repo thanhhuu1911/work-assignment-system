@@ -113,16 +113,13 @@ export default function Dashboard() {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  const uniqueAssignees = tasks
-    .filter(
-      (t, i, a) => a.findIndex((x) => x.assignee?._id === t.assignee?._id) === i
-    )
-    .map((t) => t.assignee);
-
-  const filteredAssignees =
-    groupFilter === "all"
-      ? uniqueAssignees
-      : uniqueAssignees.filter((u) => u?.group === groupFilter);
+  const uniqueAssignees = Array.from(
+    new Map(
+      tasks
+        .filter((t) => t.assignee?._id)
+        .map((t) => [t.assignee._id, t.assignee])
+    ).values()
+  );
 
   const uniqueGroups = [
     ...new Set(tasks.map((t) => t.assignee?.group).filter(Boolean)),
@@ -249,7 +246,8 @@ export default function Dashboard() {
                       {uniqueAssignees
                         .filter(
                           (u) =>
-                            groupFilter === "all" || u?.group === groupFilter
+                            u &&
+                            (groupFilter === "all" || u.group === groupFilter)
                         )
                         .map((u) => (
                           <option key={u._id} value={u._id}>

@@ -175,20 +175,20 @@ const resources = {
       last_30_days: "30 ngày gần nhất",
       this_month: "Tháng này",
       this_quarter: "Quý này",
-
+      task_description: "Mô tả công việc",
       total_tasks: "Tổng công việc",
       // assignee: "Đang thực hiện", // bạn đang dùng "assignee" cho ongoing
       completed: "Hoàn thành",
       overdue: "Quá hạn",
       rejected: "Không đạt",
-
+      pending_review: "Chờ duyệt",
       daily_activity: "Hoạt động theo ngày",
       status_distribution: "Tỷ lệ trạng thái công việc",
-
+      note_warning: "lưu ý cảnh báo",
       // Key xếp hạng dùng gạch dưới + context
       statistics_ranking_title: "Xếp hạng phòng ME",
       statistics_ranking_title_group: "Xếp hạng nhóm {{group}}",
-
+      processing: "Đang thực hiện",
       // Các key khác bạn có thể dùng sau này
       personal_stats: "Thống kê cá nhân",
       group_stats: "Thống kê nhóm {{group}}",
@@ -237,12 +237,12 @@ const resources = {
       team_employee: "Team Employee",
       all_team_employee: "All employee of group",
       time_period: " Time Period",
-
+      pending_review: "Pending Review",
       last_7_days: "Last 7 days",
       last_30_days: "Last 30 days",
       this_month: "This month",
       this_quarter: "This quarter",
-
+      processing: "Processing",
       total_tasks: "Total Tasks",
       assignee: "In Progress", // đang dùng cho "Đang thực hiện"
       completed: "Completed",
@@ -255,7 +255,7 @@ const resources = {
       // Xếp hạng với context
       statistics_ranking_title: "ME Department Ranking",
       statistics_ranking_title_group: "{{group}} Group Ranking",
-
+      task_description: "Task Description",
       // Các key khác (giữ để sau dùng)
       personal_stats: "Personal Statistics",
       group_stats: "Group {{group}} Statistics",
@@ -310,6 +310,7 @@ const resources = {
       attached_files_hint: "Hold Ctrl to select multiple files",
       assign_task_button: "Assign Task",
       all_factory: "All Factories",
+      note_warning: "Note Warning",
 
       improve_task: "Improve Task",
       after_images: "After Images (optional)",

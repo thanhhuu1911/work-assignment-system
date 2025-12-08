@@ -41,7 +41,7 @@ export default function Header() {
               boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
             }}
           />
-          <h4 className="mb-0 fw-bold text-primary">Team ME</h4>
+          <h2 className="mb-0 fw-bold text-primary">Team ME</h2>
         </div>
 
         {/* Thông tin người dùng + Ngôn ngữ + Logout */}
