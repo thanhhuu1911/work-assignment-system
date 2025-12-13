@@ -37,7 +37,7 @@ const resources = {
 
       // ===== STATUS =====
       ongoing: "Đang thực hiện",
-      review: " duyệt",
+      review: "Duyệt",
       pending_approval: "Chờ duyệt",
       approved: "Hoàn thành",
       rejected: "Không đạt",
@@ -105,7 +105,7 @@ const resources = {
       file_completed: "File hoàn thành:",
       message_from_member: "Tin nhắn từ nhân viên:",
       overdue_text: "Quá hạn",
-
+      access_denied: "Không có quyền!",
       // ===== STATISTICS =====
       personal_stats: "Thống kê cá nhân",
       group_stats: "Thống kê nhóm {{group}}",
@@ -133,7 +133,8 @@ const resources = {
       load_error: "Lỗi tải dữ liệu",
       unauthorized_improve: "Không thể cải thiện công việc này!",
       not_in_review: "Công việc không ở trạng thái chờ duyệt",
-
+      only_leaders_managers_assign_tasks:
+        "Chỉ Leader và Manager mới được giao việc.",
       logout: "Đăng xuất",
       note_for_employee: "Ghi chú cho nhân viên",
       note_required: "(bắt buộc nếu từ chối)",
@@ -225,7 +226,7 @@ const resources = {
       success: "Success!",
       error: "Error!",
       note_placeholder: "Enter your note here...",
-
+      access_denied: "Access denied",
       home: "Home",
       reset: "Reset",
       department: "Department",
@@ -260,7 +261,8 @@ const resources = {
       personal_stats: "Personal Statistics",
       group_stats: "Group {{group}} Statistics",
       department_stats: "ME Department Statistics",
-
+      only_leaders_managers_assign_tasks:
+        "Only Leaders and Managers can assign tasks.",
       personal_stats: "Personal Statistics",
       group_stats: "Group {{group}} Statistics",
       department_stats: "ME Department Statistics",

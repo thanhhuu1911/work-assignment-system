@@ -317,7 +317,7 @@ export default function ReviewTask() {
                   </button>
 
                   <button
-                    className="btn btn-success px-4 py-2 fw-bold rounded-pill shadow-sm"
+                    className="btn btn-info text-white px-4 py-2 fw-bold rounded-pill shadow-sm"
                     onClick={() => handleAction("approve")}
                     disabled={!!submitting}
                   >

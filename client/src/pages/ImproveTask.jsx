@@ -145,7 +145,7 @@ export default function ImproveTask() {
                     >
                       {task.position}
                     </h5>
-                    <span className="badge bg-info text-white px-3 py-2">
+                    <span className="badge bg-success text-white rounded-pill px-3 py-2">
                       {t("improving")}
                     </span>
                   </div>

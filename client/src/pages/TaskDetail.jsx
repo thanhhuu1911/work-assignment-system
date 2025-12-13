@@ -290,10 +290,18 @@ export default function TaskDetail() {
                   {/* NÚT HÀNH ĐỘNG */}
                   <div className="d-flex justify-content-center gap-3 mt-4 px-3">
                     <button
-                      className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
+                      className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center gap-2"
                       onClick={() => navigate(-1)}
                       style={{ minWidth: "110px" }}
                     >
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354l-6-6z" />
+                      </svg>
                       {t("home")}
                     </button>
 

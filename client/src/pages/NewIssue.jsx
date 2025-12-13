@@ -20,7 +20,9 @@ export default function NewIssue() {
   });
   const [beforePreview, setBeforePreview] = useState(null);
   const [users, setUsers] = useState([]);
-  const [currentUser, setCurrentUser] = useState({});
+  const [currentUser, setCurrentUser] = useState(
+    JSON.parse(localStorage.getItem("user")) || {}
+  );
   const [loading, setLoading] = useState(true);
   const [attachedFiles, setAttachedFiles] = useState([]); // { file, name, size, preview, isImage }
 
@@ -34,7 +36,10 @@ export default function NewIssue() {
         setUsers(userRes.data.data);
         setCurrentUser(storedUser);
       } catch (err) {
-        showToast("Failed to load data", "Có lỗi xảy ra!");
+        showToast(
+          "Lỗi: " + (err.response?.data?.message || "Không thể tải dữ liệu"),
+          "Có lỗi xảy ra!"
+        );
       } finally {
         setLoading(false);
       }
@@ -58,22 +63,45 @@ export default function NewIssue() {
 
   if (!["manager", "a_manager", "leader"].includes(currentUser.role)) {
     return (
-      <>
+      <div className="d-flex flex-column min-vh-100 bg-light">
         <Header />
-        <div>
-          <Header />
-          <div className="d-flex flex-column justify-content-center align-items-center py-5">
-            <div
-              className="spinner-border text-primary mb-3"
-              style={{ width: "3rem", height: "3rem" }}
-            >
-              <span className="visually-hidden">Loading...</span>
+        <main className="flex-grow-1 d-flex align-items-center justify-content-center py-4">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div className="card shadow-lg border-0 rounded-4 text-center p-5">
+                  <i className="bi bi-shield-lock-fill text-warning display-1 mb-4 opacity-75"></i>
+
+                  <h1 className="text-primary fw-bold mb-3">
+                    {t("access_denied")}
+                  </h1>
+
+                  <p className="text-muted mb-4 fs-5">
+                    {t("only_leaders_managers_assign_tasks")}
+                    {/* Ví dụ: "Chỉ Leader và Manager mới được phép giao việc." */}
+                  </p>
+
+                  <button
+                    className="btn btn-primary btn-lg px-5 py-3 fw-bold rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2 mx-auto"
+                    onClick={() => navigate("/dashboard")}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="currentColor"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354l-6-6z" />
+                    </svg>
+                    {t("home")}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <Footer />
-        </div>
+        </main>
         <Footer />
-      </>
+      </div>
     );
   }
 
@@ -87,11 +115,11 @@ export default function NewIssue() {
         );
       });
     }
-    if (role === "leader") {
+    if (currentUser.role === "leader") {
       return users.filter(
         (u) =>
           u.department === "ME" &&
-          u.group === group &&
+          u.group === currentUser.group &&
           u.role === "member" &&
           u._id !== currentUser._id
       );
