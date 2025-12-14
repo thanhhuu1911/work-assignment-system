@@ -335,13 +335,14 @@ export default function Dashboard() {
               <button
                 className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center "
                 onClick={() => {
-                  // reset các filter về mặc định
                   setStatusFilter("all");
                   setPositionFilter("all");
-                  setGroupFilter("all");
-                  setAssigneeFilter("all");
+                  // KHÔNG ĐỔI groupFilter và assigneeFilter nếu là leader/member
+                  if (!["leader", "member"].includes(user.role)) {
+                    setGroupFilter("all");
+                    setAssigneeFilter("all");
+                  }
                   setCurrentPage(1);
-                  // load lại tasks
                   loadTasks();
                 }}
               >
