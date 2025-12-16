@@ -28,7 +28,7 @@ export default function Header() {
     <header className="bg-white shadow-sm py-3 mb-4 border-bottom">
       <div className="container-fluid d-flex justify-content-between align-items-center px-4">
         {/* Logo + Tên nhóm */}
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center gap-2">
           <img
             src="http://localhost:5000/images/Logo_ME.jpg"
             alt="ME Logo"
