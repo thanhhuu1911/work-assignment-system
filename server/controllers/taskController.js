@@ -288,10 +288,11 @@ export const getTaskStats = async (req, res) => {
       });
     }
 
-    if (isLeader && userId && userId !== "all") {
-      // ... (phần kiểm tra user thuộc nhóm leader – giữ nguyên)
-      // (code kiểm tra quyền leader vẫn như cũ, không cần thay đổi)
-    }
+    // if (isLeader && userId && userId !== "all") {
+    //   // ... (phần kiểm tra user thuộc nhóm leader – giữ nguyên)
+    //   // (code kiểm tra quyền leader vẫn như cũ, không cần thay đổi)
+    //   tasks = tasks.filter((t) => t.assignee?._id.toString() === userId);
+    // }
 
     // ===== 5. TÍNH TOÁN THỐNG KÊ (dùng tasks đã lọc) =====
     const summary = {
