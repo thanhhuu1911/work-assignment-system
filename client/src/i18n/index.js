@@ -43,6 +43,7 @@ const resources = {
       rejected: "Không đạt",
       rejected_overdue: "Quá hạn / Không đạt",
       overdue: "Quá hạn",
+      STATISTICS: "Thống Kê",
 
       // ===== TASK INFO =====
       assigned_by: "Người giao",
@@ -138,7 +139,11 @@ const resources = {
       logout: "Đăng xuất",
       note_for_employee: "Ghi chú cho nhân viên",
       note_required: "(bắt buộc nếu từ chối)",
-
+      task_created: "Tạo mới",
+      task_completed: "Hoàn thành",
+      task_ongoing: "Đang thực hiện",
+      task_overdue: "Quá hạn",
+      task_rejected: "Không đạt",
       // ===== REVIEW TASK PAGE EXTRA =====
       review_title: "Duyệt công việc",
       review_information: "Thông tin duyệt",
@@ -155,7 +160,8 @@ const resources = {
       leader_feedback: "Feedback từ Leader",
       reject_reason_placeholder: "Nhập lý do từ chối...",
       note_placeholder: "Nhập ghi chú tại đây...",
-
+      ME_Department: "Phòng ME",
+      export_ppt: "Xuất PPT",
       home: "Trang chủ",
       reset: "Làm mới",
       position: "Khu vực sản xuất",
@@ -167,7 +173,7 @@ const resources = {
       team_employee: "Nhân viên trong nhóm",
       all_team_employee: "Tất cả thành viên nhóm",
       time_period: "Thời gian",
-
+      Export_Date: "Ngày Xuất",
       personal_stats: "Thống kê cá nhân",
       group_stats: "Thống kê nhóm {{group}}",
       department_stats: "Thống kê phòng ME",
@@ -221,7 +227,9 @@ const resources = {
       no_tasks: "No tasks found",
       loading: "Loading...",
       employee: "Employee",
-
+      STATISTICS: "STATISTICS",
+      ME_Department: "ME Department",
+      Export_Date: "Export Date",
       warning: "Warning!",
       success: "Success!",
       error: "Error!",
@@ -249,7 +257,7 @@ const resources = {
       completed: "Completed",
       overdue: "Overdue",
       rejected: "Rejected",
-
+      export_ppt: "Export PPT",
       daily_activity: "Daily Activity",
       status_distribution: "Task Status Distribution",
 
@@ -332,7 +340,11 @@ const resources = {
       approving: "Approving...",
       rejecting: "Processing...",
       must_enter_reason: "Please enter a reason before rejecting!",
-
+      task_created: "Created",
+      task_completed: "Completed",
+      task_ongoing: "Ongoing",
+      task_overdue: "Overdue",
+      task_rejected: "Rejected",
       task_detail: "Task Detail",
       file_required: "Required Files:",
       file_completed: "Completed Files:",

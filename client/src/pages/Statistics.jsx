@@ -18,7 +18,8 @@ import {
   CartesianGrid,
   Legend,
 } from "recharts";
-
+import html2canvas from "html2canvas";
+import PptxGenJS from "pptxgenjs";
 const STATUS_COLORS = {
   "Đang thực hiện": "#ffc107",
   "Hoàn thành": "#28a745",
@@ -59,6 +60,104 @@ export default function Statistics() {
     }
   };
 
+  const exportToPPT = async () => {
+    if (loading || !stats) {
+      showToast("Chưa tải xong dữ liệu", "warning");
+      return;
+    }
+
+    // Ẩn các phần không muốn xuất
+    const header = document.querySelector("header");
+    const footer = document.querySelector("footer");
+    const titleAndButtonsRow = document.querySelector(
+      ".d-flex.justify-content-between.align-items-center.mb-4"
+    );
+    const rankingSection = document.querySelector(".row.mt-5"); // Phần Ranking (có class mt-5)
+
+    if (header) header.style.display = "none";
+    if (footer) footer.style.display = "none";
+    if (titleAndButtonsRow) titleAndButtonsRow.style.display = "none";
+    if (rankingSection) rankingSection.style.display = "none";
+
+    // Khu vực cần chụp: từ container-fluid đến hết 2 biểu đồ
+    const captureArea = document.querySelector("main .container-fluid");
+
+    // Tăng padding và background trắng để đẹp khi xuất
+    const originalPadding = captureArea.style.padding;
+    const originalBackground = captureArea.style.background;
+    captureArea.style.padding = "3rem 2rem";
+    captureArea.style.background = "#ffffff";
+
+    try {
+      const canvas = await html2canvas(captureArea, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: "#ffffff",
+        scrollY: -window.scrollY, // Đảm bảo chụp đúng vị trí
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+
+      // Tạo PPT
+      const pptx = new PptxGenJS();
+      pptx.layout = "LAYOUT_16x9";
+
+      // Slide 1: Cover
+      const coverSlide = pptx.addSlide();
+      coverSlide.background = { color: "FFFFFF" };
+      coverSlide.addText(t("STATISTICS"), {
+        x: 0.5,
+        y: 1.8,
+        w: "90%",
+        fontSize: 56,
+        color: "1C2526",
+        bold: true,
+        align: "center",
+      });
+      const today = new Date().toLocaleDateString("vi-VN");
+      coverSlide.addText(
+        `${t("ME_Department")}\n${t("Export_Date")}: ${today}`,
+        {
+          x: 0.5,
+          y: 3.5,
+          w: "90%",
+          fontSize: 32,
+          color: "1C2526",
+          align: "center",
+          lineSpacing: 40,
+        }
+      );
+
+      // Slide 2: Chỉ nội dung thống kê đến 2 biểu đồ
+      const statsSlide = pptx.addSlide();
+      statsSlide.addImage({
+        data: imgData,
+        x: 0.5,
+        y: 0.6,
+        w: "93%",
+        h: "80%",
+        sizing: { type: "contain" },
+      });
+
+      // Tải file
+      pptx.writeFile({
+        fileName: `Statistics_Department_ME_${today.replace(/\//g, "-")}.pptx`,
+      });
+      showToast("Xuất PPT thành công!", "success");
+    } catch (err) {
+      console.error("Lỗi xuất PPT:", err);
+      showToast("Lỗi xuất PPT", "error");
+    } finally {
+      // Khôi phục UI
+      if (header) header.style.display = "";
+      if (footer) footer.style.display = "";
+      if (titleAndButtonsRow) titleAndButtonsRow.style.display = "";
+      if (rankingSection) rankingSection.style.display = "";
+      captureArea.style.padding = originalPadding;
+      captureArea.style.background = originalBackground;
+    }
+  };
   useEffect(() => {
     fetchStats();
   }, [groupFilter, userFilter, dateRange]);
@@ -148,6 +247,25 @@ export default function Statistics() {
                   style={{ width: "25px", height: "25px" }}
                 />
                 {t("reset")}
+              </button>
+
+              <button
+                onClick={exportToPPT}
+                disabled={loading || !stats}
+                className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill shadow-sm fw-semibold"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path d="M8.5 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm3 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm-6 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
+                  <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
+                  <path d="M5.5 4h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1zm0 2h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1z" />
+                </svg>
+                {t("export_ppt") || "Xuất PowerPoint"}
               </button>
             </div>
           </div>
@@ -269,7 +387,7 @@ export default function Statistics() {
                 color: "primary",
               },
               {
-                label: t("assignee"),
+                label: t("task_ongoing"),
                 value: summary.ongoing,
                 color: "warning",
               },
@@ -325,35 +443,35 @@ export default function Statistics() {
                         type="monotone"
                         dataKey="created"
                         stroke="#007bff"
-                        name="Tạo mới"
+                        name={t("task_created")}
                         strokeWidth={3}
                       />
                       <Line
                         type="monotone"
                         dataKey="completed"
                         stroke="#28a745"
-                        name="Hoàn thành"
+                        name={t("task_completed")}
                         strokeWidth={3}
                       />
                       <Line
                         type="monotone"
                         dataKey="ongoing"
                         stroke="#ffc107"
-                        name="Đang thực hiện"
+                        name={t("task_ongoing")}
                         strokeWidth={3}
                       />
                       <Line
                         type="monotone"
                         dataKey="overdue"
                         stroke="#dc3545"
-                        name="Quá hạn"
+                        name={t("task_overdue")}
                         strokeWidth={3}
                       />
                       <Line
                         type="monotone"
                         dataKey="rejected"
                         stroke="#6c757d"
-                        name="Không đạt"
+                        name={t("task_rejected")}
                         strokeWidth={3}
                       />
                     </LineChart>
@@ -432,7 +550,7 @@ export default function Statistics() {
                             {p.rate}%
                           </span>
                           <small className="text-muted d-block">
-                            ({p.completed} / {p.total} công việc)
+                            ({p.completed} / {p.total} Task)
                           </small>
                         </div>
                       </div>
