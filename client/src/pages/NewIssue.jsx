@@ -367,7 +367,7 @@ export default function NewIssue() {
                         type="file"
                         className="form-control form-control-sm rounded-pill shadow-sm"
                         multiple
-                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png,.jpeg"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png,.jpeg,.zip,.rar"
                         onChange={handleAttachedFilesChange}
                       />
 

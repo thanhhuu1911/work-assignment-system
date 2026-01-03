@@ -20,11 +20,18 @@ import {
 } from "recharts";
 import html2canvas from "html2canvas";
 import PptxGenJS from "pptxgenjs";
-const STATUS_COLORS = {
-  "Đang thực hiện": "#ffc107",
-  "Hoàn thành": "#28a745",
-  "Quá hạn": "#dc3545",
-  "Không đạt": "#808080ff",
+// const STATUS_COLORS = {
+//   "Đang thực hiện": "#ffc107",
+//   "Hoàn thành": "#28a745",
+//   "Quá hạn": "#dc3545",
+//   "Không đạt": "#808080ff",
+// };
+
+const STATUS_COLOR_MAPPING = {
+  ongoing: "#ffc107",
+  completed: "#28a745",
+  overdue: "#dc3545",
+  rejected: "#808080ff",
 };
 
 export default function Statistics() {
@@ -492,20 +499,42 @@ export default function Statistics() {
                       <Pie
                         data={statusBreakdown}
                         dataKey="value"
-                        nameKey="name"
+                        // nameKey="name"
                         cx="50%"
                         cy="50%"
                         outerRadius={110}
-                        label={({ name, value }) => `${name}: ${value}`}
+                        // label={({ name, value }) => `${name}: ${value}`}
+                        label={({ key, value }) =>
+                          `${t(`task_${key}`)}: ${value}`
+                        }
                       >
                         {statusBreakdown.map((entry, i) => (
                           <Cell
                             key={i}
-                            fill={STATUS_COLORS[entry.name] || "#888"}
+                            // fill={STATUS_COLORS[entry.name] || "#888"}
+                            fill={STATUS_COLOR_MAPPING[entry.key] || "#888"}
                           />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (active && payload && payload.length) {
+                            const { key, value } = payload[0].payload;
+                            return (
+                              <div className="bg-white p-3 border rounded shadow-sm">
+                                <p className="font-semibold text-dark">
+                                  {t(`task_${key}`)}
+                                </p>
+                                <p className="text-muted">
+                                  {t("tasks_count", { count: value })}{" "}
+                                  {/* Tùy chọn: thêm key dịch số lượng */}
+                                </p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        }}
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -550,7 +579,7 @@ export default function Statistics() {
                             {p.rate}%
                           </span>
                           <small className="text-muted d-block">
-                            ({p.completed} / {p.total} Task)
+                            ({p.completed} / {p.total} {t("task")})
                           </small>
                         </div>
                       </div>

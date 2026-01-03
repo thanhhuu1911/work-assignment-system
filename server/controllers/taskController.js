@@ -210,7 +210,7 @@ export const getTaskStats = async (req, res) => {
 
     if (isManager) {
       // FIX 1: Nhóm luôn cố định → không bao giờ bị mất
-      availableGroups = ["Lean", "IE", "Data"];
+      availableGroups = ["Lean", "IE"]; //"Data"
 
       // FIX 2: Lấy danh sách nhân viên từ TOÀN BỘ task (chưa lọc theo userId) → không bị mất khi chọn nhân viên
       const userMap = new Map();
@@ -393,11 +393,18 @@ export const getTaskStats = async (req, res) => {
     }
     dailyStats.reverse();
 
+    // const statusBreakdown = [
+    //   { name: "Đang thực hiện", value: summary.ongoing },
+    //   { name: "Hoàn thành", value: summary.completed },
+    //   { name: "Quá hạn", value: summary.overdue },
+    //   { name: "Không đạt", value: summary.rejected },
+    // ].filter((i) => i.value > 0);
+
     const statusBreakdown = [
-      { name: "Đang thực hiện", value: summary.ongoing },
-      { name: "Hoàn thành", value: summary.completed },
-      { name: "Quá hạn", value: summary.overdue },
-      { name: "Không đạt", value: summary.rejected },
+      { key: "ongoing", name: "Đang thực hiện", value: summary.ongoing },
+      { key: "completed", name: "Hoàn thành", value: summary.completed },
+      { key: "overdue", name: "Quá hạn", value: summary.overdue },
+      { key: "rejected", name: "Không đạt", value: summary.rejected },
     ].filter((i) => i.value > 0);
 
     return res.json({

@@ -102,10 +102,20 @@ export default function ImproveTask() {
       showToast("Gửi duyệt thành công!", "Thành công!");
       navigate("/dashboard");
     } catch (err) {
-      showToast(
-        "Lỗi: " +
-          (err.response?.data?.message || "Server error", "Có lỗi xảy ra")
-      );
+      if (
+        err.response?.status === 403 &&
+        err.response?.data?.message.includes("quá hạn")
+      ) {
+        showToast(
+          "Công việc đã quá hạn, không thể gửi cải thiện nữa!",
+          "Hết hạn rồi!"
+        );
+      } else {
+        showToast(
+          "Lỗi: " + (err.response?.data?.message || "Server error"),
+          "Có lỗi xảy ra!"
+        );
+      }
     } finally {
       setSubmitting(false);
     }
@@ -255,7 +265,7 @@ export default function ImproveTask() {
                     type="file"
                     multiple
                     className="form-control form-control-sm rounded-pill shadow-sm"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.png,.jpeg,.zip,.rar"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.png,.jpeg,.zip,.rar"
                     onChange={handleCompletedFilesChange}
                   />
 
@@ -352,7 +362,7 @@ export default function ImproveTask() {
                       submitting || (!afterImage && completedFiles.length === 0)
                     }
                   >
-                    {submitting ? t("sending") : t("send_for_review")}
+                    {submitting ? t("sending") : t("send_for_approval")}
                   </button>
                 </div>
               </div>

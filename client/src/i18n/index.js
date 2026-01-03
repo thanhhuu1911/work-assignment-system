@@ -78,12 +78,12 @@ const resources = {
       attached_files_hint: "Nhấn Ctrl để chọn nhiều file",
       assign_task_button: "Giao việc",
       all_factory: "Tất cả nhà máy",
-
+      task: "Công việc",
       // ===== IMPROVE TASK =====
       improve_task: "Cải thiện công việc",
       after_images: "Ảnh sau (không bắt buộc)",
       completed_files_hint: "Nhấn Ctrl để chọn nhiều file",
-      send_for_review: "Gửi duyệt",
+      send_for_approval: "Gửi duyệt",
       sending: "Đang gửi...",
       must_attach_one:
         "Vui lòng chọn ít nhất 1 ảnh 'Sau' hoặc 1 file hoàn thành!",
@@ -99,6 +99,11 @@ const resources = {
       approving: "Đang duyệt...",
       rejecting: "Đang xử lý...",
       must_enter_reason: "Vui lòng nhập lý do trước khi từ chối!",
+
+      success: "Thành công!",
+      error: "Lỗi!",
+      warning: "Cảnh báo!",
+      info: "Thông tin",
 
       // ===== TASK DETAIL =====
       task_detail: "Chi tiết công việc",
@@ -124,7 +129,7 @@ const resources = {
       last_30_days: "30 ngày gần nhất",
       this_month: "Tháng này",
       this_quarter: "Quý này",
-
+      toast_overdue_title: "Hết hạn rồi!",
       // TOASTS
       task_assigned_success: "Giao việc thành công!",
       improve_sent_success: "Gửi duyệt thành công!",
@@ -303,7 +308,7 @@ const resources = {
       completed_files: "Completed Files",
       feedback: "Feedback",
       review_note: "Review Note",
-
+      task: "Task",
       view_detail: "View Detail",
       improve: "Improve",
 
@@ -325,7 +330,7 @@ const resources = {
       improve_task: "Improve Task",
       after_images: "After Images (optional)",
       completed_files_hint: "Hold Ctrl to select multiple files",
-      send_for_review: "Submit for Review",
+      send_for_approval: "Submit for Approval",
       sending: "Sending...",
       must_attach_one:
         "Please upload at least one 'After' image or completed file!",
@@ -376,7 +381,7 @@ const resources = {
       load_error: "Error loading data",
       unauthorized_improve: "Cannot improve this task!",
       not_in_review: "Task is not in review status",
-
+      toast_overdue_title: "Overdue!",
       logout: "Logout",
 
       // ===== REVIEW TASK PAGE EXTRA =====
@@ -397,6 +402,11 @@ const resources = {
       request_files: "Request Files",
       leader: "Leader",
       staff: "Staff",
+
+      success: "Success!",
+      error: "Error!",
+      warning: "Warning!",
+      info: "Info",
     },
   },
 };

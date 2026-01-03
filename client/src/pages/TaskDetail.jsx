@@ -173,7 +173,7 @@ export default function TaskDetail() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-primary small text-decoration-underline text-truncate d-inline-block"
-                              style={{ maxWidth: "200px" }}
+                              style={{ maxWidth: "320px" }}
                               title={getFileName(file)}
                             >
                               {getFileName(file)}
@@ -205,6 +205,7 @@ export default function TaskDetail() {
                               rel="noopener noreferrer"
                               className="text-primary small text-decoration-underline text-truncate"
                               title={getFileName(file)}
+                              style={{ maxWidth: "320px" }}
                             >
                               {getFileName(file)}
                             </a>
