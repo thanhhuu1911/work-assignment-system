@@ -1,12 +1,12 @@
 // client/src/pages/Login.jsx
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom"; // THÊM useNavigate
+import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function Login() {
   const { t } = useTranslation();
-  const navigate = useNavigate(); // THÊM DÒNG NÀY
+  const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
@@ -24,7 +24,7 @@ export default function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      navigate("/dashboard"); // BÂY GIỜ ĐƯỢC RỒI
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }

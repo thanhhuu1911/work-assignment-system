@@ -75,7 +75,7 @@ const resources = {
       select_position: "-- Chọn vị trí --",
       enter_description: "Nhập mô tả công việc...",
       before_images: "Ảnh trước (không bắt buộc)",
-      attached_files_hint: "Nhấn Ctrl để chọn nhiều file",
+      attached_files_hint: "File yêu cầu (nhấn Ctrl để chọn nhiều file)",
       assign_task_button: "Giao việc",
       all_factory: "Tất cả nhà máy",
       task: "Công việc",
@@ -322,7 +322,8 @@ const resources = {
       select_position: "-- Select Position --",
       enter_description: "Enter task description...",
       before_images: "Before Images (optional)",
-      attached_files_hint: "Hold Ctrl to select multiple files",
+      attached_files_hint:
+        "Required files (hold Ctrl to select multiple files)",
       assign_task_button: "Assign Task",
       all_factory: "All Factories",
       note_warning: "Note Warning",

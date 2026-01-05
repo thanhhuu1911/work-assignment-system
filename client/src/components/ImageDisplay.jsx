@@ -11,7 +11,7 @@ const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
         className="w-100 h-100 img-fluid object-fit-contain bg-white p-1"
         onError={(e) => {
           e.target.src = "/no-image.jpg";
-          e.target.onerror = null; // DÒNG QUAN TRỌNG NHẤT: NGĂN LẶP VÔ HẠN
+          e.target.onerror = null;
           e.target.alt = "No image";
         }}
       />
@@ -32,7 +32,7 @@ const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
     );
   }
 
-  // 3. Placeholder đẹp chuẩn Bootstrap
+  // 3. Placeholder
   return (
     <div className="d-flex flex-column align-items-center justify-content-center h-100 bg-light text-muted">
       <i

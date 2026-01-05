@@ -198,7 +198,7 @@ export default function ReviewTask() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-primary small text-decoration-underline text-truncate d-inline-block"
-                              style={{ maxWidth: "200px" }}
+                              style={{ maxWidth: "500px" }}
                               title={getFileName(file)}
                             >
                               {getFileName(file)}
@@ -229,6 +229,7 @@ export default function ReviewTask() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-primary small text-decoration-underline text-truncate"
+                              style={{ maxWidth: "500px" }}
                               title={getFileName(file)}
                             >
                               {getFileName(file)}

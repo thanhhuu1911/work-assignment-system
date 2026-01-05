@@ -204,7 +204,6 @@ export default function NewIssue() {
                   </h2>
 
                   <form onSubmit={handleSubmit} encType="multipart/form-data">
-                    {/* Các field cũ giữ nguyên */}
                     <div className="row g-3 ">
                       <div className="col-md-6">
                         <label className="form-label small fw-semibold">
@@ -321,7 +320,7 @@ export default function NewIssue() {
                       </div>
                     </div>
 
-                    {/* ẢNH TRƯỚC – CĂN GIỮA ĐẸP LUNG LINH */}
+                    {/* ẢNH TRƯỚC */}
                     <div className="mt-2 ">
                       <label className="form-label small fw-semibold text-dark">
                         {t("before_images")}
@@ -380,9 +379,7 @@ export default function NewIssue() {
                             {attachedFiles.map((item, idx) => (
                               <div key={idx} className="mb-2">
                                 <div className="d-flex align-items-center justify-content-between bg-white border rounded-4 px-3 py-2 hover-shadow transition-all shadow-sm">
-                                  {/* Tên file + icon nhỏ xinh */}
                                   <div className="d-flex align-items-center gap-2 flex-grow-1 text-truncate">
-                                    {/* Icon nhỏ gọn */}
                                     {item.isImage ? (
                                       <img
                                         src={item.preview}
