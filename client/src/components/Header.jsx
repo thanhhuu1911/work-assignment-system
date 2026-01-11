@@ -30,7 +30,7 @@ export default function Header() {
         {/* Logo + Tên nhóm */}
         <div className="d-flex align-items-center gap-2">
           <img
-            src="http://localhost:5000/images/Logo_ME.jpg"
+            src="/Logo_ME.jpg"
             alt="ME Logo"
             style={{
               width: 70,

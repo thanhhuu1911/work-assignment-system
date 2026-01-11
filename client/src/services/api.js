@@ -3,7 +3,7 @@ import axios from "axios";
 import { showToast } from "../components/Toast";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "/api",
   withCredentials: true, // Important if using HttpOnly cookies are used
 });
 
