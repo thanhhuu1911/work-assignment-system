@@ -47,7 +47,7 @@ export default function Statistics() {
   const [groupFilter, setGroupFilter] = useState("all");
   const [userFilter, setUserFilter] = useState("all");
   const [dateRange, setDateRange] = useState(
-    isLeader || isMember ? "week" : "all"
+    isLeader || isMember ? "last_7_days" : "this_month"
   );
 
   const fetchStats = async () => {
@@ -241,8 +241,9 @@ export default function Statistics() {
                 onClick={() => {
                   setGroupFilter("all");
                   setUserFilter("all");
-                  setDateRange(isLeader || isMember ? "week" : "all");
-
+                  const defaultPeriod =
+                    isLeader || isMember ? "last_7_days" : "this_month";
+                  setDateRange(defaultPeriod);
                   fetchStats();
                 }}
                 className="btn btn-primary d-flex align-items-center gap-2 px-4 py-2 rounded-pill shadow-sm fw-semibold border-2"
@@ -327,10 +328,16 @@ export default function Statistics() {
                       value={dateRange}
                       onChange={(e) => setDateRange(e.target.value)}
                     >
-                      <option value="week">{t("last_7_days")}</option>
-                      <option value="all">{t("last_30_days")}</option>
-                      <option value="month">{t("this_month")}</option>
-                      <option value="quarter">{t("this_quarter")}</option>
+                      <option value="last_7_days">{t("last_7_days")}</option>{" "}
+                      {/* 7 ngày gần nhất */}
+                      <option value="this_month">{t("this_month")}</option>{" "}
+                      {/* Tháng này */}
+                      <option value="last_month">{t("last_month")}</option>{" "}
+                      {/* Tháng trước */}
+                      <option value="this_year">{t("this_year")}</option>{" "}
+                      {/* Năm này */}
+                      <option value="last_year">{t("last_year")}</option>{" "}
+                      {/* Năm trước */}
                     </select>
                   </div>
                 </div>
@@ -372,10 +379,16 @@ export default function Statistics() {
                       value={dateRange}
                       onChange={(e) => setDateRange(e.target.value)}
                     >
-                      <option value="week">{t("last_7_days")}</option>
-                      <option value="all">{t("last_30_days")}</option>
-                      <option value="month">{t("this_month")}</option>
-                      <option value="quarter">{t("this_quarter")}</option>
+                      <option value="last_7_days">{t("last_7_days")}</option>{" "}
+                      {/* 7 ngày gần nhất */}
+                      <option value="this_month">{t("this_month")}</option>{" "}
+                      {/* Tháng này */}
+                      <option value="last_month">{t("last_month")}</option>{" "}
+                      {/* Tháng trước */}
+                      <option value="this_year">{t("this_year")}</option>{" "}
+                      {/* Năm này */}
+                      <option value="last_year">{t("last_year")}</option>{" "}
+                      {/* Năm trước */}
                     </select>
                   </div>
                 </div>

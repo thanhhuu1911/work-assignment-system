@@ -24,8 +24,7 @@ router.post(
 );
 
 router.get("/", getTasks);
-router.get("/stats", getTaskStats); // Thêm dòng này
-router.get("/:id", getTaskById);
+router.get("/stats", getTaskStats);
 
 router.put(
   "/:id/improve",

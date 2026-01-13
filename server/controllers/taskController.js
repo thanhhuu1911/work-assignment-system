@@ -171,29 +171,71 @@ export const getTaskStats = async (req, res) => {
     }
 
     // ===== 2. LỌC THỜI GIAN =====
-    let createdAtFilter = {};
-    let daysToShow = 29;
+    let fromDate;
+    let toDate = new Date(); // mặc định đến hôm nay
+    let daysToShow = 6; // mặc định cho line chart (sẽ điều chỉnh sau)
 
-    if (period === "week") {
-      createdAtFilter = {
-        $gte: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000),
-      };
-      daysToShow = 6;
-    } else if (period === "month") {
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      createdAtFilter = { $gte: monthStart };
-      daysToShow = now.getDate() - 1;
-    } else if (period === "quarter") {
-      const quarterMonth = Math.floor(now.getMonth() / 3) * 3;
-      const quarterStart = new Date(now.getFullYear(), quarterMonth, 1);
-      createdAtFilter = { $gte: quarterStart };
-      daysToShow = Math.floor((now - quarterStart) / (1000 * 60 * 60 * 24));
-    } else {
-      createdAtFilter = {
-        $gte: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
-      };
-      daysToShow = 29;
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    switch (period) {
+      case "last_7_days":
+        fromDate = new Date(now);
+        fromDate.setDate(now.getDate() - 6); // 7 ngày bao gồm hôm nay
+        fromDate.setHours(0, 0, 0, 0);
+        daysToShow = 6;
+        break;
+
+      case "this_month":
+        fromDate = new Date(currentYear, currentMonth, 1);
+        fromDate.setHours(0, 0, 0, 0);
+        daysToShow = now.getDate() - 1; // số ngày đã qua trong tháng
+        break;
+
+      case "last_month":
+        fromDate = new Date(currentYear, currentMonth - 1, 1);
+        toDate = new Date(currentYear, currentMonth, 0); // ngày cuối tháng trước
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999);
+        daysToShow = toDate.getDate(); // số ngày của tháng trước
+        break;
+
+      case "this_year":
+        fromDate = new Date(currentYear, 0, 1);
+        fromDate.setHours(0, 0, 0, 0);
+        daysToShow = Math.floor((now - fromDate) / (1000 * 60 * 60 * 24));
+        break;
+
+      case "last_year":
+        fromDate = new Date(currentYear - 1, 0, 1);
+        toDate = new Date(currentYear - 1, 11, 31);
+        fromDate.setHours(0, 0, 0, 0);
+        toDate.setHours(23, 59, 59, 999);
+        daysToShow = 365; // hoặc 366 nếu năm nhuận, nhưng 365 đủ cho line chart
+        break;
+
+      default:
+        // fallback về 30 ngày gần nhất (hoặc bạn có thể throw error)
+        fromDate = new Date(now);
+        fromDate.setDate(now.getDate() - 29);
+        fromDate.setHours(0, 0, 0, 0);
+        daysToShow = 29;
+        break;
     }
+
+    // Đảm bảo fromDate và toDate đúng múi giờ (nếu cần)
+    fromDate = new Date(fromDate.setHours(0, 0, 0, 0));
+    if (toDate) {
+      toDate = new Date(toDate.setHours(23, 59, 59, 999));
+    } else {
+      toDate = new Date(now.setHours(23, 59, 59, 999));
+    }
+
+    // Tạo filter cho MongoDB
+    const createdAtFilter = {
+      $gte: fromDate,
+      $lte: toDate,
+    };
 
     // ===== 3. LẤY TOÀN BỘ TASK TRONG KHOẢNG THỜI GIAN (CHƯA LỌC GROUP/USER) =====
     let tasks = await Task.find({
@@ -376,10 +418,11 @@ export const getTaskStats = async (req, res) => {
         : [];
 
     const dailyStats = [];
-    for (let i = 0; i <= daysToShow; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dateStr = format(d, "dd/MM");
+    const cursor = new Date(fromDate);
+
+    while (cursor <= toDate) {
+      const dateStr = format(cursor, "dd/MM");
+
       dailyStats.push(
         dailyMap.get(dateStr) || {
           date: dateStr,
@@ -390,8 +433,9 @@ export const getTaskStats = async (req, res) => {
           rejected: 0,
         }
       );
+
+      cursor.setDate(cursor.getDate() + 1);
     }
-    dailyStats.reverse();
 
     // const statusBreakdown = [
     //   { name: "Đang thực hiện", value: summary.ongoing },
