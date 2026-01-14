@@ -29,7 +29,11 @@ export default function ImproveTask() {
       try {
         const res = await api.get(`/tasks/${id}`);
         const taskData = res.data;
-        if (!["ongoing", "rejected", "review"].includes(taskData.status)) {
+        if (
+          !["ongoing", "rejected", "needs_improvement"].includes(
+            taskData.status
+          )
+        ) {
           showToast("Không thể cải thiện công việc này!", "Cảnh báo!");
           navigate("/dashboard");
           return;

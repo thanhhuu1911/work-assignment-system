@@ -120,18 +120,23 @@ export const improveTask = async (req, res) => {
 export const reviewTask = async (req, res) => {
   const { status, reviewNote } = req.body;
 
+  // Cho phép 3 trạng thái
+  if (!["approved", "rejected", "needs_improvement"].includes(status)) {
+    return res.status(400).json({ message: "Trạng thái không hợp lệ" });
+  }
+
   try {
     const updateData = {
       status,
       reviewedAt: new Date(),
     };
 
+    // Bắt buộc reviewNote khi rejected hoặc needs_improvement
     if (reviewNote?.trim()) {
       updateData.reviewNote = reviewNote.trim();
-    } else if (status === "rejected") {
-      updateData.reviewNote = "Không đạt"; // bắt buộc có lý do khi reject
+    } else if (status === "rejected" || status === "needs_improvement") {
+      updateData.reviewNote = "Không đạt – yêu cầu cải thiện lại"; // fallback
     }
-    // nếu duyệt + không ghi gì → KHÔNG làm gì cả → reviewNote vẫn null → chuẩn!
 
     const task = await Task.findByIdAndUpdate(req.params.id, updateData, {
       new: true,

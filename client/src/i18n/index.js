@@ -35,6 +35,9 @@ const resources = {
       group: "Nhóm",
       member: "Nhân viên",
 
+      needs_improvement: "Yêu cầu cải thiện",
+      requesting_improvement: "Đang yêu cầu cải thiện...",
+
       // ===== STATUS =====
       ongoing: "Đang thực hiện",
       review: "Duyệt",
@@ -99,12 +102,13 @@ const resources = {
       approving: "Đang duyệt...",
       rejecting: "Đang xử lý...",
       must_enter_reason: "Vui lòng nhập lý do trước khi từ chối!",
-
+      note_required_for_reject_or_improve:
+        "nhập ghi chú khi từ chối hoặc yêu cầu cải thiện.",
       success: "Thành công!",
       error: "Lỗi!",
       warning: "Cảnh báo!",
       info: "Thông tin",
-
+      needs_improvement: "Cần cải thiện lại",
       // ===== TASK DETAIL =====
       task_detail: "Chi tiết công việc",
       required_files: "File yêu cầu:",
@@ -125,7 +129,7 @@ const resources = {
       status_distribution: "Tỷ lệ trạng thái công việc",
       ranking: "Xếp hạng",
       completion_rate: "Tỷ lệ hoàn thành",
-      last_7_days: "7 ngày qua",
+      last_7_days: "7 ngày trước",
       last_30_days: "30 ngày gần nhất",
       this_month: "Tháng này",
       this_quarter: "Quý này",
@@ -183,7 +187,7 @@ const resources = {
       group_stats: "Thống kê nhóm {{group}}",
       department_stats: "Thống kê phòng ME",
       last_month: "Tháng trước",
-      last_7_days: "7 ngày qua",
+      last_7_days: "7 ngày trước",
       last_30_days: "30 ngày gần nhất",
       this_year: "Năm hiện tại",
       last_year: "Năm trước",
@@ -267,6 +271,8 @@ const resources = {
       export_ppt: "Export PPT",
       daily_activity: "Daily Activity",
       status_distribution: "Task Status Distribution",
+      note_required_for_reject_or_improve:
+        "Please enter a note when rejecting or requesting improvement.",
 
       // Xếp hạng với context
       statistics_ranking_title: "ME Department Ranking",
@@ -386,7 +392,7 @@ const resources = {
       not_in_review: "Task is not in review status",
       toast_overdue_title: "Overdue!",
       logout: "Logout",
-
+      needs_improvement: "Needs improvement",
       // ===== REVIEW TASK PAGE EXTRA =====
       review_title: "Review Task",
       review_information: "Review Information",
@@ -414,6 +420,8 @@ const resources = {
       error: "Error!",
       warning: "Warning!",
       info: "Info",
+      needs_improvement: "Request improvement",
+      requesting_improvement: "Requesting improvement...",
     },
   },
 };

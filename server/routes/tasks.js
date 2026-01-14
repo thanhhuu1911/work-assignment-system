@@ -25,7 +25,7 @@ router.post(
 
 router.get("/", getTasks);
 router.get("/stats", getTaskStats);
-
+router.get("/:id", getTaskById);
 router.put(
   "/:id/improve",
   authorize("manager", "a_manager", "leader", "member"),

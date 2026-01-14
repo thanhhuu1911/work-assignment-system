@@ -33,6 +33,7 @@ export default function TaskCard({ task }) {
   const getStatusText = () => {
     if (task.status === "approved") return t("approved");
     if (task.status === "rejected") return t("rejected");
+    if (task.status === "needs_improvement") return t("needs_improvement");
     if (task.isOverdue) return t("overdue");
 
     const statusMap = {
@@ -46,6 +47,7 @@ export default function TaskCard({ task }) {
   const getStatusColor = () => {
     if (task.status === "approved") return "success";
     if (task.status === "rejected") return "danger";
+    if (task.status === "needs_improvement") return "warning";
     if (task.isOverdue) return "danger";
     return STATUS_COLORS[task.status] || "secondary";
   };
@@ -213,9 +215,13 @@ export default function TaskCard({ task }) {
           </button>
 
           {!task.isOverdue &&
-            ["ongoing", "processing", "review", "rejected"].includes(
-              task.status
-            ) && (
+            [
+              "ongoing",
+              "processing",
+              "review",
+              "rejected",
+              "needs_improvement",
+            ].includes(task.status) && (
               <button
                 className="btn btn-success btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
                 onClick={() => navigate(`/improve/${task._id}`)}

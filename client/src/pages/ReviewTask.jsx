@@ -52,8 +52,16 @@ export default function ReviewTask() {
   };
 
   const handleAction = async (action) => {
-    // Chỉ kiểm tra bắt buộc khi TỪ CHỐI
-    if (action === "reject" && !note.trim()) {
+    let newStatus;
+    if (action === "approve") newStatus = "approved";
+    else if (action === "reject") newStatus = "rejected";
+    else if (action === "needs_improvement") newStatus = "needs_improvement";
+
+    // Bắt buộc note khi từ chối HOẶC yêu cầu cải thiện
+    if (
+      (newStatus === "rejected" || newStatus === "needs_improvement") &&
+      !note.trim()
+    ) {
       setShowWarning(true);
       return;
     }
@@ -63,24 +71,32 @@ export default function ReviewTask() {
 
     try {
       const payload = {
-        status: action === "approve" ? "approved" : "rejected",
+        status: newStatus,
       };
-      // Nếu có ghi chú → gửi luôn (dù duyệt hay từ chối)
       if (note.trim()) {
         payload.reviewNote = note.trim();
       }
 
       await api.put(`/tasks/${id}/review`, payload);
 
-      showToast(
-        action === "approve" ? "ĐÃ DUYỆT THÀNH CÔNG!" : "ĐÃ TỪ CHỐI!",
-        action === "approve" ? "Thành công!" : "Cảnh báo!"
-      );
+      let toastMessage = "";
+      let toastType = "Thành công!";
+      if (newStatus === "approved") {
+        toastMessage = "ĐÃ DUYỆT THÀNH CÔNG!";
+      } else if (newStatus === "rejected") {
+        toastMessage = "ĐÃ TỪ CHỐI!";
+        toastType = "Cảnh báo!";
+      } else if (newStatus === "needs_improvement") {
+        toastMessage = "ĐÃ YÊU CẦU CẢI THIỆN!";
+        toastType = "Cảnh báo!";
+      }
+
+      showToast(toastMessage, toastType);
       navigate("/dashboard");
     } catch (err) {
       showToast(
-        "Lỗi: " +
-          (err.response?.data?.message || "Server error", "Có lỗi xảy ra!")
+        "Lỗi: " + (err.response?.data?.message || "Server error"),
+        "Có lỗi xảy ra!"
       );
     } finally {
       setSubmitting("");
@@ -236,14 +252,14 @@ export default function ReviewTask() {
                     )}
                 </div>
 
-                {/* TIN NHẮN TỪ NHÂN VIÊN KHI CẢI THIỆN – MÀU PRIMARY, KHÔNG BACKGROUND */}
+                {/* TIN NHẮN TỪ NHÂN VIÊN */}
                 {task.improveNote && (
                   <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
                     <div className="d-flex align-items-start gap-2">
                       <i className="bi bi-chat-dots-fill text-dark"></i>
                       <div className="flex-grow-1">
                         <small className="text-dark fw-bold d-block">
-                          {task.assignee?.name || "Nhân viên"}{" "}
+                          {task.assignee?.name || "Nhân viên"}
                         </small>
                         <p
                           className="mb-0 text-dark small lh-sm"
@@ -256,7 +272,7 @@ export default function ReviewTask() {
                   </div>
                 )}
 
-                {/* GHI CHÚ DUYỆT – HIỆN LUÔN KHI CÓ reviewNote, DÙ ĐÃ APPROVED HAY REJECTED */}
+                {/* GHI CHÚ DUYỆT CŨ (nếu có) */}
                 {task.reviewNote && (
                   <div className="mx-2 mt-1 p-2 rounded-3 border bg-light">
                     <small
@@ -278,11 +294,13 @@ export default function ReviewTask() {
                   </div>
                 )}
 
-                {/* GHI CHÚ (TỰ DO NHẬP) */}
+                {/* Ô NHẬP GHI CHÚ */}
                 <div className="px-4 py-3 border-top">
                   <label className="form-label fw-bold text-dark small">
                     {t("note_for_employee")}{" "}
-                    <span className="text-danger">{t("note_required")}</span>
+                    <span className="text-danger">
+                      {t("note_required_for_reject_or_improve")}
+                    </span>
                   </label>
                   <textarea
                     className={`form-control ${
@@ -303,8 +321,8 @@ export default function ReviewTask() {
                   )}
                 </div>
 
-                {/* NÚT HÀNH ĐỘNG – CÓ "QUAY LẠI" */}
-                <div className="p-4 bg-white border-top d-flex justify-content-center gap-3">
+                {/* NÚT HÀNH ĐỘNG */}
+                <div className="p-4 bg-white border-top d-flex justify-content-center gap-3 flex-wrap">
                   <button
                     className="btn btn-primary btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm d-flex align-items-center gap-1"
                     onClick={() => navigate(-1)}
@@ -327,6 +345,16 @@ export default function ReviewTask() {
                     disabled={!!submitting}
                   >
                     {submitting === "approve" ? t("approving") : t("approve")}
+                  </button>
+
+                  <button
+                    className="btn btn-warning text-white px-4 py-2 fw-bold rounded-pill shadow-sm"
+                    onClick={() => handleAction("needs_improvement")}
+                    disabled={!!submitting}
+                  >
+                    {submitting === "needs_improvement"
+                      ? t("requesting_improvement")
+                      : t("needs_improvement")}
                   </button>
 
                   <button

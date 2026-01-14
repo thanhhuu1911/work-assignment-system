@@ -27,6 +27,7 @@ const taskSchema = new mongoose.Schema(
         "approved",
         "rejected",
         "overdue",
+        "needs_improvement",
       ],
       default: "ongoing",
     },
