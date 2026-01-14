@@ -215,13 +215,9 @@ export default function TaskCard({ task }) {
           </button>
 
           {!task.isOverdue &&
-            [
-              "ongoing",
-              "processing",
-              "review",
-              "rejected",
-              "needs_improvement",
-            ].includes(task.status) && (
+            ["ongoing", "processing", "review", "needs_improvement"].includes(
+              task.status
+            ) && (
               <button
                 className="btn btn-success btn-sm px-3 py-2 fw-bold rounded-pill shadow-sm"
                 onClick={() => navigate(`/improve/${task._id}`)}

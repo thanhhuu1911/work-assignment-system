@@ -51,7 +51,7 @@ export default function Dashboard() {
       const sorted = res.data.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
-      setTasks(sorted); // ← backend đã có isOverdue rồi!
+      setTasks(sorted);
     } catch (err) {
       showToast("Failed to load tasks", "Có lỗi xảy ra!");
     }

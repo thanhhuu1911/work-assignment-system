@@ -103,7 +103,7 @@ const resources = {
       rejecting: "Đang xử lý...",
       must_enter_reason: "Vui lòng nhập lý do trước khi từ chối!",
       note_required_for_reject_or_improve:
-        "nhập ghi chú khi từ chối hoặc yêu cầu cải thiện.",
+        " khi từ chối hoặc yêu cầu cải thiện.",
       success: "Thành công!",
       error: "Lỗi!",
       warning: "Cảnh báo!",
@@ -202,7 +202,8 @@ const resources = {
       pending_review: "Chờ duyệt",
       daily_activity: "Hoạt động theo ngày",
       status_distribution: "Tỷ lệ trạng thái công việc",
-      note_warning: "lưu ý cảnh báo",
+      note_warning:
+        "Vui lòng nhập lí do khi từ chối hoặc Yêu cầu cải thiện lai",
       // Key xếp hạng dùng gạch dưới + context
       statistics_ranking_title: "Xếp hạng phòng ME",
       statistics_ranking_title_group: "Xếp hạng nhóm {{group}}",

@@ -119,7 +119,7 @@ export default function Register() {
                   </option>
                   <option value="Lean">Lean</option>
                   <option value="IE">IE</option>
-                  {/* <option value="Data">Data</option> */}
+                  <option value="Data">Data</option>
                 </select>
               </div>
             )}

@@ -302,7 +302,7 @@ export default function TaskDetail() {
                       {t("home")}
                     </button>
 
-                    {["ongoing", "rejected"].includes(task.status) && (
+                    {["ongoing", "needs_improvement"].includes(task.status) && (
                       <button
                         className="btn btn-success btn-sm px-4 py-2 fw-bold rounded-pill shadow-sm"
                         onClick={() => navigate(`/improve/${task._id}`)}

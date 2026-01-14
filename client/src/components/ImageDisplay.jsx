@@ -6,7 +6,7 @@ const ImageDisplay = ({ imageField, attachedFile, type = "before" }) => {
   if (imageField) {
     return (
       <img
-        src={`http://localhost:5000/uploads/${imageField}`}
+        src={`/uploads/${imageField}`}
         alt={isBefore ? "Before" : "After"}
         className="w-100 h-100 img-fluid object-fit-contain bg-white p-1"
         onError={(e) => {
